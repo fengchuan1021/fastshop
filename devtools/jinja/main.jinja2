@@ -1,0 +1,58 @@
+from __future__ import annotations
+from sqlalchemy.ext.asyncio import AsyncSession
+from common.dbsession import get_webdbsession
+from RegistryManager import Registry
+from component.cache import cache
+from fastapi import APIRouter
+from fastapi import Depends
+from sqlalchemy.exc import IntegrityError
+import settings
+from typing import Dict
+from common.globalFunctions import get_token
+from .__init__ import APIPREFIX
+from .__init__ import dependencies
+{{imports}}
+
+router = APIRouter(
+    prefix=APIPREFIX,
+    dependencies=dependencies
+)
+
+
+
+
+
+{% for operation in operations %}
+# <editor-fold desc="{{operation.summary}} {{operation.type}}: {{operation.snake_case_path}}">
+@router.{{operation.type}}('{{operation.snake_case_path}}', response_model={{operation.response}}
+    {% if operation.additional_responses %}
+        , responses={
+            {% for status_code, models in operation.additional_responses.items() %}
+                '{{ status_code }}': {
+                {% for key, model in models.items() %}
+                    '{{ key }}': {{ model }}{% if not loop.last %},{% endif %}
+                {% endfor %}
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        }
+    {% endif %})
+async def {{operation.summary}}({{operation.arguments}}{% if operation.arguments %},{% endif %} db: AsyncSession=Depends(get_webdbsession),token:settings.UserTokenData=Depends(get_token))->{{operation.return_type}}:
+    {%- if operation.summary %}
+    """
+    {{ operation.summary }}
+    """
+    {%- endif %}
+
+    #user=await Registry.UserRegistry.findByPk(db,token.id)
+
+
+
+
+    #install pydantic plugin,press alt+enter auto complete the args.
+    return {{operation.return_type}}()
+# </editor-fold>
+
+
+
+
+{% endfor %}
