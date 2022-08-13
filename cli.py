@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+import importlib
 try:
     import typer
 except Exception as e:
@@ -55,6 +56,7 @@ nodeid="66"
             cursor.execute(f'create DATABASE {DATABASE}')
             from alembic import command
             import settings
+            importlib.reload(settings)
             from alembic.config import Config
             versionpath=os.path.join('alembic','versions')
             if os.path.exists(versionpath):
