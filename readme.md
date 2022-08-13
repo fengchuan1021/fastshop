@@ -35,17 +35,14 @@ celery -A celery_mainworker beat -S redbeat.RedBeatScheduler -l info
 
 
 
-### two methods generate cotroller and shema from openapi.json:
+### cotroller and shema from openapi.json:
 
-1. generate controller from cli.
+
 
 ```shell
 python cli.py importopenapi 1.json
 ```
 
-2. visit http://127.0.0.1/apidesign/importfromapifox   drag json file in the upload box
-
-suggest use method one. from command line. 
 
 
 
