@@ -34,7 +34,7 @@ def inidb()->None:
     AMQPURL=click.prompt('Please input rabbitmq url', default="amqp://admin:admin@127.0.0.1:5672/",type=str)
     REDISURL = click.prompt('Please input redis url', default="redis://127.0.0.1:6379",
                                      type=str)
-    with open('DEV.env','w',encoding='utf8') as conf:
+    with open('DEVCONNECT.env','w',encoding='utf8') as conf:
         conf.write(f'''ASYNCDBURL="mysql+aiomysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 SYNCDBURL="mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 
