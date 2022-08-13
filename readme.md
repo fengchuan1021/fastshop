@@ -3,7 +3,7 @@
 clone code repository:
 
 ```
-git clone https://github.com/xxxx/xxxx.git
+git clone https://github.com/fengchuan1021/tmapi.git
 ```
 
 initproject after clone.(such as input db password,db name ,etc).
@@ -26,16 +26,11 @@ or
 python -m uvicorn app:app --reload
 ```
 
-### start celery worker(linux only)
-
-```
-celery -A celery_mainworker worker -l info --concurrency=4
-celery -A celery_mainworker beat -S redbeat.RedBeatScheduler -l info
-```
 
 
 
-### cotroller and shema from openapi.json:
+
+### generate cotroller and shema from openapi.json:
 
 
 
@@ -65,3 +60,11 @@ docker run --add-host=host.docker.internal:host-gateway --restart=always --log-o
 alembic revision --autogenerate -m "add root_cause table"
 alembic upgrade head
 mysql+pymsql://root:root@host.docker.internal/buildbot
+
+
+### if you have Distributed tasks,start celery worker(linux only)
+
+```
+celery -A celery_mainworker beat -S redbeat.RedBeatScheduler -l info
+celery -A celery_mainworker worker -l info --concurrency=4
+```
