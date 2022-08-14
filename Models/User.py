@@ -49,32 +49,3 @@ class User(Base):
             self.userrole = self.userrole | UserRole.admin.value
         else:
             self.userrole=self.userrole & (UserRole.admin.value-1)
-
-    @classmethod
-    async def getUserByPhoneOrUsername(cls,db: AsyncSession,usernameOrPhone:str)->Optional['User']:
-        query=select(cls).filter(or_(cls.username==usernameOrPhone,cls.phone==usernameOrPhone))
-        results = await db.execute(query)
-        return results.scalar_one_or_none()
-
-    @classmethod
-    async def authenticate(cls,dbSession: AsyncSession, username: str, password: str)->Optional['User']:
-        user = await cls.getUserByPhoneOrUsername(dbSession,username)
-        print('user:',user)
-        if not user:
-            return None
-        print(user.password,password)
-        if user.password!=password:
-            return None
-        return user
-
-    @classmethod
-    def create_access_token(cls,data:'User', expires_delta: Union[timedelta, None] = None)->str:
-        to_encode = settings.UserTokenData.from_orm(data).dict()
-        print(f'{to_encode=}')
-        if expires_delta:
-            expire = datetime.utcnow() + expires_delta
-        else:
-            expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-        return encoded_jwt
