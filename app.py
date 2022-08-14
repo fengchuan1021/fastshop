@@ -13,6 +13,7 @@ from typing import Any
 from fastapi import FastAPI, Request, Depends
 import redis.asyncio as redis
 
+from redis.exceptions import ConnectionError
 from common.dbsession import get_webdbsession
 from component.cache import cache
 from pathlib import Path
@@ -99,6 +100,9 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         response=JSONResponse(jsonout,status_code=500)
     except fastapi.exceptions.ValidationError as e:
         jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.validateerror,msg='',data=e.errors()))
+        response=JSONResponse(jsonout,status_code=500)
+    except  ConnectionError as e:
+        jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.cacheerror,msg='cache server error',data=str(e)))
         response=JSONResponse(jsonout,status_code=500)
     except Exception as e:
         if settings.DEBUG:

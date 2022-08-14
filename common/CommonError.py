@@ -10,6 +10,7 @@ class Common500Status(Enum):
     validateerror = 'validateerror'
     neterror = 'neterror'
     dberror = 'dberror'
+    cacheerror='cache server error'
     tokenerror = 'tokenerror'
     unknownerr='unknownerr'
     notlogin='notlogin'
