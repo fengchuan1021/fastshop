@@ -1,8 +1,6 @@
 from __future__ import annotations
 import json
-import asyncio
-from typing import get_type_hints
-from pydantic import BaseModel
+
 from redis.asyncio import Redis
 import redis.asyncio as redis
 import settings
@@ -11,7 +9,7 @@ from fastapi.encoders import jsonable_encoder
 import asyncio
 from functools import wraps
 from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast
-from inspect import signature, _empty
+from inspect import signature
 F = TypeVar('F', bound=Callable[..., Any])
 _StrType = TypeVar("_StrType", bound=str | bytes)
 
