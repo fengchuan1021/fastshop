@@ -1,16 +1,7 @@
-#type: ignore
-# from cache.cache import (
-#     cache,
-#     cache_one_day,
-#     cache_one_hour,
-#     cache_one_minute,
-#     cache_one_month,
-#     cache_one_week,
-#     cache_one_year,
-# )
-#from cache.client import FastApiRedisCache
+from __future__ import annotations
 import json
 import asyncio
+from typing import get_type_hints
 from pydantic import BaseModel
 from redis.asyncio import Redis
 import redis.asyncio as redis
@@ -47,7 +38,14 @@ class CacheClass:
         self._prefix = prefix
         self._expire = expire if expire else settings.DEFAULT_REDIS_EXPIRED
         self._enable = enable
-        self._loop=asyncio.get_event_loop()
+        loop=asyncio.get_event_loop()
+        if loop.is_running():
+            self._loop = loop
+        else:
+            loop=asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            self._loop=loop
+
 
     @overload
     def __call__(self,__func: Optional[F]=None) -> F: ...
@@ -83,7 +81,7 @@ class CacheClass:
                 key_builder = key_builder or default_key_builder
 
                 key = key_builder(
-                    funcsig, namespace, args=args, kwargs=kwargs
+                    func,funcsig, namespace, args=args, kwargs=kwargs
                 )
                 ret = await self.get(key)
 
@@ -94,17 +92,19 @@ class CacheClass:
                     # await func(inDataType)
                 else:
                     ret = func(*args, **kwargs)
-                #funcsig._return_annotation.__args__[0].parse_obj()
-                if(funcsig.return_annotation is not _empty) and issubclass(funcsig.return_annotation,BaseModel):
-                    ret=jsonable_encoder(funcsig.return_annotation.parse_obj(ret))
-
-                await self.set(key,ret, expire)
+                try:
+                    ret=jsonable_encoder(ret)
+                    await self.set(key, ret, expire)
+                    return ret
+                except Exception as e:
+                    print(e)
                 return ret
             return cast(F, inner)
 
         if __func is not None:
             return decorator(__func)
         else:
+
             return decorator
 
 
