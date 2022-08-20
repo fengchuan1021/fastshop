@@ -1,4 +1,3 @@
-
 import fastapi.exceptions
 import settings
 import asyncio
@@ -6,22 +5,18 @@ import os
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from starlette.background import BackgroundTasks
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError,OperationalError
 from RegistryManager import Registry
 import importlib
 from typing import Any
 from fastapi import FastAPI, Request, Depends
-import redis.asyncio as redis
-
 from redis.exceptions import ConnectionError
 from common.dbsession import get_webdbsession
 from component.cache import cache
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from common.CommonError import Common500OutShema,Common500Status,TokenException
-from sqlalchemy.exc import OperationalError
 from common.globalFunctions import getorgeneratetoken, get_token
-from datetime import timedelta
 import BroadcastManager
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
@@ -30,23 +25,10 @@ if os.name!='nt':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 else:
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-class UserBannedException(Exception):
-    def __init__(self,msg:str)->None:
-        self.msg=msg
-async def checkuserstatus(token: settings.UserTokenData = Depends(get_token),db: AsyncSession = Depends(get_webdbsession))->None:
-    user=await Registry.UserRegistry.findByPk(db,token.id)
 
-    if user and user.is_banned=='banned':
-        raise UserBannedException("用户已被封禁")
-app = FastAPI(redoc_url=None,docs_url=None,openapi_url=None,dependencies=[Depends(checkuserstatus)])
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
+app = FastAPI(redoc_url=None,docs_url=None,openapi_url=None)
+app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,allow_methods=["*"],allow_headers=["*"],)
 
 async def finalcommit(session: AsyncSession)->None:
     try:
@@ -95,9 +77,6 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
     except TokenException as e:
         jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.tokenerror, msg=str(e)))
         response=JSONResponse(jsonout,status_code=500)
-    except UserBannedException as e:
-        jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.userbanned, msg=str(e)))
-        response=JSONResponse(jsonout,status_code=500)
     except fastapi.exceptions.ValidationError as e:
         jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.validateerror,msg='',data=e.errors()))
         response=JSONResponse(jsonout,status_code=500)
@@ -118,11 +97,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
 async def startup()->None:
     if settings.MODE == 'DEV':
         from devtools import debugtools
-        #from devtools.apidesign import router
         import multiprocessing
-        # app.include_router(router)
-        from fastapi.staticfiles import StaticFiles
-        # app.mount("/apidesign/importfromapifox", StaticFiles(directory="devtools/uploadpage", html=True),name="uploadfromapifox")
         backgroundprocess = multiprocessing.Process(target=debugtools.before_appstart)
         backgroundprocess.start()
     cache.init(prefix="xt-cache",expire=3600)
