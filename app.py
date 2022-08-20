@@ -9,9 +9,9 @@ from sqlalchemy.exc import IntegrityError,OperationalError
 from RegistryManager import Registry
 import importlib
 from typing import Any
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from redis.exceptions import ConnectionError
-from common.dbsession import get_webdbsession
+
 from component.cache import cache
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
