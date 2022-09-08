@@ -10,7 +10,7 @@ def before_appstart()->None:
     serviceTpl=open(os.path.join(settings.BASE_DIR, 'devtools','template', 'Service__init__.py.tpl'), 'r', encoding='utf8').read()
     arr={}
     for cls in allmodelclasses:
-        arr[cls] = f'{cls}Service : CRUDBase[Models.{cls}]'
+        arr[cls] = f'{cls[0].lower()+cls[1:]}Service : CRUDBase[Models.{cls}]'
     #needannotations=arr.copy()
     def getclassnames(filetoread:Path)->List:
         allcontent=filetoread.open('rt',encoding='utf8').read()
@@ -24,8 +24,8 @@ def before_appstart()->None:
 
             for classname in classnames:
                 #del needannotations[classname]
-                del arr[classname]
-                #arr[classname]=f'{classname}Service : Service.{classname}Service\n'
+
+                arr[classname]=f'{classname[0].lower()+classname[1:]}Service : {classname}Service'
             classService=[tmp+'Service' for tmp in classnames]
             importoServiceini.append(f"from .{str(f.relative_to(Path(settings.BASE_DIR).joinpath('Service'))).replace(os.path.sep,'.')[0:-3]} import {','.join(classService)}")
 
@@ -41,7 +41,7 @@ def before_appstart()->None:
 
     with open(os.path.join(settings.BASE_DIR, 'Service', '__init__.py'), 'r', encoding='utf8') as tmpf:
         oldcontent=tmpf.read()
-    newcontent=serviceTpl.replace('{import}','\n'.join(sorted(importoServiceini))).replace('{annotations}','\n'.join(arr.values()))
+    newcontent=serviceTpl.replace('{imports}','\n'.join(importoServiceini)).replace('{annotations}','\n'.join(arr.values()))
 
     if oldcontent!=newcontent:
         with open(os.path.join(settings.BASE_DIR, 'Service', '__init__.py'), 'w', encoding='utf8') as tmpf:
