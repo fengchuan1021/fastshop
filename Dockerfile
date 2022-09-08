@@ -10,4 +10,5 @@ RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r /etc/requirement
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple uvloop
 COPY . /app
 RUN python cli.py initall
+EXPOSE 8000
 CMD sh ./dockerstart.sh
