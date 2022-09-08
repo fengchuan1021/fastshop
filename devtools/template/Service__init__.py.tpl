@@ -16,15 +16,12 @@ def getModelname(name):
 
 def __getattr__(name: str) -> Any:
     for annotationname,classtype in thismodule.__annotations__.items():
-        print(annotationname)
-        print(classtype)
-        print(type(classtype))
         if annotationname==name:
             tmpinstance = classtype(getattr(Models, getModelname(name)))
             setattr(thismodule, name, tmpinstance)
             return tmpinstance
-    if hasattr(Models, name.replace('Service', '')):
-        model = getattr(Models, name.replace('Service', ''))
+    if hasattr(Models, getModelname(name)):
+        model = getattr(Models, getModelname(name))
         tmpinstance = CRUDBase(model)
         setattr(thismodule, name, tmpinstance)
         return tmpinstance
