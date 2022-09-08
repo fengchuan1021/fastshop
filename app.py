@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from starlette.background import BackgroundTasks
 from sqlalchemy.exc import IntegrityError,OperationalError
-from RegistryManager import Registry
+from ServiceManager import Service
 import importlib
 from typing import Any
 from fastapi import FastAPI, Request
@@ -90,7 +90,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         response=JSONResponse(jsonout,status_code=500)
 
     if request.state.token.is_guest:
-        response.set_cookie('token',Registry.UserRegistry.create_access_token(request.state.token),expires=3600*24*30)
+        response.set_cookie('token',Service.UserService.create_access_token(request.state.token),expires=3600*24*30)
     return response
 
 @app.on_event("startup")

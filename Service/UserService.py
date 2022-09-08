@@ -1,5 +1,5 @@
 
-from Registries.base import CRUDBase
+from Service.base import CRUDBase
 import Models
 from typing import Union
 from datetime import datetime, timedelta
@@ -18,7 +18,7 @@ from sqlalchemy import select
 
 
 
-class UserRegistry(CRUDBase[Models.User]):
+class UserService(CRUDBase[Models.User]):
 
 
     async def getUserByPhoneOrUsername(self,db: AsyncSession,usernameOrPhone:str)->Optional[Models.User]:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 from common.dbsession import get_webdbsession
-from RegistryManager import Registry
+from ServiceManager import Service
 from component.cache import cache
 from fastapi import APIRouter
 from fastapi import Depends
@@ -43,7 +43,7 @@ async def {{operation.summary}}({{operation.arguments}}{% if operation.arguments
     """
     {%- endif %}
 
-    #user=await Registry.UserRegistry.findByPk(db,token.id)
+    #user=await Service.UserService.findByPk(db,token.id)
 
 
 
