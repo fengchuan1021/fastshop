@@ -4,7 +4,7 @@
 
 trigger:
 - main
-- dev
+- stage
 resources:
 - repo: self
 
