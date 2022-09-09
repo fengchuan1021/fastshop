@@ -6,16 +6,16 @@ from dotenv import load_dotenv
 import os
 BASE_DIR = Path(__file__).parent.__str__()
 DEBUG=False
-MODE=os.getenv("MODE","DEV")
+MODE=os.getenv("MODE","dev")
 
-if MODE=='DEV':
+if MODE=='dev':
     DEBUG = True
-    load_dotenv(os.path.join(BASE_DIR,'DEV.env'))
+    load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.env'))
     load_dotenv(os.path.join(BASE_DIR, 'DEVCONNECT.env'))
-elif MODE=='STAGING':
-    load_dotenv(os.path.join(BASE_DIR, 'STAGING.env'))
+elif MODE=='stage':
+    load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
 else:
-    load_dotenv(os.path.join(BASE_DIR, 'PROD.env'))
+    load_dotenv(os.path.join(BASE_DIR, 'environment/PROD.env'))
 from UserRole import UserRole
 NODEID=int(os.getenv("NODEID", 0))
 REDISURL:str=os.getenv('REDISURL','')
