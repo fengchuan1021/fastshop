@@ -5,16 +5,19 @@ import subprocess
 import sys
 from pathlib import Path
 import importlib
+branch=os.getenv('BRANCH_NAME','dev')
 try:
     import typer
 except Exception as e:
-    yn = input('speed pip install use china tsinghua university pip source y/n? [y]:')
-    yn=yn.strip()
-    if not yn or yn=='y' or yn=="Y":
-        subprocess.check_call(['pip', "config", "set", "global.index-url", "https://pypi.tuna.tsinghua.edu.cn/simple"])
+    if branch=='dev':
+        yn = input('speed pip install use china tsinghua university pip source y/n? [y]:')
+        yn=yn.strip()
+        if not yn or yn=='y' or yn=="Y":
+            subprocess.check_call(['pip', "config", "set", "global.index-url", "https://pypi.tuna.tsinghua.edu.cn/simple"])
     else:
-        subprocess.check_call(['pip', "config", "unset", "global.index-url"])
-    subprocess.check_call([sys.executable, "-m", "pip", "install","-r", 'requirements.txt'])
+        pass
+        #subprocess.check_call(['pip', "config", "unset", "global.index-url"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install","-r", f'requirements_{branch}.txt'])
     if os.name!='nt':
         subprocess.check_call([sys.executable, "-m", "pip", "install", "uvloop"])
 try:

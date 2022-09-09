@@ -4,12 +4,12 @@
 
 trigger:
 - main
-
+- dev
 resources:
 - repo: self
 
 variables:
-
+  BRANCH_NAME: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'd1855d60-1904-4f63-9ccf-bbcb323dea58'
   imageRepository: 'tmapi'
@@ -37,6 +37,7 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
+        arguments: --build-arg BRANCH_NAME=$(BRANCH_NAME)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
