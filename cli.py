@@ -135,9 +135,10 @@ def initall()->None:
 
     click.secho('Success: project has init successfully', fg='green')
 
-from devtools.generatefromopenapi import mymain
+
 @app.command()
 def importopenapi(filepath:str)->None:
+    from devtools.generatefromopenapi import mymain
     content=open(filepath,'r',encoding='utf8').read()
     mymain(content)
 if __name__ == "__main__":
