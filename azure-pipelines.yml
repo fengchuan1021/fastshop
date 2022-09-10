@@ -68,7 +68,7 @@ stages:
       vmImage: $(vmImageName)
     ${{ if eq(variables.BRANCH_NAME, 'stage') }}:
       environment: 'tmapi.asktage'
-    ${{ else eq(variables.BRANCH_NAME, 'main') }}:
+    ${{ else }}:
       environment: 'tmapi.mydevaks'
 
     strategy:
