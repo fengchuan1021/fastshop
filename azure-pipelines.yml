@@ -67,7 +67,7 @@ stages:
     pool:
       vmImage: $(vmImageName)
     ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/stage') }}:
-      environment: 'tmapi.asktage'
+      environment: 'tmapi.askstage'
     ${{ else }}:
       environment: 'tmapi.mydevaks'
 
