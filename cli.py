@@ -127,8 +127,8 @@ def initall()->None:
     print('end patch library')
 
     if os.path.exists('.git'):
-        print('begin setup git hook')
-        subprocess.check_call(['git', "config", "--local", "core.hooksPath", ".githooks/"])
+        if branch=='dev':
+            subprocess.check_call(['git', "config", "--local", "core.hooksPath", ".githooks/"])
         print('end setup git hook')
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':
         inidb()
