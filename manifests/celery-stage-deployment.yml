@@ -1,0 +1,23 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: celery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery
+  template:
+    metadata:
+      labels:
+        app: celery
+    spec:
+      containers:
+        - name: tmapi 
+          image: fengchuandevcontainer.azurecr.io/tmapi
+
+          env:
+            - name: MODE
+              value: stage
+            - name: CMD
+              value: CELERY

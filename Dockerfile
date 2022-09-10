@@ -3,7 +3,7 @@ ARG BRANCH_NAME='dev'
 WORKDIR /app
 ENV DEBIAN_FRONTEND noninteractive
 ENV MODE ${BRANCH_NAME}
-COPY environment/requirements_${BRANCH_NAME}.txt /etc/requirements_${BRANCH_NAME}.txt
+COPY requirements/requirements_${BRANCH_NAME}.txt /etc/requirements_${BRANCH_NAME}.txt
 RUN /bin/cp /usr/share/zoneinfo/Europe/London /etc/localtime && echo 'Europe/London' >/etc/timezone
 RUN pip3 install -r /etc/requirements_${BRANCH_NAME}.txt
 COPY . /app

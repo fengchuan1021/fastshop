@@ -88,7 +88,8 @@ stages:
               action: deploy
               #kubernetesServiceConnection: $(k8sname)
               manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/app-$(BRANCH_NAME)-deployment.yml
+                $(Pipeline.Workspace)/manifests/celery-$(BRANCH_NAME)-deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)

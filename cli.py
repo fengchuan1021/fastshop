@@ -17,7 +17,7 @@ except Exception as e:
     else:
         pass
         #subprocess.check_call(['pip', "config", "unset", "global.index-url"])
-    subprocess.check_call([sys.executable, "-m", "pip", "install","-r", f'requirements_{branch}.txt'])
+    subprocess.check_call([sys.executable, "-m", "pip", "install","-r", f'requirements/requirements_{branch}.txt'])
     if os.name!='nt':
         subprocess.check_call([sys.executable, "-m", "pip", "install", "uvloop"])
 try:
