@@ -32,16 +32,22 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
-      displayName: Build and push an image to container registry
+      displayName: Build
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
+        command: build
         dockerfile: $(dockerfilePath)
-        arguments: '--build-arg BRANCH_NAME=$(BRANCH_NAME)'
-        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
         tags: |
           $(tag)
-
+        arguments: --build-arg BRANCH_NAME=$(BRANCH_NAME)
+    - task: Docker@2
+      displayName: Push image
+      inputs:
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
+        command: push
+        tags: |
+          $(tag)
     - upload: manifests
       artifact: manifests
 
