@@ -17,3 +17,8 @@ spec:
           image: fengchuandevcontainer.azurecr.io/tmapi
           ports:
           - containerPort: 8000
+          env:
+            - name: MODE
+              value: "$(MODE)"
+            - name: CMD
+              value: "$(CMD)"
