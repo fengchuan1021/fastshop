@@ -54,8 +54,12 @@ stages:
         command: push
         tags: |
           $(tag)
-#    - upload: manifests
-#      artifact: manifests
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/s/k8s'
+        artifact: 'manifests'
+        publishLocation: 'pipeline'
+
 
 - stage: Deploy
   displayName: Deploy stage
