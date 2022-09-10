@@ -56,7 +56,7 @@ stages:
           $(tag)
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)/k8s'
+        targetPath: '$(Pipeline.Workspace)/s/k8s'
         artifact: 'manifests'
         publishLocation: 'pipeline'
 
@@ -92,9 +92,9 @@ stages:
               action: deploy
               #kubernetesServiceConnection: $(k8sname)
               manifests: |
-                $(Pipeline.Workspace)/k8s/app-$(BRANCH_NAME)-deployment.yml
-                $(Pipeline.Workspace)/k8s/celery-$(BRANCH_NAME)-deployment.yml
-                $(Pipeline.Workspace)/k8s/service.yml
+                $(Pipeline.Workspace)/manifests/app-$(BRANCH_NAME)-deployment.yml
+                $(Pipeline.Workspace)/manifests/celery-$(BRANCH_NAME)-deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
