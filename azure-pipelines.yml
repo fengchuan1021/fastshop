@@ -17,11 +17,11 @@ variables:
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'fengchuandevcontainer2e75-auth'
-  - name: k8sname
-    ${{ if eq(variables.BRANCH_NAME, 'stage') }}:
-      value: 'akstage'
-    ${{ elseif eq(variables.BRANCH_NAME, 'main') }}:
-      value: 'myAKSCluster'
+
+  ${{ if eq(variables.BRANCH_NAME, 'stage') }}:
+    k8sname: akstage
+  ${{ elseif eq(variables.BRANCH_NAME, 'main') }}:
+    k8sname: myAKSCluster
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
