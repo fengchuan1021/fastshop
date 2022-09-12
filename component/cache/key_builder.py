@@ -22,11 +22,12 @@ def get_func_args(sig: Signature, *args: List, **kwargs: Dict) -> "OrderedDict[s
     """Return a dict object containing the name and value of all function arguments."""
     func_args = sig.bind(*args, **kwargs)
     func_args.apply_defaults()
+
     return func_args.arguments
 def get_args_str(sig_params: SigParameters, func_args: "OrderedDict[str, Any]") -> str:
     """Return a string with the name and value of all args whose type is not included in `ignore_arg_types`"""
     return ",".join(
-        f"{arg}={val}" for arg, val in func_args.items() if sig_params[arg].annotation not in ignore_arg_types
+        f"{arg}={val}" for arg, val in func_args.items() if arg not in ['self','cls'] and sig_params[arg].annotation not in ignore_arg_types
     )
 def default_key_builder(
     func:Callable[..., Any],

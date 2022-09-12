@@ -52,7 +52,7 @@ python cli.py importopenapi 1.json
 
 docker run --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name myredis -p 6379:6379 redis
 
-docker run --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name mymysql -p3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=jky2  -v /home/fengchuan/mysqldata:/var/lib/mysql mysql:8 --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4
+docker run --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name mymysql -p3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=XT  -v /home/fengchuan/mysqldata:/var/lib/mysql mysql:8 --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4
 
 docker run --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --hostname my-rabbit --name myrabbit -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin -p5672:5672 -p15672:15672 rabbitmq:3-management
 

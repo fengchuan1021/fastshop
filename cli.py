@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,14 +39,14 @@ def inidb()->None:
     AMQPURL=click.prompt('Please input rabbitmq url', default="amqp://admin:admin@127.0.0.1:5672/",type=str)
     REDISURL = click.prompt('Please input redis url', default="redis://127.0.0.1:6379",
                                      type=str)
-    with open('DEVCONNECT.env','w',encoding='utf8') as conf:
+    with open('environment/DEVCONNECT.env', 'w', encoding='utf8') as conf:
         conf.write(f'''ASYNCDBURL="mysql+aiomysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 SYNCDBURL="mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 
 BUILDBOT_CONFIG_URL="https://raw.fastgit.org/fengchuan1021/buildbot-docker-example-config/master/master.cfg"
 AMQPURL="{AMQPURL}"
 REDISURL="{REDISURL}"
-nodeid="66"
+NODEID="66"
 ''')
     db = pymysql.connect(host=DB_HOST,
                          user=DB_USER,
@@ -102,12 +103,15 @@ def resetdb()->None:
         if f == '__pycache__':
             continue
         os.remove(os.path.join(versionpath, f))
-
-    connection = pymysql.connect(host=os.getenv('DB_HOST'),
-                                 user=os.getenv('DB_USER','root'),
-                                 port=int(os.getenv('DB_PORT',3306)),
-                                 password=os.getenv('DB_PASS','root'),
-                                 database=os.getenv('DATABASE'),autocommit=True)
+    dburl=os.getenv('ASYNCDBURL')
+    print(dburl)
+    tmp=re.findall(r'mysql\+aiomysql://(.*?):(.*?)@(.*?):(.*?)/(.*?)\?',dburl)[0]
+    user,password,host,port,database=tmp
+    connection = pymysql.connect(host=host,
+                                 user=user,
+                                 port=int(port),
+                                 password=password,
+                                 database=database,autocommit=True)
     cur=connection.cursor()
     cur.execute("delete from alembic_version")
 

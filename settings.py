@@ -11,7 +11,7 @@ MODE=os.getenv("MODE","dev")
 if MODE=='dev':
     DEBUG = True
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.env'))
-    load_dotenv(os.path.join(BASE_DIR, 'DEVCONNECT.env'))
+    load_dotenv(os.path.join(BASE_DIR, 'environment/DEVCONNECT.env'))
 elif MODE=='stage':
     load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
 else:
@@ -22,10 +22,14 @@ REDISURL:str=os.getenv('REDISURL','')
 CELERY_BROKER_URL=os.getenv('AMQPURL','')
 CELERY_RESULT_BACKEND=os.getenv('REDISURL','')
 CELERY_RESULT_EXPIRED=3600
-DEFAULT_REDIS_EXPIRED=3600
+
 
 DBURL=os.getenv("ASYNCDBURL",'')
 SYNC_DBURL=os.getenv("SYNCDBURL",'')
+
+ENABLE_CACHE=True
+CACHE_PREFIX='xtcache'
+DEFAULT_CACHE_EXPIRE=3600*12
 
 SECRET_KEY = "11a60e557ae59d6a4674bb5aeddcbc963bed0a4d44694f62c3be578d4155471d"
 ACCESS_TOKEN_EXPIRE_MINUTES = 3600*24*30

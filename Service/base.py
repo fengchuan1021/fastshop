@@ -10,8 +10,9 @@ ModelType = TypeVar("ModelType", bound=Base)
 from sqlalchemy.orm import defer
 import Models
 class CRUDBase(Generic[ModelType]):
-    def __init__(self, model: Type[ModelType]):
+    def __init__(self, model: Type[ModelType],cacheModel=True):
         self.model = model
+        self.cacheModel = cacheModel
 
     async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
         results=await dbSession.execute(select(self.model).where(self.model.id==id))

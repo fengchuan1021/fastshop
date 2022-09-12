@@ -21,15 +21,16 @@ class MyBase(object):
     id = Column(BIGINT(20), primary_key=True,default=snowFlack.getId)
     @declared_attr
     def created_at(self)->Column[DateTime]:
-        return deferred(Column(DateTime, server_default=text("CURRENT_TIMESTAMP")))
+        return Column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
+        #return deferred(Column(DateTime, server_default=text("CURRENT_TIMESTAMP")))
 
     @declared_attr
     def updated_at(self)->Column[DateTime]:
-        return deferred(Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")))
+        return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
 
     def as_dict(self)->Dict[str,Any]:
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns if c.name not in ['updated_at','created_at']}#type: ignore
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns if c.name in self.__dict__}#type: ignore
 
 
 Base = declarative_base(cls=MyBase)

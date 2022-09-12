@@ -1,11 +1,16 @@
 from __future__ import annotations
 import json
+import types
+import typing
 
 from redis.asyncio import Redis
 import redis.asyncio as redis
+
+import Models
 import settings
 from component.cache.key_builder import default_key_builder
 from fastapi.encoders import jsonable_encoder
+from common.globalFunctions import toJson
 import asyncio
 from functools import wraps
 from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast
@@ -17,29 +22,36 @@ class CacheClass:
     #self._loop: asyncio.AbstractEventLoop
 
     def __init__(self)->None:
-        self._prefix:str = ''
-        self._expire:int = 0
+        self._prefix:str = settings.CACHE_PREFIX
+        self._expire:int = settings.DEFAULT_CACHE_EXPIRE
         self._init:bool = False
-        self._enable:bool = True
+        self._enable:bool = settings.ENABLE_CACHE
         self._loop:asyncio.AbstractEventLoop
         pool = redis.ConnectionPool.from_url(url=settings.REDISURL)
         self.redis: Redis= redis.Redis(connection_pool=pool)
+        try:
+            loop=asyncio.get_running_loop()
+            self._loop = loop
+        except Exception as e:
+            loop=asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            self._loop=loop
     def init(
         self,
-        prefix: str = "",
-        expire: int = None,
-        enable: bool = True,
+        prefix: str = settings.CACHE_PREFIX,
+        expire: int = settings.DEFAULT_CACHE_EXPIRE,
+        enable: bool = settings.ENABLE_CACHE,
     )->None:#type: ignore
         if self._init:
             return
         self._init = True
         self._prefix = prefix
-        self._expire = expire if expire else settings.DEFAULT_REDIS_EXPIRED
+        self._expire = expire if expire else settings.DEFAULT_CACHE_EXPIRE
         self._enable = enable
-        loop=asyncio.get_event_loop()
-        if loop.is_running():
+        try:
+            loop=asyncio.get_running_loop()
             self._loop = loop
-        else:
+        except Exception as e:
             loop=asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             self._loop=loop
@@ -49,12 +61,13 @@ class CacheClass:
     def __call__(self,__func: Optional[F]=None) -> F: ...
 
     @overload
-    def __call__(self,*, expire: Optional[int]=0,key_builder: Optional[Callable[...,str]]=None,namespace:Optional[str]='') -> Callable[[F], F]: ...
+    def __call__(self,*, key='',expire: Optional[int]=settings.DEFAULT_CACHE_EXPIRE,key_builder: Optional[Callable[...,str]]=None,namespace:Optional[str]='') -> Callable[[F], F]: ...
 
     def __call__(
             self,
             __func:Optional[F] = None,
             *,
+            key: Optional[str]='',
             expire: Optional[int] = 0,
             key_builder: Optional[Callable[...,str]]= None,
             namespace: Optional[str] = "",
@@ -69,33 +82,43 @@ class CacheClass:
         """
 
         def decorator(func:F)->F:
+            if not self._enable:
+                return func
             funcsig=signature(func)
 
             @wraps(func)
             async def inner(*args:Any, **kwargs:Any)->Any:
                 nonlocal expire
                 nonlocal key_builder
+                nonlocal key
                 expire = expire or self.get_expire()
-                key_builder = key_builder or default_key_builder
+                if not key:
+                    key_builder = key_builder or default_key_builder
 
-                key = key_builder(
-                    func,funcsig, namespace, args=args, kwargs=kwargs
-                )
+                    key = key_builder(
+                        func,funcsig, namespace, args=args, kwargs=kwargs
+                    )
                 ret = await self.get(key)
+                if ret and (returndic:=json.loads(ret)):
+                    if isinstance(tmpClass:=func.__annotations__.get('return',int),typing._GenericAlias):
+                        if issubclass(tmpClass.__args__[0], Models.Base):
+                            return [tmpClass.__args__[0](**item) for item in returndic]
+                    elif issubclass(tmpClass,Models.Base):
+                        return tmpClass(**returndic)
 
-                if ret is not None:
                     return json.loads(ret)
+
                 if asyncio.iscoroutinefunction(func):
-                    ret = await self._loop.run_until_complete(func(*args, **kwargs))
+                    ret = await func(*args, **kwargs)
                     # await func(inDataType)
                 else:
                     ret = func(*args, **kwargs)
                 try:
-                    ret=jsonable_encoder(ret)
-                    await self.set(key, ret, expire)
+                    if ret:
+                        await self.set(key, json.dumps(toJson(ret)), expire)
                     return ret
                 except Exception as e:
-                    print(e)
+                    print('function returned are not jsonable',e)
                 return ret
             return cast(F, inner)
 
@@ -136,7 +159,8 @@ class CacheClass:
 
     async def get(self, key:str) -> _StrType | None:
         return await self.redis.get(key)
-
+    async def close(self):
+        await self.redis.close(True)
 
 
     async def set(self, key: str, value: str, expire: int = None)-> bool | None:

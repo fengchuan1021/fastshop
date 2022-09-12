@@ -2,7 +2,7 @@ import settings
 from fastapi import Request
 from jose import  jwt
 from component.snowFlakeId import snowFlack
-
+from Models import Base
 async def getorgeneratetoken(request)-> settings.UserTokenData:
     try:
         tokenstr = request.headers.get('token',None)
@@ -22,6 +22,12 @@ async def getorgeneratetoken(request)-> settings.UserTokenData:
 
 async def get_token(request:Request)->settings.UserTokenData:
     return request.state.token
+
+from fastapi.encoders import jsonable_encoder
+def _encodesqlalchemymodel(model):
+    return jsonable_encoder(model.as_dict())
+def toJson(obj):
+    return jsonable_encoder(obj,custom_encoder={Base:_encodesqlalchemymodel})
 
 
 

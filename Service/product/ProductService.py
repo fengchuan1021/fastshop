@@ -1,21 +1,22 @@
 from Service.base import CRUDBase
 import Models
-from typing import Union,Optional
+from typing import Union, Optional, List
 from datetime import datetime, timedelta
 import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import and_, or_
-
+from common.filterbuilder import filterbuilder
 
 from sqlalchemy.orm import undefer_group
 
-from sqlalchemy import select
-
+from sqlalchemy import select,text
+from component.cache import cache
 
 
 
 class ProductService(CRUDBase[Models.Product]):
 
+    @cache(expire=3600*24)
     async def findByPk(self,dbSession: AsyncSession,id,lang='')->Models.Product:
         if lang:
             statment=select(Models.Product).options(undefer_group(lang)).where(self.model.id==id)
@@ -25,15 +26,52 @@ class ProductService(CRUDBase[Models.Product]):
         results = await dbSession.execute(statment)
         return results.scalar_one_or_none()
 
-
+    @cache(expire=3600*24)
+    async def findByAttribute(self,dbsession:AsyncSession,filters={},sep=' and ',lang='en')->List[Models.Product]:
+        filter=filterbuilder(filters,sep)
+        statment=select(self.model).where(text(filter))
+        results=await dbsession.execute(statment)
+        tmp=results.scalars().all()
+        print('tmp::',tmp)
+        return tmp
 if __name__ == "__main__":
     import asyncio
     from common.dbsession import getdbsession
-    async def main():
+    async def inserttestproduct():
+        db = await getdbsession()
+        newproduct=Models.Product(productName_en='english productname',
+                                  productDescription_en='english productdescription',
+                                  brand_en='english brand',
+                                  productName_cn="产品1颜色红",
+                                  productDescription_cn="这个产品很有用",
+                                  brand_cn="红的的图片",
+                                  )
+        db.add(newproduct)
+        await db.commit()
+        await db.close()
+
+    async def testselect():
         db = await getdbsession()
         ps = ProductService(Models.Product)
-        await ps.findByPk(db, 1,'en')
-    loop=asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+        tmp=await ps.findByPk(db, 6, 'en')
+
+
+        await db.close()
+
+        await cache.close()
+    async def testfindbyattributes():
+        db = await getdbsession()
+        ps = ProductService(Models.Product)
+        tmp=await ps.findByAttribute(db, {"id__in":[2,3]}, 'en')
+        print('tmp::',tmp)
+
+        await db.close()
+
+        await cache.close()
+
+
+
+    #asyncio.run(testfindbyattributes())
+    asyncio.run(testselect())
+    #asyncio.run(inserttestproduct())
 

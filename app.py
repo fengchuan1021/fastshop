@@ -100,7 +100,7 @@ async def startup()->None:
         import multiprocessing
         backgroundprocess = multiprocessing.Process(target=debugtools.before_appstart)
         backgroundprocess.start()
-    cache.init(prefix="xt-cache",expire=3600)
+    cache.init(prefix=settings.CACHE_PREFIX,expire=settings.DEFAULT_CACHE_EXPIRE,enable=settings.ENABLE_CACHE)
 
 
 for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
