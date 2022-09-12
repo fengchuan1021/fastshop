@@ -11,7 +11,7 @@ from sqlalchemy.sql import and_, or_
 from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-from fastapi import Depends
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 from sqlalchemy import select
