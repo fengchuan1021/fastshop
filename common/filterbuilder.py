@@ -29,5 +29,4 @@ def filterbuilder(filters:Dict={},sep=' and ')->str:
             else:
                 arr.append(f"{column} {oprationtable[opration]} {newvalue}")
 
-    print('dd',sep.join(arr))
     return sep.join(arr)
