@@ -106,7 +106,7 @@ class CacheClass:
                     elif issubclass(tmpClass,Models.Base):
                         return tmpClass(**returndic)
 
-                    return json.loads(ret)
+                    return returndic
 
                 if asyncio.iscoroutinefunction(func):
                     ret = await func(*args, **kwargs)
