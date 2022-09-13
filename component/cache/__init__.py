@@ -15,6 +15,7 @@ import asyncio
 from functools import wraps
 from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast
 from inspect import signature
+from Service.base import ModelType
 F = TypeVar('F', bound=Callable[..., Any])
 _StrType = TypeVar("_StrType", bound=str | bytes)
 
@@ -92,21 +93,34 @@ class CacheClass:
                 nonlocal key_builder
                 nonlocal key
                 expire = expire or self.get_expire()
-                if not key:
-                    key_builder = key_builder or default_key_builder
+                func_args=funcsig.bind(*args,**kwargs)
+                func_args.apply_defaults()
+                classinstance=func_args.arguments.get('self',False)
+                usecache=True
+                if classinstance:
+                    usecache=getattr(classinstance,'usecache')
+                if usecache:
+                    if not key:
+                        key_builder = key_builder or default_key_builder
 
-                    key = key_builder(
-                        func,funcsig, namespace, args=args, kwargs=kwargs
-                    )
-                ret = await self.get(key)
-                if ret and (returndic:=json.loads(ret)):
-                    if isinstance(tmpClass:=func.__annotations__.get('return',int),typing._GenericAlias):
-                        if issubclass(tmpClass.__args__[0], Models.Base):
-                            return [tmpClass.__args__[0](**item) for item in returndic]
-                    elif issubclass(tmpClass,Models.Base):
-                        return tmpClass(**returndic)
-
-                    return returndic
+                        key = key_builder(
+                            func,funcsig,func_args, namespace
+                        )
+                    ret = await self.get(key)
+                    if ret and (returndic:=json.loads(ret)):
+                        if isinstance(tmpClass:=func.__annotations__.get('return',int),typing._GenericAlias):
+                            returntype=tmpClass.__args__[0]
+                            listtype=True if tmpClass.__origin__==list else False
+                            if returntype==ModelType:
+                                returnclass=classinstance.model
+                            elif issubclass(returntype, Models.Base):
+                                returnclass=tmpClass.__args__[0]
+                            return [returnclass(**item) for item in returndic] if listtype else returnclass(**returndic)
+                        elif tmpClass==ModelType:
+                            return classinstance.model(**returndic)
+                        elif issubclass(tmpClass,Models.Base):
+                            return tmpClass(**returndic)
+                        return returndic
 
                 if asyncio.iscoroutinefunction(func):
                     ret = await func(*args, **kwargs)
@@ -114,7 +128,7 @@ class CacheClass:
                 else:
                     ret = func(*args, **kwargs)
                 try:
-                    if ret:
+                    if usecache and ret:
                         await self.set(key, json.dumps(toJson(ret)), expire)
                     return ret
                 except Exception as e:

@@ -9,11 +9,16 @@ from common.filterbuilder import filterbuilder
 ModelType = TypeVar("ModelType", bound=Base)
 from sqlalchemy.orm import defer
 import Models
+from component.cache import cache
 class CRUDBase(Generic[ModelType]):
-    def __init__(self, model: Type[ModelType],cacheModel=True):
+    usecache=True
+    def __init__(self, model: Type[ModelType]):
         self.model = model
-        self.cacheModel = cacheModel
-
+    def enablecache(self):
+        self.usecache=True
+    def disablecache(self):
+        self.usecache=False
+    @cache
     async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
         results=await dbSession.execute(select(self.model).where(self.model.id==id))
         return results.scalar_one_or_none()
