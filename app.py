@@ -17,7 +17,7 @@ from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from common.CommonError import Common500OutShema,Common500Status,TokenException
 from common.globalFunctions import getorgeneratetoken, get_token
-import BroadcastManager
+import Broadcast
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 if os.name!='nt':
@@ -51,12 +51,12 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
             if (dbsession._updateArr  or dbsession._createdArr or dbsession._deletedArr):# type: ignore
                 backgroundtasks=BackgroundTasks()
                 if dbsession._updateArr:
-                    backgroundtasks.add_task(BroadcastManager.fireAfterUpdated,set(dbsession._updateArr),dbsession,request.state.token,background=True)# type: ignore
+                    backgroundtasks.add_task(Broadcast.fireAfterUpdated,set(dbsession._updateArr),dbsession,request.state.token,background=True)# type: ignore
                 if dbsession._createdArr:
-                    backgroundtasks.add_task(BroadcastManager.fireAfterCreated,dbsession._createdArr,dbsession,request.state.token,background=True)# type: ignore
+                    backgroundtasks.add_task(Broadcast.fireAfterCreated,dbsession._createdArr,dbsession,request.state.token,background=True)# type: ignore
 
                 if dbsession._deletedArr:
-                    backgroundtasks.add_task(BroadcastManager.fireAfterDeleted,dbsession._deletedArr,dbsession,request.state.token,background=True)# type: ignore
+                    backgroundtasks.add_task(Broadcast.fireAfterDeleted,dbsession._deletedArr,dbsession,request.state.token,background=True)# type: ignore
 
                 backgroundtasks.add_task(finalcommit,dbsession)
                 response.background =backgroundtasks

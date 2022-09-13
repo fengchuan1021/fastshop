@@ -27,7 +27,6 @@ class ProductService(CRUDBase[Models.Product]):
         results = await dbSession.execute(statment)
         return results.scalar_one_or_none()
 
-    @cache(expire=3600*24)
     async def findByAttribute(self,dbsession:AsyncSession,filters={},sep=' and ',lang='en')->List[Models.Product]:
         filter=filterbuilder(filters,sep)
         statment=select(self.model).where(text(filter))

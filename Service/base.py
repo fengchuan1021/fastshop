@@ -12,8 +12,9 @@ import Models
 from component.cache import cache
 class CRUDBase(Generic[ModelType]):
     usecache=True
-    def __init__(self, model: Type[ModelType]):
+    def __init__(self, model: Type[ModelType],usecache=True):
         self.model = model
+        self.usecache = usecache
     def enablecache(self):
         self.usecache=True
     def disablecache(self):
