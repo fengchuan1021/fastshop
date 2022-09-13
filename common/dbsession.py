@@ -11,10 +11,11 @@ engine = create_async_engine(
     settings.DBURL,
     echo=settings.DEBUG,
 )
-
-async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+from common.routingDBsession import AsyncSessionMaker
+#async_session = AsyncSessionMaker()
+#async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 async def getdbsession()-> AsyncSession:
-    session=async_session()
+    session=AsyncSessionMaker()
     return session
 
 async def get_webdbsession(request:Request,token: settings.UserTokenData=Depends(get_token)) -> AsyncSession:
