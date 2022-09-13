@@ -18,7 +18,8 @@ class CRUDBase(Generic[ModelType]):
         self.usecache=True
     def disablecache(self):
         self.usecache=False
-    @cache
+
+    @cache(expire=3600*6)
     async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
         results=await dbSession.execute(select(self.model).where(self.model.id==id))
         return results.scalar_one_or_none()
