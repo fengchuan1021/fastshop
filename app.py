@@ -39,11 +39,10 @@ async def finalcommit(session: AsyncSession)->None:
 
 @app.middleware("http")
 async def validate_tokenandperformevent(request: Request, call_next:Any)->Response:
-
+    #todo: need verify the token expire date.and add refresh token.
     request.state.token=await getorgeneratetoken(request)
-    if request.state.token.is_guest:
-        jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.notlogin, msg="用户尚未登录"))
-        response=JSONResponse(jsonout,status_code=500)
+    print('token:',request.state.token)
+
     try:
         response = await call_next(request)  # This request will be modified and sent
         if dbsession:=request.state._state.get('db_client',None):
@@ -89,8 +88,8 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.unknownerr, msg=str(e)))
         response=JSONResponse(jsonout,status_code=500)
 
-    if request.state.token.is_guest:
-        response.set_cookie('token',Service.UserService.create_access_token(request.state.token),expires=3600*24*30)
+    #if request.state.token.is_guest:
+    #    response.set_cookie('token',Service.userService.create_access_token(request.state.token),expires=3600*24*30)
     return response
 
 @app.on_event("startup")
@@ -116,6 +115,9 @@ for f in Path(settings.BASE_DIR).joinpath('listeners').rglob('*.py'):
     if f.name.endswith('Listener.py'):
         importlib.import_module(str(f.relative_to(settings.BASE_DIR)).replace(os.sep,'.')[0:-3])
 
+@app.get('/')
+def forazureping():
+    return {"status": 'success'}
 
 if __name__ == "__main__":
     import uvicorn

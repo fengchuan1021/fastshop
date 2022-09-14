@@ -1,4 +1,5 @@
-FROM python:3.10-slim
+FROM python:3.10
+#FROM python:3.10-slim
 ARG BRANCH_NAME='dev'
 WORKDIR /app
 ENV DEBIAN_FRONTEND noninteractive
@@ -8,5 +9,5 @@ RUN /bin/cp /usr/share/zoneinfo/Europe/London /etc/localtime && echo 'Europe/Lon
 RUN pip3 install -r /etc/requirements_${BRANCH_NAME}.txt
 COPY . /app
 RUN python3 cli.py initall
-EXPOSE 8000
+EXPOSE 80
 CMD sh ./dockerstart.sh

@@ -5,7 +5,16 @@ helm upgrade my-ingress bitnami/nginx-ingress-controller --set tcp.3306="default
 --set tcp.6380="default/redis-1662980590-replicas:5672"
 
 
+docker build --build-arg BRANCH_NAME=stage -t fengchuanhn/myimage:v3 .
+docker push fengchuanhn/myimage:v3
+
+kubectl create secret docker-registry dockerhub --docker-server=docker.io --docker-username=fengchuanhn --docker-password=Xiaochuan1021 --docker-email=1299693999@qq.com
+kubectl create secret docker-registry dockerhub --docker-server=https://index.docker.io/v1/ --docker-username=fengchuanhn --docker-password=Xiaochuan1021 --docker-email=1299693999@qq.com
+
+kubectl create secret generic regcred --from-file=.dockerconfigjson=C:/Users/fengchuan/.docker/config.json --type=kubernetes.io/dockerconfigjson
 
 redis-1662980590-master.default.svc.cluster.local for read/write operations (port 6379)
 redis-1662980590-replicas.default.svc.cluster.local for read-only operations (port 6379)
+
+
 
