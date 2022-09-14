@@ -76,7 +76,7 @@ if __name__ == "__main__":
         await db.close()
 
         await cache.close()
-    #asyncio.run(testcategory())
+    asyncio.run(testcategory())
     #asyncio.run(testfindbyattributes())
     #asyncio.run(testselect())
     #asyncio.run(inserttestproduct())

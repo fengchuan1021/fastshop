@@ -10,17 +10,24 @@ ModelType = TypeVar("ModelType", bound=Base)
 from sqlalchemy.orm import defer
 import Models
 from component.cache import cache
+
 class CRUDBase(Generic[ModelType]):
     usecache=True
+
     def __init__(self, model: Type[ModelType],usecache=True):
         self.model = model
         self.usecache = usecache
+
     def enablecache(self):
         self.usecache=True
+
     def disablecache(self):
         self.usecache=False
 
-    @cache(expire=3600*6)
+    def getpkcachename(self,func,funcsig,func_args, namespace):
+        return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"
+
+    @cache(key_builder='getpkcachename',expire=3600*48)
     async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
         results=await dbSession.execute(select(self.model).where(self.model.id==id))
         return results.scalar_one_or_none()

@@ -36,7 +36,7 @@ class User(Base):
     children:List["User"] = relationship('User',uselist=True, backref=backref('parent', remote_side='User.id'),join_depth=2)
     #pddaccounts=relationship("UserPddAccount")
 
-    @property
+
     def is_admin(self)->int:
         if not self.userrole:
             self.userrole =0

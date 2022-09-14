@@ -70,7 +70,7 @@ class CacheClass:
             *,
             key: Optional[str]='',
             expire: Optional[int] = 0,
-            key_builder: Optional[Callable[...,str]]= None,
+            key_builder: Optional[Callable[...,str] | str]= None,
             namespace: Optional[str] = "",
     )-> F | Callable[[F], F]:
         """
@@ -102,7 +102,8 @@ class CacheClass:
                 if usecache:
                     if not key:
                         key_builder = key_builder or default_key_builder
-
+                        if isinstance(key_builder,str) and classinstance:
+                            key_builder =getattr(classinstance,key_builder)
                         key = key_builder(
                             func,funcsig,func_args, namespace
                         )
@@ -176,6 +177,8 @@ class CacheClass:
     async def close(self):
         await self.redis.close(True)
 
+    async def delete(self,key):
+        await self.redis.delete(key)
 
     async def set(self, key: str, value: str, expire: int = None)-> bool | None:
         return await self.redis.set(key, value, ex=expire)

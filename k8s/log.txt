@@ -1,7 +1,7 @@
 helm upgrade my-ingress bitnami/nginx-ingress-controller --set tcp.3306="default/mymysql-primary-headless:3306" `
 --set tcp.3307="default/mymysql-secondary-headless:3306" `
 --set tcp.5672="default/rabbitmq-1662947536-headless:5672" `
---set tcp.6379="default/redis-1662980590-headless:6379" `
+--set tcp.6379="default/redis-1662980590-master:6379" `
 --set tcp.6380="default/redis-1662980590-replicas:5672"
 
 

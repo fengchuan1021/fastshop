@@ -28,7 +28,7 @@ def generate_model()->List:
         with open(os.path.join(settings.BASE_DIR,'Models', 'allModels.py.fromdb'), 'w', encoding='utf8') as f:
             f.write(newcontent)
 
-    overwriteclass=["from .ModelBase import Base"]
+    overwriteclass=["from .ModelBase import Base","from typing import TypeVar",'ModelType = TypeVar("ModelType", bound=Base)']
     allmodelclas=[]
     for tmpfile in Path(settings.BASE_DIR).joinpath('Models').rglob("*.py"):
         if tmpfile.name.endswith('.py') and tmpfile.name not in ['__init__.py','Base.py']:
