@@ -28,8 +28,10 @@ class CacheClass:
         self._init:bool = False
         self._enable:bool = settings.ENABLE_CACHE
         self._loop:asyncio.AbstractEventLoop
-        pool = redis.ConnectionPool.from_url(url=settings.REDISURL)
-        self.redis: Redis= redis.Redis(connection_pool=pool)
+        writepool = redis.ConnectionPool.from_url(url=settings.REDISURL)
+        readpool=redis.ConnectionPool.from_url(url=settings.SLAVEREDISURL)
+        self.write_redis: Redis= redis.Redis(connection_pool=writepool)
+        self.read_redis:Redis=redis.Redis(connection_pool=readpool)
         try:
             loop=asyncio.get_running_loop()
             self._loop = loop
@@ -161,27 +163,28 @@ class CacheClass:
     async def clear(self, namespace: str = None, key: str = None) -> int:
         if namespace:
             lua = f"for i, name in ipairs(redis.call('KEYS', '{namespace}:*')) do redis.call('DEL', name); end"
-            return await self.redis.eval(lua, numkeys=0)
+            return await self.write_redis.eval(lua, numkeys=0)
         elif key:
-            return await self.redis.delete(key)
+            return await self.write_redis.delete(key)
         else:
             return 0
 
     async def get_with_ttl(self, key: str) -> Tuple[int, str]:
-        async with self.redis.pipeline(transaction=True) as pipe:
+        async with self.read_redis.pipeline(transaction=True) as pipe:
             return await (pipe.ttl(key).get(key).execute()) #type: ignore
 
 
     async def get(self, key:str) -> _StrType | None:
-        return await self.redis.get(key)
+        return await self.read_redis.get(key)
     async def close(self):
-        await self.redis.close(True)
+        await self.read_redis.close(True)
+        await self.write_redis.close(True)
 
     async def delete(self,key):
-        await self.redis.delete(key)
+        await self.write_redis.delete(key)
 
     async def set(self, key: str, value: str, expire: int = None)-> bool | None:
-        return await self.redis.set(key, value, ex=expire)
+        return await self.write_redis.set(key, value, ex=expire)
 
 
 

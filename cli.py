@@ -46,6 +46,7 @@ SLAVEDBURL="mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?c
 BUILDBOT_CONFIG_URL="https://raw.fastgit.org/fengchuan1021/buildbot-docker-example-config/master/master.cfg"
 AMQPURL="{AMQPURL}"
 REDISURL="{REDISURL}"
+SLAVEREDISURL="{REDISURL}"
 NODEID="66"
 ''')
     db = pymysql.connect(host=DB_HOST,
