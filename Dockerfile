@@ -8,6 +8,6 @@ COPY requirements/requirements_${BRANCH_NAME}.txt /etc/requirements_${BRANCH_NAM
 RUN /bin/cp /usr/share/zoneinfo/Europe/London /etc/localtime && echo 'Europe/London' >/etc/timezone
 RUN pip3 install -r /etc/requirements_${BRANCH_NAME}.txt
 COPY . /app
-RUN python3 cli.py initall
+RUN python3 manage.py initall
 EXPOSE 80
 CMD sh ./dockerstart.sh

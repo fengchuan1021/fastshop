@@ -9,7 +9,7 @@ git clone https://github.com/fengchuan1021/tmapi.git
 initproject after clone.(such as input db password,db name ,etc).
 
 ```
-python cli.py initall
+python manage.py initall
 ```
 
 
@@ -35,7 +35,7 @@ python -m uvicorn app:app --reload
 
 
 ```shell
-python cli.py importopenapi 1.json
+python manage.py importopenapi 1.json
 ```
 
 
