@@ -60,20 +60,19 @@ if __name__ == "__main__":
 
         await cache.close()
     async def testfindbyattributes():
-        db = await getdbsession()
-        ps = ProductService(Models.Product)
-        tmp=await ps.findByAttribute(db, {"id__in":[2,3]}, 'en')
-        print('tmp::',tmp)
+        async with getdbsession() as db:
+            ps = ProductService(Models.Product)
+            tmp=await ps.findByAttribute(db, {"id__in":[2,3]}, 'en')
+            print('tmp::',tmp)
 
-        await db.close()
 
-        await cache.close()
+            await cache.close()
 
     async def testcategory():
-        db = await getdbsession()
-        result=await Service.categoryService.findByPk(db,1)
-        print(result)
+        async with getdbsession() as db:
 
+            result=await Service.categoryService.findByPk(db,1)
+            print(result)
         await cache.close()
     asyncio.run(testcategory())
     #asyncio.run(testfindbyattributes())

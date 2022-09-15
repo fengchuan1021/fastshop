@@ -6,8 +6,8 @@ from sqlalchemy.sql import Update, Delete
 import settings
 import random
 engines = {
-    'master': create_async_engine(settings.DBURL),
-    'slaver': create_async_engine(settings.SLAVEDBURL),
+    'master': create_async_engine(settings.DBURL,echo=settings.DEBUG),
+    'slaver': create_async_engine(settings.SLAVEDBURL,echo=settings.DEBUG),
 }
 
 

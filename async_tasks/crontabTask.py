@@ -11,10 +11,11 @@ from common.dbsession import getdbsession
 @celery_app.task
 @sync2async
 async def active_banneduser()->None:# type: ignore
-    dbsession=await getdbsession()
-    statment=update(Models.User).where(Models.User.is_banned=='banned',Models.User.ban_enddate<datetime.datetime.now()).values({Models.User.is_banned:'normal'})
-    await dbsession.execute(statment)
-    await dbsession.close()
+    async with getdbsession() as dbsession:
+
+        statment=update(Models.User).where(Models.User.is_banned=='banned',Models.User.ban_enddate<datetime.datetime.now()).values({Models.User.is_banned:'normal'})
+        await dbsession.execute(statment)
+        await dbsession.close()
 
 @celery_app.task
 def hello()->None:
