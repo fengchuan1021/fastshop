@@ -35,7 +35,11 @@ class getdbsession:
                 await_only(Broadcast.fireAfterDeleted(self.session.deleted, self.session, token, background=False))
                 self.session._deletedArr += list(self.session.deleted)  # type: ignore
 
-
+    def __await__(self):
+        if settings.MODE!='dev':
+            raise Exception("this method is only usable in dev environment")
+        self.__init__()
+        return self.__aenter__().__await__()
     async def __aenter__(self):
         return self.session
 

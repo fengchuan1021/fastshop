@@ -13,7 +13,8 @@ import asyncio
 from functools import wraps
 from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast
 from inspect import signature
-from Service.base import ModelType
+from Models import Base
+ModelType = TypeVar("ModelType", bound=Base)
 F = TypeVar('F', bound=Callable[..., Any])
 _StrType = TypeVar("_StrType", bound=str | bytes)
 

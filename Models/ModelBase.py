@@ -30,7 +30,7 @@ class MyBase(object):
 
 
     def as_dict(self)->Dict[str,Any]:
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns if c.name in self.__dict__}#type: ignore
+        return {key:value for key,value in self.__dict__.items() if not key.startswith('_')}#type: ignore
 
 
 Base = declarative_base(cls=MyBase)
