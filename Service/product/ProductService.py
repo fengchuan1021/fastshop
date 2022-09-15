@@ -73,7 +73,6 @@ if __name__ == "__main__":
         db = await getdbsession()
         result=await Service.categoryService.findByPk(db,1)
         print(result)
-        await db.close()
 
         await cache.close()
     asyncio.run(testcategory())

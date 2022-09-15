@@ -30,13 +30,6 @@ else:
 app = FastAPI(redoc_url=None,docs_url=None,openapi_url=None)
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,allow_methods=["*"],allow_headers=["*"],)
 
-async def finalcommit(session: AsyncSession)->None:
-    try:
-        await session.commit()
-        await session.close()
-    except Exception as e:
-        pass
-
 @app.middleware("http")
 async def validate_tokenandperformevent(request: Request, call_next:Any)->Response:
     #todo: need verify the token expire date.and add refresh token.
@@ -45,20 +38,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
 
     try:
         response = await call_next(request)  # This request will be modified and sent
-        if dbsession:=request.state._state.get('db_client',None):
-            await dbsession.commit()
-            if (dbsession._updateArr  or dbsession._createdArr or dbsession._deletedArr):# type: ignore
-                backgroundtasks=BackgroundTasks()
-                if dbsession._updateArr:
-                    backgroundtasks.add_task(Broadcast.fireAfterUpdated,set(dbsession._updateArr),dbsession,request.state.token,background=True)# type: ignore
-                if dbsession._createdArr:
-                    backgroundtasks.add_task(Broadcast.fireAfterCreated,dbsession._createdArr,dbsession,request.state.token,background=True)# type: ignore
 
-                if dbsession._deletedArr:
-                    backgroundtasks.add_task(Broadcast.fireAfterDeleted,dbsession._deletedArr,dbsession,request.state.token,background=True)# type: ignore
-
-                backgroundtasks.add_task(finalcommit,dbsession)
-                response.background =backgroundtasks
     except OperationalError as e:
         jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.dberror,msg=str(e)))
         response=JSONResponse(jsonout,status_code=500)
