@@ -1,0 +1,4 @@
+#!/bin/sh
+docker build -t myimage:latest --build-arg BRANCH_NAME=stage --build-arg USE_TUNA .
+docker push fengchuanhn/myimage:latest
+helm upgrade xtapichart k8s/charts/xtapichart --set image.tag=latest

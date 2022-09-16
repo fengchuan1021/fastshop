@@ -14,6 +14,9 @@ kubectl create secret docker-registry dockerhub --docker-server=https://index.do
 
 kubectl create secret generic regcred --from-file=.dockerconfigjson=C:/Users/fengchuan/.docker/config.json --type=kubernetes.io/dockerconfigjson
 
+
+helm install my-release bitnami/elasticsearch --set global.kibanaEnabled=true
+
 redis-1662980590-master.default.svc.cluster.local for read/write operations (port 6379)
 redis-1662980590-replicas.default.svc.cluster.local for read-only operations (port 6379)
 
