@@ -43,10 +43,10 @@ def inidb()->None:
         conf.write(f'''ASYNCDBURL="mysql+aiomysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 SYNCDBURL="mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 SLAVEDBURL="mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
-BUILDBOT_CONFIG_URL="https://raw.fastgit.org/fengchuan1021/buildbot-docker-example-config/master/master.cfg"
 AMQPURL="{AMQPURL}"
 REDISURL="{REDISURL}"
 SLAVEREDISURL="{REDISURL}"
+ELASTICSEARCHURL='10.108.193.135:9200'
 NODEID="66"
 ''')
     db = pymysql.connect(host=DB_HOST,

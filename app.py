@@ -1,3 +1,5 @@
+import datetime
+
 import fastapi.exceptions
 import settings
 import asyncio
@@ -25,6 +27,8 @@ if os.name!='nt':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 else:
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+from elasticsearchclient import es
 
 
 app = FastAPI(redoc_url=None,docs_url=None,openapi_url=None)
@@ -63,8 +67,16 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.cacheerror,msg='cache server error',data=str(e)))
         response=JSONResponse(jsonout,status_code=500)
     except Exception as e:
+        #es
+        doc = {
+            'text': str(e),
+            'request':str(request),
+            'timestamp': datetime.datetime.now(),
+        }
+        await es.index(index=f"xtlog-{settings.MODE}", document=doc)
         if settings.DEBUG:
             raise
+
         jsonout = jsonable_encoder(Common500OutShema(status=Common500Status.unknownerr, msg=str(e)))
         response=JSONResponse(jsonout,status_code=500)
 
