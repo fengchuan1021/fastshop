@@ -25,6 +25,7 @@ class CRUDBase(Generic[ModelType]):
         self.usecache=False
 
     def getpkcachename(self,func,funcsig,func_args, namespace)->str:#type: ignore
+        # associated listener validredisListerer.py .dont change.
         return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"#type: ignore
 
     @cache(key_builder='getpkcachename',expire=3600*48)

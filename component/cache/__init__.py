@@ -153,7 +153,7 @@ class CacheClass:
                     ret = func(*args, **kwargs)
                 try:
                     if usecache and ret:
-                        await self.set(key, json.dumps(toJson(ret)), expire)
+                        await self.set(key, toJson(ret), expire)
                     return ret
                 except Exception as e:
                     print('function returned are not jsonable',e)

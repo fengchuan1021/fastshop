@@ -44,7 +44,7 @@ class getdbsession:
 
     def __await__(self):#type: ignore
         if settings.MODE!='dev':
-            raise Exception("this method is only usable in dev environment")
+            raise Exception("this method is only usable in dev environment for testing porpose. in product mode it will not trigger broadcast")
         self.__init__()
         return self.__aenter__().__await__()
     async def __aenter__(self)->AsyncSession:

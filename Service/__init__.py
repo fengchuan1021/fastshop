@@ -16,6 +16,11 @@ from .search.ProductSearchService import ProductSearchService
 def getModelname(name:str)->str:
     return name[0].upper()+name[1:].replace('Service', '')
 
+def getInstanceForModel(model:ModelType)->Any:
+    tmpname:str=model.__class__.__name__
+    attributename=tmpname[0].lower()+tmpname[1:]+'Service'
+    return getattr(thismodule,attributename)
+
 def __getattr__(name: str) -> Any:
     for annotationname,classtype in thismodule.__annotations__.items():
         if annotationname==name:

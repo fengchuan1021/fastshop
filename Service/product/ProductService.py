@@ -51,14 +51,11 @@ if __name__ == "__main__":
 
 
     async def testselect():
-        db = await getdbsession()
-        ps = ProductService(Models.Product)
-        tmp=await ps.findByPk(db, 6, 'en')
+        async with getdbsession() as db:
+            ps = ProductService(Models.Product)
+            tmp=await ps.findByPk(db, 66706553062818882, 'en')
 
 
-        await db.close()
-
-        await cache.close()
     async def testfindbyattributes():
         async with getdbsession() as db:
             ps = ProductService(Models.Product)
@@ -75,23 +72,26 @@ if __name__ == "__main__":
             print(result)
         await cache.close()
 
-    async def updateproduct(id=66322594160182339):
+    async def updateproduct(id):
         async with getdbsession() as db:
             product=await Service.productService.findByPk(db,id)
-            print('product:',product)
+
             product.brand_en="dior122"
-            product.brand_cn='屌啊122'
-            db.update(product)
+            product.brand_cn='444'
+            db.add(product)
 
-    async def delproduct():
+
+    async def delproduct(id):
         async with getdbsession() as db:
-            model=await Service.productService.findByPk(db,66322594160182338)
-            await db.delete(model)
+            model=await Service.productService.findByPk(db,id)
+            if model:
+                await db.delete(model)
 
-    asyncio.run(delproduct())
+    #asyncio.run(delproduct())
     #asyncio.run(testcategory())
     #asyncio.run(testfindbyattributes())
     #asyncio.run(testselect())
     #asyncio.run(inserttestproduct())
-    #asyncio.run(updateproduct())
+    asyncio.run(updateproduct(66731785458811970))
+    #asyncio.run(delproduct(66706553062818882))
 
