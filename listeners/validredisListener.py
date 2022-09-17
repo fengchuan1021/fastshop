@@ -19,5 +19,7 @@ async def defmodelcachefromredis(model:Models.Product,db:AsyncSession,token:sett
 
 @Broadcast.AfterModelUpdated('*',background=True)
 async def resetcache(model:Models.Product,db:AsyncSession,token:settings.UserTokenData=None)->None:
-    cachekey = f"{cache.get_prefix()}:modelcache:{model.__tablename__}:{model.id}"
-    await cache.set(cachekey,toJson(model.as_dict()))
+    service=Service.getInstanceForModel(model)
+    if service.usecache:
+        cachekey = f"{cache.get_prefix()}:modelcache:{model.__tablename__}:{model.id}"
+        await cache.set(cachekey,toJson(model.as_dict()))
