@@ -5,6 +5,7 @@ from sqlalchemy import Column, DateTime, Float, ForeignKey, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT
 class Product(Base):
     __tablename__ = 'product'
+    price=Column(INTEGER)
 
     productName_en= deferred(Column(VARCHAR(255),nullable=True), group='en')
     productDescription_en=deferred(Column(TEXT(),nullable=True), group='en')

@@ -2,9 +2,9 @@ helm upgrade my-ingress bitnami/nginx-ingress-controller --set tcp.3306="default
 --set tcp.3307="default/mymysql-secondary-headless:3306" `
 --set tcp.5672="default/rabbitmq-1662947536-headless:5672" `
 --set tcp.6379="default/redis-1662980590-master:6379" `
---set tcp.6380="default/redis-1662980590-replicas:5672" `
---set tcp.9200="default/elasticsearch-1663114221-master-hl:9200" `
---set tcp.9300="default/elasticsearch-1663114221-master-hl:9300" `
+--set tcp.6380="default/redis-1662980590-replicas:6379" `
+--set tcp.9200="default/my-release-elasticsearch-data-hl:9200" `
+--set tcp.9300="default/my-release-elasticsearch-data-hl:9300"
 
 docker build --build-arg BRANCH_NAME=stage -t fengchuanhn/myimage:v3 .
 docker push fengchuanhn/myimage:v3

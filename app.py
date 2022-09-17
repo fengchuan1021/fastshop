@@ -103,12 +103,10 @@ for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
         app.include_router(controller.router)
 
 
-for f in Path(settings.BASE_DIR).joinpath('listeners').rglob('*.py'):
-    if f.name.endswith('Listener.py'):
-        importlib.import_module(str(f.relative_to(settings.BASE_DIR)).replace(os.sep,'.')[0:-3])
+
 
 @app.get('/')
-def forazureping():
+def forazureping()->dict:
     return {"status": 'success'}
 
 if __name__ == "__main__":

@@ -1,7 +1,8 @@
+#type: ignore
 import Service
 from Service.base import CRUDBase
 import Models
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Dict
 from datetime import datetime, timedelta
 import settings
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,8 +18,8 @@ from component.cache import cache
 
 class ProductService(CRUDBase[Models.Product]):
 
-    @cache(expire=3600*24)
-    async def findByPk(self,dbSession: AsyncSession,id,lang='')->Models.Product:
+    @cache(key_builder='getpkcachename',expire=3600*48)
+    async def findByPk(self,dbSession: AsyncSession,id:int,lang:str='')->Models.Product:
         if lang:
             statment=select(Models.Product).options(undefer_group(lang)).where(self.model.id==id)
         else:
@@ -27,7 +28,7 @@ class ProductService(CRUDBase[Models.Product]):
         results = await dbSession.execute(statment)
         return results.scalar_one_or_none()
 
-    async def findByAttribute(self,dbsession:AsyncSession,filters={},sep=' and ',lang='en')->List[Models.Product]:
+    async def findByAttribute(self,dbsession:AsyncSession,filters:Dict={},sep:str=' and ',lang:str='en')->List[Models.Product]:
         filter=filterbuilder(filters,sep)
         statment=select(self.model).where(text(filter))
         results=await dbsession.execute(statment)
@@ -38,17 +39,16 @@ if __name__ == "__main__":
     import asyncio
     from common.dbsession import getdbsession
     async def inserttestproduct():
-        db = await getdbsession()
-        newproduct=Models.Product(productName_en='english productname',
-                                  productDescription_en='english productdescription',
-                                  brand_en='english brand',
-                                  productName_cn="产品1颜色红",
-                                  productDescription_cn="这个产品很有用",
-                                  brand_cn="红的的图片",
-                                  )
-        db.add(newproduct)
-        await db.commit()
-        await db.close()
+        async with getdbsession() as db:
+            newproduct=Models.Product(productName_en='english productname',
+                                      productDescription_en='english productdescription',
+                                      brand_en='english brand',
+                                      productName_cn="产品1颜色红",
+                                      productDescription_cn="这个产品很有用",
+                                      brand_cn="红的的图片",
+                                      )
+            db.add(newproduct)
+
 
     async def testselect():
         db = await getdbsession()
@@ -74,8 +74,18 @@ if __name__ == "__main__":
             result=await Service.categoryService.findByPk(db,1)
             print(result)
         await cache.close()
-    asyncio.run(testcategory())
+
+    async def updateproduct(id=66322594160182339):
+        async with getdbsession() as db:
+            product=await Service.productService.findByPk(db,id)
+            print('product:',product)
+            product.brand_en="dior122"
+            product.brand_cn='屌啊122'
+            db.update(product)
+
+    #asyncio.run(testcategory())
     #asyncio.run(testfindbyattributes())
     #asyncio.run(testselect())
     #asyncio.run(inserttestproduct())
+    asyncio.run(updateproduct())
 

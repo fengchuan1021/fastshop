@@ -1,3 +1,4 @@
+
 import asyncio
 
 from elasticsearch import AsyncElasticsearch
@@ -11,7 +12,7 @@ if __name__ == '__main__':
     import datetime
 
 
-    async def main():
+    async def main():#type: ignore
         doc = {
             'author': 'kimchy',
             'text': 'Elasticsearch: cool. bonsai cool.',

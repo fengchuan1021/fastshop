@@ -1,7 +1,7 @@
 import Service
 from Service.base import CRUDBase
 import Models
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Any
 from datetime import datetime, timedelta
 import settings
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,12 +15,11 @@ from component.cache import cache
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
-es=AsyncElasticsearch()
+from elasticsearchclient import es
 
 class ProductSearchService():
-    def __init__(self,*args):
+    def __init__(self,*args:Any)->None:
         pass
 
-    async def getproductdata(self):
+    async def getproductdata(self)->None:
         pass
-    resp=await async_bulk(es,getproductdata())
