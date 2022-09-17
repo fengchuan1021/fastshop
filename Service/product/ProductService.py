@@ -83,9 +83,15 @@ if __name__ == "__main__":
             product.brand_cn='屌啊122'
             db.update(product)
 
+    async def delproduct():
+        async with getdbsession() as db:
+            model=await Service.productService.findByPk(db,66322594160182338)
+            await db.delete(model)
+
+    asyncio.run(delproduct())
     #asyncio.run(testcategory())
     #asyncio.run(testfindbyattributes())
     #asyncio.run(testselect())
     #asyncio.run(inserttestproduct())
-    asyncio.run(updateproduct())
+    #asyncio.run(updateproduct())
 

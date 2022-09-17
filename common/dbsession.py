@@ -11,7 +11,7 @@ from common.globalFunctions import get_token
 import Broadcast
 from sqlalchemy.util.concurrency import await_only
 from elasticsearchclient import es
-from common.routingDBsession import AsyncSessionMaker
+from common.routingDBsession import AsyncSessionMaker,engines
 
 for f in Path(settings.BASE_DIR).joinpath('listeners').rglob('*.py'):
     if f.name.endswith('Listener.py'):
@@ -63,6 +63,8 @@ class getdbsession:
         await self.session.close()
         if not self.request:
             await es.close()
+            [await engine.dispose() for engine in engines.values()]
+
 
 
 async def get_webdbsession(request:Request,token: settings.UserTokenData=Depends(get_token)) -> AsyncSession:#type: ignore
