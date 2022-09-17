@@ -1,3 +1,4 @@
+#type: ignore
 from __future__ import annotations
 import json
 import typing
@@ -117,11 +118,32 @@ class CacheClass:
                                 returnclass=classinstance.model
                             elif issubclass(returntype, Models.Base):
                                 returnclass=tmpClass.__args__[0]
-                            return [returnclass(**item) for item in returndic] if listtype else returnclass(**returndic)
+
+                            if not listtype:
+                                tmpmodel=returnclass(**returndic)
+                                tmpmodel._sa_instance_state.committed_state = {}
+                                tmpmodel._sa_instance_state.key = (returnclass, (returndic['id'],), None)
+                                return tmpmodel
+                            if listtype:
+                                arr=[]
+                                for item in returndic:
+                                    tmpmodel=returnclass(**item)
+                                    tmpmodel._sa_instance_state.committed_state = {}
+                                    tmpmodel._sa_instance_state.key = (returnclass, (item['id'],), None)
+                                    arr.append(tmpmodel)
+                                return arr
+
                         elif tmpClass==ModelType:
-                            return classinstance.model(**returndic)
+                            tmpmodel=classinstance.model(**returndic)
+                            tmpmodel._sa_instance_state.committed_state = {}
+                            tmpmodel._sa_instance_state.key = (classinstance.model, (returndic['id'],), None)
+                            return tmpmodel
+
                         elif issubclass(tmpClass,Models.Base):
-                            return tmpClass(**returndic)
+                            tmpmodel = tmpClass(**returndic)
+                            tmpmodel._sa_instance_state.committed_state = {}
+                            tmpmodel._sa_instance_state.key = (tmpClass, (returndic['id'],), None)
+                            return tmpmodel
                         return returndic
 
                 if asyncio.iscoroutinefunction(func):
