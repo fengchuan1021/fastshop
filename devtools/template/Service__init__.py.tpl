@@ -11,7 +11,7 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 
 {imports}
 
-def getModelname(name):
+def getModelname(name:str)->str:
     return name[0].upper()+name[1:].replace('Service', '')
 
 def __getattr__(name: str) -> Any:

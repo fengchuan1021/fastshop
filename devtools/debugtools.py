@@ -14,7 +14,7 @@ def before_appstart()->None:
     #needannotations=arr.copy()
     def getclassnames(filetoread:Path)->List:
         allcontent=filetoread.open('rt',encoding='utf8').read()
-        return re.findall(r'class (.*?)Service\(CRUDBase',allcontent)
+        return re.findall(r'class (.*?)Service\(',allcontent)
     importoServiceini=[]
     for f in Path(settings.BASE_DIR).joinpath('Service').rglob('*.py'):
         if f.name.endswith('Service.py'):

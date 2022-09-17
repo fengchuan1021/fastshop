@@ -14,18 +14,18 @@ from component.cache import cache
 class CRUDBase(Generic[ModelType]):
     usecache=True
 
-    def __init__(self, model: Type[ModelType],usecache=True):
+    def __init__(self, model: Type[ModelType],usecache:bool=True)->None:
         self.model = model
         self.usecache = usecache
 
-    def enablecache(self):
+    def enablecache(self)->None:
         self.usecache=True
 
-    def disablecache(self):
+    def disablecache(self)->None:
         self.usecache=False
 
-    def getpkcachename(self,func,funcsig,func_args, namespace):
-        return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"
+    def getpkcachename(self,func,funcsig,func_args, namespace)->str:#type: ignore
+        return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"#type: ignore
 
     @cache(key_builder='getpkcachename',expire=3600*48)
     async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
