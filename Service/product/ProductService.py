@@ -53,7 +53,11 @@ if __name__ == "__main__":
     async def testselect():
         async with getdbsession() as db:
             ps = ProductService(Models.Product)
-            tmp=await ps.findByPk(db, 66706553062818882, 'en')
+            tmp=await ps.findByPk(db, 66731785458811970, 'en')
+            db.add(tmp)
+            print('111111')
+            print(tmp.dynamic.statement)
+
 
 
     async def testfindbyattributes():
@@ -90,8 +94,8 @@ if __name__ == "__main__":
     #asyncio.run(delproduct())
     #asyncio.run(testcategory())
     #asyncio.run(testfindbyattributes())
-    #asyncio.run(testselect())
+    asyncio.run(testselect())
     #asyncio.run(inserttestproduct())
-    asyncio.run(updateproduct(66731785458811970))
+    #asyncio.run(updateproduct(66731785458811970))
     #asyncio.run(delproduct(66706553062818882))
 

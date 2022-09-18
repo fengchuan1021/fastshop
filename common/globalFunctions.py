@@ -6,6 +6,8 @@ from Models import Base
 from Models import ModelType
 from typing import Any
 import json
+from fastapi.encoders import jsonable_encoder
+
 async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
     try:
         tokenstr = request.headers.get('token',None)
@@ -26,7 +28,7 @@ async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
 async def get_token(request:Request)->settings.UserTokenData:
     return request.state.token
 
-from fastapi.encoders import jsonable_encoder
+
 def _encodesqlalchemymodel(model:ModelType):#type: ignore
     return jsonable_encoder(model.as_dict())
 
