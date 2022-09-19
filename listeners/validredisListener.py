@@ -22,4 +22,4 @@ async def resetcache(model:Models.Product,db:AsyncSession,token:settings.UserTok
     service=Service.getInstanceForModel(model)
     if service.usecache:
         cachekey = f"{cache.get_prefix()}:modelcache:{model.__tablename__}:{model.id}"
-        await cache.set(cachekey,toJson(model.as_dict()))
+        await cache.set(cachekey,model.json())

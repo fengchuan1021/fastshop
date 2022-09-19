@@ -1,3 +1,4 @@
+import orjson
 
 from common.filterbuilder import filterbuilder
 from component.snowFlakeId import snowFlack
@@ -31,6 +32,7 @@ class MyBase(object):
 
     def as_dict(self)->Dict[str,Any]:
         return {key:value for key,value in self.__dict__.items() if not key.startswith('_')}#type: ignore
-
+    def json(self)->str:
+        return orjson.dumps(self.as_dict()).decode()
 
 Base = declarative_base(cls=MyBase)

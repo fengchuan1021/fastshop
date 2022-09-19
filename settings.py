@@ -1,3 +1,9 @@
+import orjson
+import pydantic
+def orjson_dumps(v, *, default)->str:#type: ignore
+    return orjson.dumps(v, default=default).decode()
+pydantic.config.BaseConfig.json_loads=orjson.loads
+pydantic.config.BaseConfig.json_dumps=orjson_dumps
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Union, Optional, Literal

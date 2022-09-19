@@ -10,11 +10,11 @@ import Service
 @Broadcast.AfterModelCreated(Models.Product,background=True)
 async def upload2elastic(model:Models.Product,db: AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
 
-    await es.index(index=f'product-{settings.MODE}',id=model.id,document=model.as_dict())
+    await es.index(index=f'product-{settings.MODE}',id=model.id,document=model.json())
 
 @Broadcast.AfterModelUpdated(Models.Product,background=True)
 async def upload2elasticonupdate(model:Models.Product,db: AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
-    await es.index(index=f'product-{settings.MODE}',id=model.id,document=model.as_dict())
+    await es.index(index=f'product-{settings.MODE}',id=model.id,document=model.json())
 
 @Broadcast.AfterModelDeleted(Models.Product,background=True)
 async def delproductines(model:Models.Product,db:AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:

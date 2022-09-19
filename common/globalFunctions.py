@@ -1,3 +1,5 @@
+import orjson
+
 import settings
 from fastapi import Request
 from jose import  jwt
@@ -5,8 +7,8 @@ from component.snowFlakeId import snowFlack
 from Models import Base
 from Models import ModelType
 from typing import Any
-import json
-from fastapi.encoders import jsonable_encoder
+
+
 
 async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
     try:
@@ -28,12 +30,15 @@ async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
 async def get_token(request:Request)->settings.UserTokenData:
     return request.state.token
 
-
-def _encodesqlalchemymodel(model:ModelType):#type: ignore
-    return jsonable_encoder(model.as_dict())
+from pydantic import BaseModel
+def obj2json(obj:Any)->str:#type: ignore
+    if isinstance(obj,BaseModel):
+        return obj.json()
+    elif isinstance(obj,Base):
+        return obj.json()
 
 def toJson(obj:Any)->str:
-    return json.dumps(jsonable_encoder(obj,custom_encoder={Base:_encodesqlalchemymodel}))
+    return orjson.dumps(obj,default=obj2json).decode()
 
 
 

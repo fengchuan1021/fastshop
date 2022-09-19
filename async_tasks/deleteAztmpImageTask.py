@@ -1,6 +1,7 @@
+import settings
 import os
 from typing import List
-import settings
+
 from sqlalchemy.dialects.mysql import Insert
 
 import aiohttp
