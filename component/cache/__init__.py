@@ -106,10 +106,10 @@ class CacheClass:
                         key_builder = key_builder or default_key_builder
                         if isinstance(key_builder,str) and classinstance:
                             key_builder =getattr(classinstance,key_builder)
-                        key = key_builder(
+                        calutedkey = key_builder(
                             func,funcsig,func_args, namespace
                         )
-                    ret = await self.get(key)
+                    ret = await self.get(key or calutedkey)
                     if ret and (returndic:=json.loads(ret)):
                         if isinstance(tmpClass:=func.__annotations__.get('return',int),typing._GenericAlias):
                             returntype=tmpClass.__args__[0]

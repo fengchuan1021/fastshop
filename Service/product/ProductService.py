@@ -64,7 +64,7 @@ if __name__ == "__main__":
         async with getdbsession() as db:
             ps = ProductService(Models.Product)
             tmp=await ps.findByAttribute(db, {"id__in":[2,3]}, 'en')
-            print('tmp::',tmp)
+            #print('tmp::',tmp)
 
 
             await cache.close()
