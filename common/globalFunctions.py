@@ -32,10 +32,9 @@ async def get_token(request:Request)->settings.UserTokenData:
 
 from pydantic import BaseModel
 def obj2json(obj:Any)->str:#type: ignore
-    if isinstance(obj,BaseModel):
+    if isinstance(obj,(BaseModel,Base)):
         return obj.json()
-    elif isinstance(obj,Base):
-        return obj.json()
+    raise Exception("object are not jsonable")
 
 def toJson(obj:Any)->str:
     return orjson.dumps(obj,default=obj2json).decode()
