@@ -14,12 +14,14 @@ from sqlalchemy.orm import undefer_group
 from sqlalchemy import select,text
 from component.cache import cache
 
+class ProductDynamicService(CRUDBase[Models.ProductDynamic]):
+    def __int__(self):
+        super().__init__(Models.ProductDynamic,False)
 
-
-class ProductService(CRUDBase[Models.Product]):
+class ProductStaticService(CRUDBase[Models.ProductStatic]):
 
     @cache(key_builder='getpkcachename',expire=3600*48)
-    async def findByPk(self,dbSession: AsyncSession,id:int,lang:str='')->Models.Product:
+    async def findByPk(self,dbSession: AsyncSession,id:int,lang:str='')->Models.ProductStatic:
         if lang:
             statment=select(Models.Product).options(undefer_group(lang)).where(self.model.id==id)
         else:
@@ -28,16 +30,63 @@ class ProductService(CRUDBase[Models.Product]):
         results = await dbSession.execute(statment)
         return results.scalar_one_or_none()
 
-    async def findByAttribute(self,dbsession:AsyncSession,filters:Dict={},sep:str=' and ',lang:str='en')->List[Models.Product]:
+    async def findByAttribute(self,dbsession:AsyncSession,filters:Dict={},sep:str=' and ',lang:str='en')->List[Models.ProductStatic]:
         filter=filterbuilder(filters,sep)
         statment=select(self.model).where(text(filter))
         results=await dbsession.execute(statment)
         tmp=results.scalars().all()
         print('tmp::',tmp)
         return tmp
+from pydantic import BaseModel
+
+class ProductDynamicInSchema(BaseModel):
+    is_hot:Optional[str]="TRUE"
+    is_recommend:Optional[str]="TRUE"
+
+
+class ProductInSchema(BaseModel):
+    productName_en: str
+    productDescription_en: str
+    brand_en: str
+    price: float
+    dynamic:Optional[ProductDynamicInSchema]
+
+
+
+class ProductService():
+    def __int__(self):
+        super().__init__(Models.ProductDynamic,False)
+
+    async def findByPk(self,db:AsyncSession,id:int,lang:str='',with_dynamic=True):
+        asyncfunc1=Service.productStaticService.findByPk(db,id,lang)
+        asyncfunc2=Service.productDynamicService.findByPk(db,id)
+        done_tasks,_=asyncio.wait(asyncfunc1,asyncfunc2)
+        modelstatic,modeldynamic=done_tasks[0].result(),done_tasks[1].result()
+        print('static:',modelstatic)
+        print('static2:', modeldynamic)
+    async def addproduct(self,db:AsyncSession,jsonSchema:ProductInSchema)->Models.ProductStatic:
+
+        model=Models.ProductStatic(**jsonSchema.dict(exclude={'dynamic'}))
+        dic=jsonSchema.dict()
+        if dic['dynamic']:
+            dyncmicmodel=Models.ProductDynamic(**dic['dynamic'])
+        else:
+            dyncmicmodel = Models.ProductDynamic()
+
+        model.dynamic=dyncmicmodel
+        db.add(model)
+
 if __name__ == "__main__":
     import asyncio
     from common.dbsession import getdbsession
+    async def addproduct():
+        async with getdbsession() as db:
+            pd= ProductDynamicInSchema(is_hot="TRUE", is_recommend="TRUE")
+            ps= ProductInSchema(productName_en='pen', productDescription_en='p desc en', brand_en='br en', price=99.99)
+            await Service.productService.addproduct(db,ps)
+
+    asyncio.run(addproduct())
+
     async def inserttestproduct():
         async with getdbsession() as db:
             newproduct=Models.Product(productName_en='english productname',
@@ -94,7 +143,7 @@ if __name__ == "__main__":
     #asyncio.run(delproduct())
     #asyncio.run(testcategory())
     #asyncio.run(testfindbyattributes())
-    asyncio.run(testselect())
+    #asyncio.run(testselect())
     #asyncio.run(inserttestproduct())
     #asyncio.run(updateproduct(66731785458811970))
     #asyncio.run(delproduct(66706553062818882))

@@ -30,9 +30,21 @@ class MyBase(object):
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
 
-    def as_dict(self)->Dict[str,Any]:
-        return {key:value for key,value in self.__dict__.items() if not key.startswith('_')}#type: ignore
+    def as_dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
+        dic={}
+        if self not in resolved:
+            resolved.append(self)
+        for key, value in self.__dict__.items():
+            if key.startswith('_'):
+                continue
+            if isinstance(value,Base):
+                if value not in resolved:
+                    dic[key]=value.as_dict()
+            else:
+                dic[key]=value
+        return dic
     def json(self)->str:
+
         return orjson.dumps(self.as_dict()).decode()
 
 Base = declarative_base(cls=MyBase)

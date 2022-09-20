@@ -19,7 +19,7 @@ ModelType = TypeVar("ModelType", bound=Base)
 F = TypeVar('F', bound=Callable[..., Any])
 _StrType = TypeVar("_StrType", bound=str | bytes)
 
-class CacheClass:
+class _Cache:
     #self._loop: asyncio.AbstractEventLoop
 
     def __init__(self)->None:
@@ -209,4 +209,4 @@ class CacheClass:
 
 
 
-cache=CacheClass()
+cache=_Cache()

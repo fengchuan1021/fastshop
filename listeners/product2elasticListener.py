@@ -7,17 +7,17 @@ from elasticsearchclient import es
 from component.cache import cache
 import Service
 
-@Broadcast.AfterModelCreated(Models.Product,background=True)
-async def upload2elastic(model:Models.Product,db: AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
+@Broadcast.AfterModelCreated(Models.ProductStatic,background=True)
+async def upload2elastic(model:Models.ProductStatic,db: AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
 
     await es.index(index=f'product-{settings.MODE}',id=model.id,document=model.json())
 
-@Broadcast.AfterModelUpdated(Models.Product,background=True)
-async def upload2elasticonupdate(model:Models.Product,db: AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
+@Broadcast.AfterModelUpdated(Models.ProductStatic,background=True)
+async def upload2elasticonupdate(model:Models.ProductStatic,db: AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
     await es.index(index=f'product-{settings.MODE}',id=model.id,document=model.json())
 
-@Broadcast.AfterModelDeleted(Models.Product,background=True)
-async def delproductines(model:Models.Product,db:AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
+@Broadcast.AfterModelDeleted(Models.ProductStatic,background=True)
+async def delproductines(model:Models.ProductStatic,db:AsyncSession,token:settings.UserTokenData=None,reason:str='')->None:
     #delete from elasticsearch
     await es.delete(index=f'product-{settings.MODE}',id=model.id,ignore=404)#type: ignore
 
