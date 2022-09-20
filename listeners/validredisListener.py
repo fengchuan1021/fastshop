@@ -19,6 +19,7 @@ async def defmodelcachefromredis(model:Models.ProductStatic,db:AsyncSession,toke
 
 @Broadcast.AfterModelUpdated('*',background=True)
 async def resetcache(model:Models.ProductStatic,db:AsyncSession,token:settings.UserTokenData=None)->None:
+    print('modelname:',model.__class__.__name__)
     service=Service.getInstanceForModel(model)
     if service.usecache:
         cachekey = f"{cache.get_prefix()}:modelcache:{model.__tablename__}:{model.id}"

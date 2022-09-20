@@ -1,5 +1,6 @@
 #type: ignore
 import Service
+import asyncio
 from Service.base import CRUDBase
 import Models
 from typing import Union, Optional, List, Dict
@@ -23,9 +24,9 @@ class ProductStaticService(CRUDBase[Models.ProductStatic]):
     @cache(key_builder='getpkcachename',expire=3600*48)
     async def findByPk(self,dbSession: AsyncSession,id:int,lang:str='')->Models.ProductStatic:
         if lang:
-            statment=select(Models.Product).options(undefer_group(lang)).where(self.model.id==id)
+            statment=select(Models.ProductStatic).options(undefer_group(lang)).where(self.model.id==id)
         else:
-            statment = select(Models.Product).where(self.model.id==id)
+            statment = select(Models.ProductStatic).where(self.model.id==id)
         print(statment)
         results = await dbSession.execute(statment)
         return results.scalar_one_or_none()
@@ -58,12 +59,18 @@ class ProductService():
         super().__init__(Models.ProductDynamic,False)
 
     async def findByPk(self,db:AsyncSession,id:int,lang:str='',with_dynamic=True):
-        asyncfunc1=Service.productStaticService.findByPk(db,id,lang)
-        asyncfunc2=Service.productDynamicService.findByPk(db,id)
-        done_tasks,_=asyncio.wait(asyncfunc1,asyncfunc2)
-        modelstatic,modeldynamic=done_tasks[0].result(),done_tasks[1].result()
-        print('static:',modelstatic)
-        print('static2:', modeldynamic)
+        funcarr=[Service.productStaticService.findByPk(db,id,lang)]
+        if with_dynamic:
+            funcarr.append(Service.productDynamicService.findByPk(db,id))
+
+        results=await asyncio.gather(*funcarr)
+
+        modelstatic=results[0]
+        if not modelstatic:
+            return None
+        if with_dynamic:
+            modelstatic.dynamic=results[1]
+        return modelstatic
     async def addproduct(self,db:AsyncSession,jsonSchema:ProductInSchema)->Models.ProductStatic:
 
         model=Models.ProductStatic(**jsonSchema.dict(exclude={'dynamic'}))
@@ -82,10 +89,16 @@ if __name__ == "__main__":
     async def addproduct():
         async with getdbsession() as db:
             pd= ProductDynamicInSchema(is_hot="TRUE", is_recommend="TRUE")
-            ps= ProductInSchema(productName_en='pen', productDescription_en='p desc en', brand_en='br en', price=99.99)
+            ps= ProductInSchema(productName_en='pen', productDescription_en='p desc en', brand_en='br en', price=99.99,dynamic=pd)
             await Service.productService.addproduct(db,ps)
 
-    asyncio.run(addproduct())
+    async def findbyproductpk():
+        async with getdbsession() as db:
+            tmp=await Service.productService.findByPk(db,68451662070547522)
+            print(tmp)
+
+    asyncio.run(findbyproductpk())
+    #asyncio.run(addproduct())
 
     async def inserttestproduct():
         async with getdbsession() as db:

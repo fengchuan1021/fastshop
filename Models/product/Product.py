@@ -4,14 +4,18 @@ from Models.ModelBase import Base
 from sqlalchemy import Column, DateTime, Float, ForeignKey, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT
 
+from component.snowFlakeId import snowFlack
+
+
 class ProductDynamic(Base):
     __tablename__ = 'product_dynamic'
+    id = Column(BIGINT(20), ForeignKey('product_static.id'),default=snowFlack.getId,primary_key=True)
     is_hot=Column(ENUM("TRUE","FALSE"),server_default="FALSE",default="FALSE",index=True)
     is_recommend=Column(ENUM("TRUE","FALSE"),server_default="FALSE",default="FALSE",index=True)
     collect_cnt=Column(INTEGER,server_default="0",default="0",index=True)
     sale_cnt=Column(INTEGER,server_default="0",default="0",index=True)
 
-    parent_id = Column(BIGINT, ForeignKey('product_static.id'))
+    #parent_id = Column(BIGINT, ForeignKey('product_static.id'))
 class ProductStatic(Base):
     __tablename__ = 'product_static'
     price=Column(INTEGER)
