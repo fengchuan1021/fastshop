@@ -37,6 +37,8 @@ DBURL=os.getenv("ASYNCDBURL",'')
 SLAVEDBURL=os.getenv("SLAVEDBURL",DBURL)
 SYNC_DBURL=os.getenv("SYNCDBURL",'')
 
+AZ_BLOB_CONNSTR=os.getenv('az_blob_connstr','')
+
 ENABLE_CACHE=True
 CACHE_PREFIX='xtcache'
 DEFAULT_CACHE_EXPIRE=3600*12

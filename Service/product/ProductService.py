@@ -58,17 +58,16 @@ class ProductService():
     def __int__(self):
         super().__init__(Models.ProductDynamic,False)
 
-    async def findByPk(self,db:AsyncSession,id:int,lang:str='',with_dynamic=True):
+    async def findByPk(self,db:AsyncSession,id:int,lang:str='',with_dynamic_table=False):
         funcarr=[Service.productStaticService.findByPk(db,id,lang)]
-        if with_dynamic:
+        if 0 and with_dynamic_table:
             funcarr.append(Service.productDynamicService.findByPk(db,id))
 
         results=await asyncio.gather(*funcarr)
-
         modelstatic=results[0]
         if not modelstatic:
             return None
-        if with_dynamic:
+        if with_dynamic_table:
             modelstatic.dynamic=results[1]
         return modelstatic
     async def addproduct(self,db:AsyncSession,jsonSchema:ProductInSchema)->Models.ProductStatic:

@@ -12,7 +12,7 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 from .UserService import UserService
 from .product.ProductService import ProductDynamicService,ProductStaticService,ProductService
 from .search.ProductSearchService import ProductSearchService
-
+from .UploadService import UploadService
 def getModelname(name:str)->str:
     return name[0].upper()+name[1:].replace('Service', '')
 
@@ -38,3 +38,4 @@ productDynamicService : ProductDynamicService
 categoryService : CRUDBase[Models.Category]
 productService : ProductService
 productSearchService : ProductSearchService
+uploadService:UploadService
