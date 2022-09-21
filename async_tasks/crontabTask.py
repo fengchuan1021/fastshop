@@ -4,12 +4,13 @@ from celery_app import celery_app
 import asyncio
 import datetime
 from common.dbsession import get_webdbsession
-from async_tasks.sync2async import sync2async
+
+from common.globalFunctions import async2sync
 from sqlalchemy import select,update
 import Models
 from common.dbsession import getdbsession
 @celery_app.task
-@sync2async
+@async2sync
 async def active_banneduser()->None:# type: ignore
     async with getdbsession() as dbsession:
 

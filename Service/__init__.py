@@ -23,14 +23,14 @@ def __getattr__(name: str) -> Any:
     for annotationname,classtype in thismodule.__annotations__.items():
         if annotationname==name:
             if issubclass(classtype,CRUDBase):
-                tmpinstance = classtype(model:=getattr(Models, getModelname(name)),model not in settings.not_cache_models)
+                tmpinstance = classtype(model:=getattr(Models, getModelname(name)),model.__name__ not in settings.not_cache_models)
             else:
                 tmpinstance = classtype()
             setattr(thismodule, name, tmpinstance)
             return tmpinstance
     if hasattr(Models, getModelname(name)):
         model = getattr(Models, getModelname(name))
-        tmpinstance = CRUDBase(model,model not in settings.not_cache_models)
+        tmpinstance = CRUDBase(model,model.__name__ not in settings.not_cache_models)
         setattr(thismodule, name, tmpinstance)
         return tmpinstance
     raise Exception(f'not found {name}')

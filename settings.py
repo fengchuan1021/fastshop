@@ -44,8 +44,8 @@ AZ_BLOB_CONNSTR=os.getenv('az_blob_connstr','')
 ENABLE_CACHE=True
 CACHE_PREFIX='xtcache'
 DEFAULT_CACHE_EXPIRE=3600*12
-import Models
-not_cache_models=[Models.User]
+
+not_cache_models=['User']
 SECRET_KEY = "11a60e557ae59d6a4674bb5aeddcbc963bed0a4d44694f62c3be578d4155471d"
 ACCESS_TOKEN_EXPIRE_MINUTES = 3600*24*30
 ALGORITHM = "HS256"

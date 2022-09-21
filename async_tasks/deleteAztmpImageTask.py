@@ -8,7 +8,7 @@ import aiohttp
 
 import asyncio
 from celery_app import celery_app
-from async_tasks.sync2async import sync2async
+from common.globalFunctions import async2sync
 import Models
 from component.snowFlakeId import snowFlack
 from common.dbsession import getdbsession
@@ -16,8 +16,9 @@ from component.cache import cache
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, __version__, PublicAccess
 import time
 from collections import defaultdict
+
 @celery_app.task
-@sync2async
+@async2sync
 async def deleteAztmpfile():#type: ignore
     tm=int(time.time())
     files=await cache.redis.zrange('aztmpfiles',0,tm)

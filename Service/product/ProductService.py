@@ -83,7 +83,7 @@ class ProductService():
         db.add(model)
 
 if __name__ == "__main__":
-    import asyncio
+    from common.globalFunctions import async2sync
     from common.dbsession import getdbsession
     async def addproduct():
         async with getdbsession() as db:
@@ -95,8 +95,8 @@ if __name__ == "__main__":
         async with getdbsession() as db:
             tmp=await Service.productService.findByPk(db,68451662070547522)
             print(tmp)
-
-    asyncio.run(findbyproductpk())
+    async2sync(findbyproductpk)()
+    #asyncio.run(findbyproductpk())
     #asyncio.run(addproduct())
 
     async def inserttestproduct():

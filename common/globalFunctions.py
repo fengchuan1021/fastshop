@@ -1,13 +1,15 @@
-import orjson
-
 import settings
+import orjson
 from fastapi import Request
 from jose import  jwt
 from component.snowFlakeId import snowFlack
 from Models import Base
-from Models import ModelType
-from typing import Any
-
+import asyncio
+import datetime
+from functools import wraps
+from typing import Callable,Any
+from pydantic import BaseModel
+from elasticsearchclient import es
 
 
 async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
@@ -30,7 +32,7 @@ async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
 async def get_token(request:Request)->settings.UserTokenData:
     return request.state.token
 
-from pydantic import BaseModel
+
 def obj2json(obj:Any)->str:#type: ignore
     if isinstance(obj,(BaseModel,Base)):
         return obj.json()
@@ -41,5 +43,30 @@ def toBytesJson(obj:Any)->bytes:
 def toJson(obj:Any)->str:
     return toBytesJson(obj).decode()
 
+
+
+async def writelog(logstr:str)->None:
+    doc = {
+        'text': logstr,
+        'request': '',
+        'timestamp': datetime.datetime.now(),
+    }
+    await es.index(index=f"xtlog-{settings.MODE}", document=doc)
+
+def async2sync(func:Callable[...,Any])->Callable[...,Any]:
+    @wraps(func)
+    def decorator(*args:Any,**kwargs:Any)->Any:
+
+        loop = asyncio.get_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            result=loop.run_until_complete(func(*args,**kwargs))
+            return result
+        except Exception as e:
+            loop.run_until_complete(writelog(str(e)))
+            if settings.DEBUG:
+                raise
+
+    return decorator
 
 
