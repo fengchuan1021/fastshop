@@ -22,3 +22,6 @@ redis-1662980590-replicas.default.svc.cluster.local for read-only operations (po
 
 
 
+#install magento
+docker run -d -p 80:80 --name magento -e MYSQL_HOST=rm-bp1k3pm58e4t9f35wso.mysql.rds.aliyuncs.com -e MYSQL_DATABASE=magento -e MYSQL_USER=root -e MYSQL_PASSWORD=Xiaochuan1021 -e MAGENTO_ADMIN_EMAIL=1299693999@qq.com -e MAGENTO_ADMIN_PASSWORD=Xiaochuan1021  alexcheng/magento
+docker run -it --rm -p 80:80 --name magento -e MYSQL_HOST=rm-bp1k3pm58e4t9f35wso.mysql.rds.aliyuncs.com -e MYSQL_DATABASE=magento -e MYSQL_USER=root -e MYSQL_PASSWORD=Xiaochuan1021 -e MAGENTO_ADMIN_EMAIL=1299693999@qq.com -e MAGENTO_ADMIN_PASSWORD=Xiaochuan1021  alexcheng/magento

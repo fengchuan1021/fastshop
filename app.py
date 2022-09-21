@@ -85,7 +85,8 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
 
 @app.on_event("startup")
 async def startup()->None:
-    if settings.MODE == 'DEV':
+    if settings.MODE == 'dev':
+
         from devtools import debugtools
         import multiprocessing
         backgroundprocess = multiprocessing.Process(target=debugtools.before_appstart)
