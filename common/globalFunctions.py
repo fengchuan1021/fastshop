@@ -36,8 +36,10 @@ def obj2json(obj:Any)->str:#type: ignore
         return obj.json()
     raise Exception("object are not jsonable")
 
+def toBytesJson(obj:Any)->bytes:
+    return orjson.dumps(obj,default=obj2json)
 def toJson(obj:Any)->str:
-    return orjson.dumps(obj,default=obj2json).decode()
+    return toBytesJson(obj).decode()
 
 
 

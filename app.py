@@ -3,8 +3,7 @@ import datetime
 import fastapi.exceptions
 import asyncio
 import os
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
+from component.xtjsonresponse import XTJsonResponse
 
 from sqlalchemy.exc import IntegrityError,OperationalError
 import Service
@@ -43,28 +42,28 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         response = await call_next(request)  # This request will be modified and sent
 
     except OperationalError as e:
-        jsonout = Common500OutShema(status=Common500Status.dberror,msg=str(e)).json()
-        response=JSONResponse(jsonout,status_code=500)
-        try:
-            await request.state.db_client.close()
-        except:
-            pass
+        jsonout = Common500OutShema(status=Common500Status.dberror,msg=str(e))
+        response=XTJsonResponse(jsonout,status_code=500)
+        # try:
+        #     await request.state.db_client.close()
+        # except:
+        #     pass
     except IntegrityError as e:
-        jsonout = Common500OutShema(status=Common500Status.dberror, msg=str(e)).json()
-        response=JSONResponse(jsonout,status_code=500)
-        try:
-            await request.state.db_client.close()
-        except:
-            pass
+        jsonout = Common500OutShema(status=Common500Status.dberror, msg=str(e))
+        response=XTJsonResponse(jsonout,status_code=500)
+        # try:
+        #     await request.state.db_client.close()
+        # except:
+        #     pass
     except TokenException as e:
-        jsonout = Common500OutShema(status=Common500Status.tokenerror, msg=str(e)).json()
-        response=JSONResponse(jsonout,status_code=500)
+        jsonout = Common500OutShema(status=Common500Status.tokenerror, msg=str(e))
+        response=XTJsonResponse(jsonout,status_code=500)
     except fastapi.exceptions.ValidationError as e:
-        jsonout = Common500OutShema(status=Common500Status.validateerror,msg='',data=e.errors()).json()
-        response=JSONResponse(jsonout,status_code=500)
+        jsonout = Common500OutShema(status=Common500Status.validateerror,msg='',data=e.errors())
+        response=XTJsonResponse(jsonout,status_code=500)
     except  ConnectionError as e:
-        jsonout = Common500OutShema(status=Common500Status.cacheerror,msg='cache server error',data=str(e)).json()
-        response=JSONResponse(jsonout,status_code=500)
+        jsonout = Common500OutShema(status=Common500Status.cacheerror,msg='cache server error',data=str(e))
+        response=XTJsonResponse(jsonout,status_code=500)
     except Exception as e:
         #es
         doc = {
@@ -76,8 +75,8 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         if settings.DEBUG:
             raise
 
-        jsonout = Common500OutShema(status=Common500Status.unknownerr, msg=str(e)).json()
-        response=JSONResponse(jsonout,status_code=500)
+        jsonout = Common500OutShema(status=Common500Status.unknownerr, msg=str(e))
+        response=XTJsonResponse(jsonout,status_code=500)
 
     #if request.state.token.is_guest:
     #    response.set_cookie('token',Service.userService.create_access_token(request.state.token),expires=3600*24*30)
