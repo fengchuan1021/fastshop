@@ -11,6 +11,7 @@ if [ "$CMD" = "APP" ] ; then
   if [ "$MODE" = "dev" ] ; then
     uvicorn app:app --reload --port 80 --host=0.0.0.0
   elif [ "$MODE" = "main" ] ; then
+    #gunicorn app:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
     gunicorn app:app --workers $CPUNUMBER --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
   else
     uvicorn app:app --reload --port 80 --host=0.0.0.0
