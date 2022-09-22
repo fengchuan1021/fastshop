@@ -1,7 +1,6 @@
 #dont modfiy this file!!! it generate from devtools/template/Service__init__.py.tpl
 #dont modfiy this file!!! it generate from devtools/template/Service__init__.py.tpl
-import os
-from typing import Any,TypeVar,TYPE_CHECKING
+from typing import Any,TypeVar
 import Models
 import sys
 
@@ -12,7 +11,7 @@ from .base import CRUDBase
 ModelType = TypeVar("ModelType", bound=Models.Base)
 
 from .UploadService import UploadService
-from .UserService import UserService
+from Service.user.UserService import UserService
 from .product.ProductService import ProductDynamicService,ProductStaticService,ProductService
 from .search.ProductSearchService import ProductSearchService
 

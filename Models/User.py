@@ -22,19 +22,19 @@ class User(Base):
     username = Column(VARCHAR(32), nullable=False, unique=True)
     email = Column(VARCHAR(32), index=True)
     nickname=Column(VARCHAR(32),default='',server_default=text("''"))
-    is_banned=Column(ENUM('normal', 'banned'),default='normal',server_default=text("'normal'"),index=True)
-    ban_enddate=Column(DateTime,index=True)
+    #is_banned=Column(ENUM('normal', 'banned'),default='normal',server_default=text("'normal'"),index=True)
+    #ban_enddate=Column(DateTime,index=True)
     phone = Column(VARCHAR(16), index=True,server_default=text("''"),default='')
     balance = Column(Float(asdecimal=True), server_default=text("'0'"))
     password = Column(VARCHAR(512), nullable=False)
     gender = Column(ENUM('man', 'woman'))
     userrole = Column(INTEGER(11),nullable=False,default=0,server_default=text("'0'"))
-    nickname=Column(VARCHAR(32))
+
     mark=Column(VARCHAR(512))
 
     parent_id = Column(BIGINT, ForeignKey('user.id',ondelete='NO ACTION'))
     children:List["User"] = relationship('User',uselist=True, backref=backref('parent', remote_side='User.id'),join_depth=2)
-    #pddaccounts=relationship("UserPddAccount")
+
 
 
     def is_admin(self)->int:
