@@ -1,6 +1,7 @@
 #dont modfiy this file!!! it generate from devtools/template/Service__init__.py.tpl
 #dont modfiy this file!!! it generate from devtools/template/Service__init__.py.tpl
-from typing import Any,TypeVar
+import os
+from typing import Any,TypeVar,TYPE_CHECKING
 import Models
 import sys
 
@@ -10,10 +11,7 @@ thismodule = sys.modules[__name__]
 from .base import CRUDBase
 ModelType = TypeVar("ModelType", bound=Models.Base)
 
-from .UploadService import UploadService
-from Service.user.UserService import UserService
-from .product.ProductService import ProductDynamicService,ProductStaticService,ProductService
-from .search.ProductSearchService import ProductSearchService
+
 
 def getModelname(name:str)->str:
     return name[0].upper()+name[1:].replace('Service', '')
@@ -34,10 +32,3 @@ def __getattr__(name: str) -> Any:
         return tmpinstance
     raise Exception(f'not found {name}')
 
-userService : UserService
-productDynamicService : ProductDynamicService
-productStaticService : ProductStaticService
-categoryService : CRUDBase[Models.Category]
-uploadService : UploadService
-productService : ProductService
-productSearchService : ProductSearchService

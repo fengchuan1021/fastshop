@@ -34,7 +34,7 @@ def generate_model()->List:
         if tmpfile.name.endswith('.py') and tmpfile.name not in ['__init__.py','Base.py']:
             with tmpfile.open('rt',encoding='utf8') as tmppyfile:
                 content=tmppyfile.read()
-                if (tmpclasses:=re.findall(r"class (.*?)\(Base",content)):
+                if (tmpclasses:=re.findall(r"^class (.*?)\(Base",content)):
                     allmodelclas+=tmpclasses
                     overwriteclass.append(f"from .{str(tmpfile.relative_to(os.path.join(settings.BASE_DIR,'Models'))).replace(os.sep,'.')[0:-3]} import {','.join(tmpclasses)}")
 

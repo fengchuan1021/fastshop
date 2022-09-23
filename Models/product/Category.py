@@ -17,5 +17,6 @@ class Category(Base):
     name=Column(VARCHAR(32))
 
 class ProductCategory(Base):
+    __tablename__ = 'product_cagetory'
     category_id = Column(INTEGER,)
     product_id=Column(INTEGER,)
