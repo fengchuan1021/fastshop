@@ -7,8 +7,7 @@ from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,T
 from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING, List
 
-if TYPE_CHECKING:
-    from .ProductImage import ProductImage
+from .ProductImage import ProductImage
 
 class ProductDynamic(Base):
     __tablename__ = 'product_dynamic'
@@ -29,6 +28,10 @@ class ProductStatic(Base):
     barcode=Column(VARCHAR(32))
     hscode=Column(VARCHAR(32))
     group_id=Column(BIGINT,server_default="0")
+
+    specification_en=Column(VARCHAR(12),server_default='')
+    specification_cn = Column(VARCHAR(12), server_default='')
+
     productName_en= deferred(Column(VARCHAR(255),nullable=True), group='en')
     productDescription_en=deferred(Column(TEXT(),nullable=True), group='en')
     brand_en=deferred(Column(VARCHAR(24),nullable=True), group='en')

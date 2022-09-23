@@ -4,18 +4,18 @@ from sqlalchemy import Column, DateTime, Float, ForeignKey, text, Index
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT
 
 from component.snowFlakeId import snowFlack
-class Specification(Base):
-    __tablename__ = 'specification'
-    name_en =Column(VARCHAR(32),server_default="",default='')
-    name_cn=Column(VARCHAR(32),server_default="",default='')
-
-class SpecificationValue(Base):
-    __tablename__ = 'specification_value'
-    parent_id=Column(BIGINT,ForeignKey("specification.id"))
-
-    value_en=Column(VARCHAR(32),server_default="",default='')
-    value_cn = Column(VARCHAR(32), server_default="", default='')
-    specification:Specification=relationship("Secification",backref="values",uselist=False)
+# class Specification(Base):
+#     __tablename__ = 'specification'
+#     name_en =Column(VARCHAR(32),server_default="",default='')
+#     name_cn=Column(VARCHAR(32),server_default="",default='')
+#
+# class SpecificationValue(Base):
+#     __tablename__ = 'specification_value'
+#     parent_id=Column(BIGINT,ForeignKey("specification.id"))
+#
+#     value_en=Column(VARCHAR(32),server_default="",default='')
+#     value_cn = Column(VARCHAR(32), server_default="", default='')
+#     specification:Specification=relationship("Secification",backref="values",uselist=False)
 
 class ProductGroupSpecification(Base):
     __tablename__ = 'productgroup_specification'
