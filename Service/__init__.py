@@ -12,7 +12,7 @@ from .base import CRUDBase
 ModelType = TypeVar("ModelType", bound=Models.Base)
 
 from .UploadService import UploadService
-from .product.ProductService import ProductDynamicService,ProductStaticService,ProductService
+from .product.ProductService import VariantDynamicService,VariantStaticService,ProductService
 from .search.ProductSearchService import ProductSearchService
 from .user.UserService import UserService
 
@@ -39,14 +39,12 @@ userService : UserService
 categoryService : CRUDBase[Models.Category]
 productCategoryService : CRUDBase[Models.ProductCategory]
 productService : ProductService
-variantDynamicService : CRUDBase[Models.VariantDynamic]
-variantStaticService : CRUDBase[Models.VariantStatic]
+variantDynamicService : VariantDynamicService
+variantStaticService : VariantStaticService
 productAttributeService : CRUDBase[Models.ProductAttribute]
 productImageService : CRUDBase[Models.ProductImage]
 preDefineSpecificationService : CRUDBase[Models.PreDefineSpecification]
 preDefineSpecificationValueService : CRUDBase[Models.PreDefineSpecificationValue]
 productGroupSpecificationService : CRUDBase[Models.ProductGroupSpecification]
 uploadService : UploadService
-productDynamicService : ProductDynamicService
-productStaticService : ProductStaticService
 productSearchService : ProductSearchService

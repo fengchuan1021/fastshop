@@ -17,23 +17,23 @@ from sqlalchemy.orm import undefer_group
 from sqlalchemy import select,text
 from component.cache import cache
 
-class ProductDynamicService(CRUDBase[Models.ProductDynamic]):
+class VariantDynamicService(CRUDBase[Models.VariantDynamic]):
     def __int__(self):
-        super().__init__(Models.ProductDynamic,False)
+        super().__init__(Models.VariantDynamic,False)
 
-class ProductStaticService(CRUDBase[Models.ProductStatic]):
+class VariantStaticService(CRUDBase[Models.VariantStatic]):
 
     @cache(key_builder='getpkcachename',expire=3600*48)
-    async def findByPk(self,dbSession: AsyncSession,id:int,lang:str='')->Models.ProductStatic:
+    async def findByPk(self,dbSession: AsyncSession,id:int,lang:str='')->Models.VariantStatic:
         if lang:
-            statment=select(Models.ProductStatic).options(undefer_group(lang)).where(self.model.id==id)
+            statment=select(Models.VariantStatic).options(undefer_group(lang)).where(self.model.id==id)
         else:
-            statment = select(Models.ProductStatic).where(self.model.id==id)
+            statment = select(Models.VariantStatic).where(self.model.id==id)
         print(statment)
         results = await dbSession.execute(statment)
         return results.scalar_one_or_none()
 
-    async def findByAttribute(self,dbsession:AsyncSession,filters:Dict={},sep:str=' and ',lang:str='en')->List[Models.ProductStatic]:
+    async def findByAttribute(self,dbsession:AsyncSession,filters:Dict={},sep:str=' and ',lang:str='en')->List[Models.VariantStatic]:
         filter=filterbuilder(filters,sep)
         statment=select(self.model).where(text(filter))
         results=await dbsession.execute(statment)
@@ -48,9 +48,9 @@ from modules.backend.product.ProductShema import AddProductInShema,ProductImage,
 class ProductService():
 
     async def findByPk(self,db:AsyncSession,id:int,lang:str='',with_dynamic_table=False):
-        funcarr=[Service.productStaticService.findByPk(db,id,lang)]
+        funcarr=[Service.VariantStaticService.findByPk(db,id,lang)]
         if 0 and with_dynamic_table:
-            funcarr.append(Service.productDynamicService.findByPk(db,id))
+            funcarr.append(Service.VariantDynamicService.findByPk(db,id))
 
         results=await asyncio.gather(*funcarr)
         modelstatic=results[0]
@@ -60,25 +60,25 @@ class ProductService():
             modelstatic.dynamic=results[1]
         return modelstatic
     async def addsingleproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
-        productstatic=Models.ProductStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
+        VariantStatic=Models.VariantStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
 
-        productdynamic=Models.ProductDynamic(**inSchema.dict(include={'stock'}))
+        VariantDynamic=Models.VariantDynamic(**inSchema.dict(include={'stock'}))
 
         for attribute in inSchema.attributes:
-            productstatic.images.append(Models.ProductAttribute(**attribute.dict()))
+            VariantStatic.images.append(Models.ProductAttribute(**attribute.dict()))
 
-        db.add(productstatic)
-        db.add(productdynamic)
+        db.add(VariantStatic)
+        db.add(VariantDynamic)
     async def addgroupproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
-        productstatic=Models.ProductStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
+        VariantStatic=Models.VariantStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
 
-        productdynamic=Models.ProductDynamic(**inSchema.dict(include={'stock'}))
+        VariantDynamic=Models.VariantDynamic(**inSchema.dict(include={'stock'}))
 
         for attribute in inSchema.attributes:
-            productstatic.images.append(Models.ProductAttribute(**attribute.dict()))
+            VariantStatic.images.append(Models.ProductAttribute(**attribute.dict()))
 
-        db.add(productstatic)
-        db.add(productdynamic)
+        db.add(VariantStatic)
+        db.add(VariantDynamic)
 
     async def addproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
         if not inSchema.subproducts:
@@ -89,22 +89,22 @@ class ProductService():
                 productarr.append(inSchema.copy(exclude={"subproduct",'images'},update=subproduct.dict(exclude_unset=True)))
 
             return await self.addgroupproduct(productarr)
-        productstatic=Models.ProductStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
+        VariantStatic=Models.VariantStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
 
-        productdynamic=Models.ProductDynamic(**inSchema.dict(include={'stock'}))
+        VariantDynamic=Models.VariantDynamic(**inSchema.dict(include={'stock'}))
 
         for attribute in inSchema.attributes:
-            productstatic.images.append(Models.ProductAttribute(**attribute.dict()))
+            VariantStatic.images.append(Models.ProductAttribute(**attribute.dict()))
 
-        db.add(productstatic)
-        db.add(productdynamic)
+        db.add(VariantStatic)
+        db.add(VariantDynamic)
 
 if __name__ == "__main__":
     from common.globalFunctions import async2sync
     from common.dbsession import getdbsession
     async def addproduct():
         async with getdbsession() as db:
-            pd= ProductDynamicInSchema(is_hot="TRUE", is_recommend="TRUE")
+            pd= VariantDynamicInSchema(is_hot="TRUE", is_recommend="TRUE")
             ps= ProductInSchema(productName_en='pen', productDescription_en='p desc en', brand_en='br en', price=99.99,dynamic=pd)
             await Service.productService.addproduct(db,ps)
 
