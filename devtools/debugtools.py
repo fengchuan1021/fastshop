@@ -5,6 +5,9 @@ import re
 from devtools import generateModel
 from pathlib import Path
 import importlib
+print('111111111111111111111')
+import time
+
 def before_appstart()->None:
     allmodelclasses=generateModel.generate_model()
     serviceTpl=open(os.path.join(settings.BASE_DIR, 'devtools','template', 'Service__init__.py.tpl'), 'r', encoding='utf8').read()
@@ -14,7 +17,8 @@ def before_appstart()->None:
     #needannotations=arr.copy()
     def getclassnames(filetoread:Path)->List:
         allcontent=filetoread.open('rt',encoding='utf8').read()
-        return re.findall(r'^class (.*?)Service\(',allcontent)
+
+        return re.findall(r'^class (.*?)Service\(',allcontent,re.M)
     importoServiceini=[]
     for f in Path(settings.BASE_DIR).joinpath('Service').rglob('*.py'):
         if f.name.endswith('Service.py'):

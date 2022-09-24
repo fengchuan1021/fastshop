@@ -1,4 +1,9 @@
 import settings
+if settings.MODE=='dev':
+    import subprocess
+    import sys
+    subprocess.Popen([sys.executable, "devtools/debugtools.py"],stdout=subprocess.DEVNULL,stdin=subprocess.DEVNULL,stderr=subprocess.DEVNULL,close_fds=True)
+
 import datetime
 import fastapi.exceptions
 import asyncio
@@ -6,7 +11,6 @@ import os
 from component.xtjsonresponse import XTJsonResponse
 
 from sqlalchemy.exc import IntegrityError,OperationalError
-import Service
 import importlib
 from typing import Any
 from fastapi import FastAPI, Request
@@ -14,7 +18,7 @@ from redis.exceptions import ConnectionError
 
 from component.cache import cache
 from pathlib import Path
-from sqlalchemy.ext.asyncio import AsyncSession
+
 from common.CommonError import Common500OutShema,Common500Status,TokenException
 from common.globalFunctions import getorgeneratetoken, get_token
 
@@ -84,12 +88,6 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
 
 @app.on_event("startup")
 async def startup()->None:
-    if settings.MODE == 'dev':
-
-        from devtools import debugtools
-        import multiprocessing
-        backgroundprocess = multiprocessing.Process(target=debugtools.before_appstart)
-        backgroundprocess.start()
     cache.init(prefix=settings.CACHE_PREFIX,expire=settings.DEFAULT_CACHE_EXPIRE,enable=settings.ENABLE_CACHE)
 
 

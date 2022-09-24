@@ -11,7 +11,10 @@ thismodule = sys.modules[__name__]
 from .base import CRUDBase
 ModelType = TypeVar("ModelType", bound=Models.Base)
 
-
+from .UploadService import UploadService
+from .product.ProductService import ProductDynamicService,ProductStaticService,ProductService
+from .search.ProductSearchService import ProductSearchService
+from .user.UserService import UserService
 
 def getModelname(name:str)->str:
     return name[0].upper()+name[1:].replace('Service', '')
@@ -32,3 +35,18 @@ def __getattr__(name: str) -> Any:
         return tmpinstance
     raise Exception(f'not found {name}')
 
+userService : UserService
+categoryService : CRUDBase[Models.Category]
+productCategoryService : CRUDBase[Models.ProductCategory]
+productService : ProductService
+variantDynamicService : CRUDBase[Models.VariantDynamic]
+variantStaticService : CRUDBase[Models.VariantStatic]
+productAttributeService : CRUDBase[Models.ProductAttribute]
+productImageService : CRUDBase[Models.ProductImage]
+preDefineSpecificationService : CRUDBase[Models.PreDefineSpecification]
+preDefineSpecificationValueService : CRUDBase[Models.PreDefineSpecificationValue]
+productGroupSpecificationService : CRUDBase[Models.ProductGroupSpecification]
+uploadService : UploadService
+productDynamicService : ProductDynamicService
+productStaticService : ProductStaticService
+productSearchService : ProductSearchService

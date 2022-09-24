@@ -104,8 +104,8 @@ def resetdb()->None:
         if f == '__pycache__':
             continue
         os.remove(os.path.join(versionpath, f))
-    dburl=os.getenv('ASYNCDBURL')
-    print(dburl)
+    dburl=os.getenv('ASYNCDBURL','')
+
     tmp=re.findall(r'mysql\+aiomysql://(.*?):(.*?)@(.*?):(.*?)/(.*?)\?',dburl)[0]
     user,password,host,port,database=tmp
     connection = pymysql.connect(host=host,
@@ -146,5 +146,9 @@ def importopenapi(filepath:str)->None:
     from devtools.generatefromopenapi import mymain
     content=open(filepath,'r',encoding='utf8').read()
     mymain(content)
+@app.command()
+def updatemodel()->None:
+    from devtools.debugtools import before_appstart
+    before_appstart()
 if __name__ == "__main__":
     app()

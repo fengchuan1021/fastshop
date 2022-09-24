@@ -37,6 +37,7 @@ async def getproductdetailbyid(
     getproductdetailbyid
     """
     print(inShema)
+    await Service.productService.addproduct(inShema)
 
     # install pydantic plugin,press alt+enter auto complete the args.
     return AddProductOutShema(status='ok')

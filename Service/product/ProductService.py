@@ -1,4 +1,6 @@
 #type: ignore
+from pydantic import BaseModel
+
 import Service
 import asyncio
 from Service.base import CRUDBase
@@ -38,25 +40,12 @@ class ProductStaticService(CRUDBase[Models.ProductStatic]):
         tmp=results.scalars().all()
         print('tmp::',tmp)
         return tmp
-from pydantic import BaseModel
-
-class ProductDynamicInSchema(BaseModel):
-    is_hot:Optional[str]="TRUE"
-    is_recommend:Optional[str]="TRUE"
 
 
-class ProductInSchema(BaseModel):
-    productName_en: str
-    productDescription_en: str
-    brand_en: str
-    price: float
-    dynamic:Optional[ProductDynamicInSchema]
 
-
+from modules.backend.product.ProductShema import AddProductInShema,ProductImage,Attribute,SingleProduct
 
 class ProductService():
-    def __int__(self):
-        super().__init__(Models.ProductDynamic,False)
 
     async def findByPk(self,db:AsyncSession,id:int,lang:str='',with_dynamic_table=False):
         funcarr=[Service.productStaticService.findByPk(db,id,lang)]
@@ -70,17 +59,45 @@ class ProductService():
         if with_dynamic_table:
             modelstatic.dynamic=results[1]
         return modelstatic
-    async def addproduct(self,db:AsyncSession,jsonSchema:ProductInSchema)->Models.ProductStatic:
+    async def addsingleproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
+        productstatic=Models.ProductStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
 
-        model=Models.ProductStatic(**jsonSchema.dict(exclude={'dynamic'}))
-        dic=jsonSchema.dict()
-        if dic['dynamic']:
-            dyncmicmodel=Models.ProductDynamic(**dic['dynamic'])
+        productdynamic=Models.ProductDynamic(**inSchema.dict(include={'stock'}))
+
+        for attribute in inSchema.attributes:
+            productstatic.images.append(Models.ProductAttribute(**attribute.dict()))
+
+        db.add(productstatic)
+        db.add(productdynamic)
+    async def addgroupproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
+        productstatic=Models.ProductStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
+
+        productdynamic=Models.ProductDynamic(**inSchema.dict(include={'stock'}))
+
+        for attribute in inSchema.attributes:
+            productstatic.images.append(Models.ProductAttribute(**attribute.dict()))
+
+        db.add(productstatic)
+        db.add(productdynamic)
+
+    async def addproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
+        if not inSchema.subproducts:
+            return await self.addsingleproduct(inSchema)
         else:
-            dyncmicmodel = Models.ProductDynamic()
+            productarr=[]
+            for subproduct in inSchema.subproducts:
+                productarr.append(inSchema.copy(exclude={"subproduct",'images'},update=subproduct.dict(exclude_unset=True)))
 
-        model.dynamic=dyncmicmodel
-        db.add(model)
+            return await self.addgroupproduct(productarr)
+        productstatic=Models.ProductStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
+
+        productdynamic=Models.ProductDynamic(**inSchema.dict(include={'stock'}))
+
+        for attribute in inSchema.attributes:
+            productstatic.images.append(Models.ProductAttribute(**attribute.dict()))
+
+        db.add(productstatic)
+        db.add(productdynamic)
 
 if __name__ == "__main__":
     from common.globalFunctions import async2sync

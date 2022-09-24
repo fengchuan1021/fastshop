@@ -5,6 +5,17 @@ from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,T
 
 from component.snowFlakeId import snowFlack
 
+class PreDefineSpecification(Base):
+    __tablename__ = 'predefine_specification'
+    name_en =Column(VARCHAR(32),server_default="",default='')
+    name_cn=Column(VARCHAR(32),server_default="",default='')
+
+class PreDefineSpecificationValue(Base):
+    __tablename__ = 'predefine_specification_value'
+    PreDefineSpecification_id=Column(BIGINT,ForeignKey("predefine_specification.id"))
+
+    value_en=Column(VARCHAR(32),server_default="",default='')
+    value_cn = Column(VARCHAR(32), server_default="", default='')
 
 class ProductGroupSpecification(Base):
     __tablename__ = 'productgroup_specification'

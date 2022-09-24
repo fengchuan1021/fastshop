@@ -178,3 +178,4 @@ zipp==3.8.1
 zope.interface==5.4.0
 orjson
 azure-storage-blob
+types-python-dateutil
