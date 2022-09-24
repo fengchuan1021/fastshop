@@ -8,7 +8,7 @@ from component.snowFlakeId import snowFlack
 class Category(Base):
     __tablename__ = 'cagetory'
     caegoryName=Column(VARCHAR(255),nullable=True)
-    parent_id = Column(BIGINT, ForeignKey('agetory.id', ondelete='NO ACTION'))
+    parent_id = Column(BIGINT, ForeignKey('cagetory.id', ondelete='NO ACTION'))
     #children: List["Category"] = relationship('Category', uselist=True, backref=backref('parent', remote_side='Category.id'),join_depth=2)
     catory_order=Column(INTEGER)
     shop_id=Column(INTEGER,server_default="0")
