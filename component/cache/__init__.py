@@ -27,11 +27,15 @@ class _Cache:
         self._expire:int = settings.DEFAULT_CACHE_EXPIRE
         self._init:bool = False
         self._enable:bool = settings.ENABLE_CACHE
+        if self._enable and settings.REDISURL:
+            writepool = redis.ConnectionPool.from_url(url=settings.REDISURL)
+            readpool = redis.ConnectionPool.from_url(url=settings.SLAVEREDISURL)
+            self.write_redis: Redis = redis.Redis(connection_pool=writepool)
+            self.read_redis: Redis = redis.Redis(connection_pool=readpool)
+        if not settings.REDISURL:
+            self._enable=False
+            print("cache not enable")
         self._loop:asyncio.AbstractEventLoop
-        writepool = redis.ConnectionPool.from_url(url=settings.REDISURL)
-        readpool=redis.ConnectionPool.from_url(url=settings.SLAVEREDISURL)
-        self.write_redis: Redis= redis.Redis(connection_pool=writepool)
-        self.read_redis:Redis=redis.Redis(connection_pool=readpool)
         try:
             loop=asyncio.get_running_loop()
             self._loop = loop

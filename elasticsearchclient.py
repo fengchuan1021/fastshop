@@ -5,8 +5,11 @@ from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 
 import settings
-
-es = AsyncElasticsearch([settings.ELASTICSEARCHURL])
+if settings.ELASTICSEARCHURL:
+    es = AsyncElasticsearch([settings.ELASTICSEARCHURL])
+else:
+    print("elasticsearch not enable")
+    es=None
 
 if __name__ == '__main__':
     import datetime
