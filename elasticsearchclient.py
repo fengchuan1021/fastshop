@@ -1,15 +1,19 @@
 
 import asyncio
 
-from elasticsearch import AsyncElasticsearch
-from elasticsearch.helpers import async_bulk
+
 
 import settings
 if settings.ELASTICSEARCHURL:
+    from elasticsearch import AsyncElasticsearch
+    from elasticsearch.helpers import async_bulk
     es = AsyncElasticsearch([settings.ELASTICSEARCHURL])
 else:
     print("elasticsearch not enable")
-    es=None
+    class AsyncElasticsearch:#type: ignore
+        def index(self,*args,**kwargs)->None:#type: ignore
+            pass
+    es=AsyncElasticsearch()
 
 if __name__ == '__main__':
     import datetime
