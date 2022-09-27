@@ -14,7 +14,7 @@ from common.globalFunctions import toJson
 import asyncio
 from functools import wraps
 from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast
-from inspect import signature
+from inspect import signature,isclass
 from Models import Base
 ModelType = TypeVar("ModelType", bound=Base)
 F = TypeVar('F', bound=Callable[..., Any])
@@ -146,7 +146,7 @@ class _Cache:
                             tmpmodel._sa_instance_state.key = (classinstance.model, (returndic['id'],), None)
                             return tmpmodel
 
-                        elif issubclass(tmpClass,Models.Base):
+                        elif isclass(tmpClass) and issubclass(tmpClass,Models.Base):
                             tmpmodel = tmpClass(**returndic)
                             tmpmodel._sa_instance_state.committed_state = {}
                             tmpmodel._sa_instance_state.key = (tmpClass, (returndic['id'],), None)
