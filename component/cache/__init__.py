@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import typing
 
+import orjson
 from redis.asyncio import Redis
 import redis.asyncio as redis
 import Models
@@ -103,6 +104,7 @@ class _Cache:
                 func_args.apply_defaults()
                 classinstance=func_args.arguments.get('self',False)
                 usecache=True
+                _key=key
                 if classinstance:
                     usecache=getattr(classinstance,'usecache')
                 if usecache:
@@ -113,7 +115,8 @@ class _Cache:
                         calutedkey = key_builder(
                             func,funcsig,func_args, namespace
                         )
-                    ret = await self.get(key or calutedkey)
+                        _key=key or calutedkey
+                    ret = await self.get(_key)
                     if ret and (returndic:=json.loads(ret)):
                         if isinstance(tmpClass:=func.__annotations__.get('return',int),typing._GenericAlias):
                             returntype=tmpClass.__args__[0]
@@ -157,7 +160,7 @@ class _Cache:
                     ret = func(*args, **kwargs)
                 try:
                     if usecache and ret:
-                        await self.set(key, toJson(ret), expire)
+                        await self.set(_key, toJson(ret), expire)
                     return ret
                 except Exception as e:
                     print('function returned are not jsonable',e)
