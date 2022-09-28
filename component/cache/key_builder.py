@@ -41,4 +41,4 @@ def default_key_builder(
     func_args = funcargs.arguments
     args_str = get_args_str(sig_params, func_args)
 
-    return f"{prefix}{func.__module__}.{func.__name__}({args_str})"
+    return f"{prefix}:{func.__module__}.{func.__name__}({args_str})"
