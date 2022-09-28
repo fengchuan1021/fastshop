@@ -69,7 +69,7 @@ class _Cache:
     def __call__(self,__func: Optional[F]=None) -> F: ...
 
     @overload
-    def __call__(self,*, key='',expire: Optional[int]=settings.DEFAULT_CACHE_EXPIRE,key_builder: Optional[Callable[...,str]]=None,namespace:Optional[str]='') -> Callable[[F], F]: ...
+    def __call__(self,*, key='',expire: Optional[int]=settings.DEFAULT_CACHE_EXPIRE,key_builder: Optional[Callable[...,str]]=None) -> Callable[[F], F]: ...
 
     def __call__(
             self,
@@ -78,14 +78,12 @@ class _Cache:
             key: Optional[str]='',
             expire: Optional[int] = 0,
             key_builder: Optional[Callable[...,str] | str]= None,
-            namespace: Optional[str] = "",
     )-> F | Callable[[F], F]:
         """
         cache all function
 
         :param expire:
         :param key_builder:
-        :param namespace:
         :return:
         """
 
@@ -113,7 +111,7 @@ class _Cache:
                         if isinstance(key_builder,str) and classinstance:
                             key_builder =getattr(classinstance,key_builder)
                         calutedkey = key_builder(
-                            func,funcsig,func_args, namespace
+                            func,funcsig,func_args
                         )
                         _key=key or calutedkey
                     ret = await self.get(_key)
@@ -188,14 +186,14 @@ class _Cache:
     def get_enable(self)->bool:
         return self._enable
     
-    async def clear(self, namespace: str = None, key: str = None) -> int:
-        if namespace:
-            lua = f"for i, name in ipairs(redis.call('KEYS', '{namespace}:*')) do redis.call('DEL', name); end"
-            return await self.write_redis.eval(lua, numkeys=0)
-        elif key:
+    async def clear(self, key: str = None) -> int:
+
+        if key:
             return await self.write_redis.delete(key)
         else:
             return 0
+    async def flush(self)->None:
+        await self.write_redis.flushall()
 
     async def get_with_ttl(self, key: str) -> Tuple[int, str]:
         async with self.read_redis.pipeline(transaction=True) as pipe:
