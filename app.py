@@ -18,7 +18,7 @@ from redis.exceptions import ConnectionError
 
 from component.cache import cache
 from pathlib import Path
-
+from common.globalFunctions import writelog
 from common.CommonError import Common500OutShema,Common500Status,TokenException
 from common.globalFunctions import getorgeneratetoken, get_token
 
@@ -70,12 +70,8 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         response=XTJsonResponse(jsonout,status_code=500)
     except Exception as e:
         #es
-        doc = {
-            'text': str(e),
-            'request':str(request),
-            'timestamp': datetime.datetime.now(),
-        }
-        await es.index(index=f"xtlog-{settings.MODE}", document=doc)
+        writelog(str(e),request=str(request))
+
         if settings.DEBUG:
             raise
 

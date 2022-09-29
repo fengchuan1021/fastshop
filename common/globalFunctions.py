@@ -45,13 +45,14 @@ def toJson(obj:Any)->str:
 
 
 
-async def writelog(logstr:str)->None:
-    doc = {
-        'text': logstr,
-        'request': '',
-        'timestamp': datetime.datetime.now(),
-    }
-    await es.index(index=f"xtlog-{settings.MODE}", document=doc)
+async def writelog(logstr:str,request:str='')->None:
+    if es:
+        doc = {
+            'text': logstr,
+            'request': request,
+            'timestamp': datetime.datetime.now(),
+        }
+        await es.index(index=f"xtlog-{settings.MODE}", document=doc)
 
 def async2sync(func:Callable[...,Any])->Callable[...,Any]:
     @wraps(func)
