@@ -26,7 +26,7 @@ class UserService(CRUDBase[Models.User]):
         results = await db.execute(query)
         return results.scalar_one_or_none()
 
-
+    #dont delete we need use this in futchure
     # def verify_password(self,plain_password:str, hashed_password : Optional[str])->bool:
     #
     #     return pwd_context.verify(plain_password, hashed_password,'bcrypt')
