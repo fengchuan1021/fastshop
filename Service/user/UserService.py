@@ -11,7 +11,8 @@ from sqlalchemy.sql import and_, or_
 from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-
+import hashlib
+import random
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 from sqlalchemy import select
@@ -20,27 +21,33 @@ from sqlalchemy import select
 
 class UserService(CRUDBase[Models.User]):
 
-
     async def getUserByPhoneOrUsername(self,db: AsyncSession,usernameOrPhone:str)->Optional[Models.User]:
         query=select(self.model).filter(Models.User.username==usernameOrPhone)
         results = await db.execute(query)
         return results.scalar_one_or_none()
 
 
-    def verify_password(self,plain_password:str, hashed_password : Optional[str])->bool:
+    # def verify_password(self,plain_password:str, hashed_password : Optional[str])->bool:
+    #
+    #     return pwd_context.verify(plain_password, hashed_password,'bcrypt')
+    # def get_password_hash(self,password):# type: ignore
+    #     return pwd_context.hash(password)
+    def verify_password(self,password:str, dbpassword:str)->bool:
+        passwordhash, salthash = dbpassword.split(':')
+        return passwordhash == hashlib.md5((salthash + password).encode()).hexdigest()
 
-        return pwd_context.verify(plain_password, hashed_password,'bcrypt')
-
-    def get_password_hash(self,password):# type: ignore
-        return pwd_context.hash(password)
+    def get_password_hash(self,password:str)->str:
+        salthash = hashlib.md5(random.randint(10000, 99999).to_bytes(4, byteorder='big')).hexdigest()
+        passwordhash = hashlib.md5((salthash + password).encode()).hexdigest()
+        return passwordhash + ':' + salthash
 
     async def authenticate(self,dbSession: AsyncSession, username: str, password: str)->bool | Models.User:
         user = await self.getUserByPhoneOrUsername(dbSession,username)
         if not user:
             return False
-
-        if not self.verify_password(password, user.password):
-            return False
+        else:
+            if not self.verify_password(password, user.password):#type: ignore
+                return False
         return user
 
     def create_access_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None)->str:
