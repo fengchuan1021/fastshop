@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gitlab
+  namespace: dev
+  labels:
+    purpose: gitlab
+spec:
+  hostname: xtgitlab-com
+  containers:
+    - name: gitlab
+      image: gitlab/gitlab-ee:latest
+      volumeMounts:
+        - mountPath: "/srv/gitlab"
+          name: data
+      ports:
+        - containerPort: 80
+      env:
+        - name: GITLAB_HOME
+          value: /srv/gitlab
+
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: gitdata-pv-claim
+  restartPolicy: OnFailure
