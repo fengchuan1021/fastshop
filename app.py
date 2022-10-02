@@ -19,7 +19,7 @@ from redis.exceptions import ConnectionError
 from component.cache import cache
 from pathlib import Path
 from common.globalFunctions import writelog
-from common.CommonError import Common500OutShema,Common500Status,TokenException
+from common.CommonError import Common500OutShema, Common500Status, TokenException, PermissionException
 from common.globalFunctions import getorgeneratetoken, get_token
 
 from starlette.middleware.cors import CORSMiddleware
@@ -60,7 +60,11 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         # except:
         #     pass
     except TokenException as e:
+
         jsonout = Common500OutShema(status=Common500Status.tokenerror, msg=str(e))
+        response=XTJsonResponse(jsonout,status_code=500)
+    except PermissionException as e:
+        jsonout = Common500OutShema(status=Common500Status.permissiondenied, msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
     except fastapi.exceptions.ValidationError as e:
         jsonout = Common500OutShema(status=Common500Status.validateerror,msg='',data=e.errors())

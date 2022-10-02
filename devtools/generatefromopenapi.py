@@ -185,7 +185,7 @@ def mymain(content:str | bytes)->None:
                 prefix = '/api' + str(dirpath).replace(str(Path(settings.BASE_DIR).joinpath('modules')),'')
                 prefix=prefix.replace('\\','/')
                 inifile.write(
-                    f"APIPREFIX='{prefix}'\nfrom .. import dependencies as praentdependencies\nfrom fastapi import Depends\nfrom typing import List,Callable,Any\ndependencies:List[Callable[...,Any]]=praentdependencies+[]")
+                    f"from .. import dependencies as praentdependencies\nfrom fastapi import Depends\nfrom typing import List,Callable,Any\ndependencies:List[Callable[...,Any]]=praentdependencies+[]")
 
         else:
             pass

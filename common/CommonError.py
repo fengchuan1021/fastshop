@@ -26,6 +26,14 @@ class TokenException(Exception):
     def __init__(self,msg:str):
         self.msg=msg
     def __repr__(self) -> str:
-
+        return self.msg
+    def __str__(self)->str:
         return self.msg
 
+class PermissionException(Exception):
+    def __init__(self,msg:str):
+        self.msg=msg
+    def __repr__(self) -> str:
+        return self.msg
+    def __str__(self)->str:
+        return self.msg

@@ -31,7 +31,7 @@ class AddProductInShema(BaseModel):
     price: float
     sku:str
     stock:int
-    attributes:List[Attribute]
-    subproducts: List[SingleProduct] = []
-    images: List[ProductImage] = []
+    # attributes:List[Attribute]
+    # subproducts: List[SingleProduct] = []
+    # images: List[ProductImage] = []
 

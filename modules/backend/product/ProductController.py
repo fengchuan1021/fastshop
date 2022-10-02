@@ -17,14 +17,13 @@ from common.globalFunctions import get_token
 from component.cache import cache
 from component.xtjsonresponse import XTJsonResponse
 
-from modules.backend import APIPREFIX, dependencies
+from modules.backend import dependencies
 from .ProductShema import AddProductInShema,AddProductOutShema
 
-router = APIRouter(prefix=APIPREFIX, dependencies=dependencies)#type: ignore
+router = APIRouter(dependencies=dependencies)#type: ignore
 
-print(APIPREFIX)
 @router.post(
-    '/product/addproduct',
+    '/backend/product/addproduct',
     response_class=XTJsonResponse,
     response_model=AddProductOutShema,
 )

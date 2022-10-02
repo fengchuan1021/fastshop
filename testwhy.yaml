@@ -10,7 +10,7 @@
 ## @param global.redis.password Redis&reg; password (overrides `password`)
 ##
 global:
-  imageRegistry: marketplace.azurecr.io
+  imageRegistry: ""
   ## E.g.
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
@@ -993,3 +993,4 @@ sysctlImage:
     ##    memory: 128Mi
     ##
     requests: {}
+
