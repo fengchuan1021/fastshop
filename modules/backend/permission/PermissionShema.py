@@ -1,4 +1,4 @@
-#   timestamp: 2022-10-03T14:41:27+00:00
+#   timestamp: 2022-10-03T15:11:26+00:00
 
 from __future__ import annotations
 from typing import Literal
@@ -20,8 +20,14 @@ class BackendPermissionSetrolepermissionPostResponse(BaseModel):
     pass
 
 
+class BackendPermissionRolePostRequest(BaseModel):
+    rolename: str
+
+
+
 class BackendPermissionRolePostResponse(BaseModel):
-    pass
+    status: Literal['failed','success']
+    msg: Optional[str] = None
 
 
 

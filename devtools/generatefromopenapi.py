@@ -145,7 +145,10 @@ def generate_code(
                     if values:
                         enumdict[key] =[total, "Literal[" + ','.join([v.__repr__() for v in values]) + "]"]
                 for classname in enumdict:
-                    newbody=newbody.replace(enumdict[classname][0], '').replace(classname,enumdict[classname][1])
+                    newbody=newbody.replace(enumdict[classname][0], '')
+                    newbody = re.sub(rf'{classname}(?!\w+)', enumdict[classname][1], newbody)
+
+
             print(newbody, file=file)
         if file is not None:
             file.close()
