@@ -60,8 +60,8 @@ def generate_code(
         output_dir.mkdir(parents=True)
     if not template_dir:
         template_dir = BUILTIN_TEMPLATE_DIR
-    if enum_field_as_literal:
-        parser = OpenAPIParser(input_text, enum_field_as_literal=enum_field_as_literal)
+    if 1:
+        parser = OpenAPIParser(input_text, enum_field_as_literal='all',field_constraints=True)
     else:
         parser = OpenAPIParser(input_text)
     with chdir(output_dir):

@@ -403,7 +403,7 @@ class Config(BaseModel):
     use_schema_description: bool = False
     reuse_model: bool = False
     encoding: str = 'utf-8'
-    enum_field_as_literal: Optional[LiteralType] = None
+    enum_field_as_literal: Optional[LiteralType] = True
     set_default_enum_member: bool = False
     strict_nullable: bool = False
     use_generic_container_types: bool = False
