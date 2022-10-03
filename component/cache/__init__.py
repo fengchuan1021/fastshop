@@ -205,6 +205,12 @@ class _Cache:
     async def close(self):
         await self.read_redis.close(True)
         await self.write_redis.close(True)
+    async def hget(self,name,key) -> _StrType | None:
+        return await self.read_redis.hget(name,key)
+    async def hset(self,name,key,value) -> int:
+        return await self.write_redis.hset(name,key,value)
+    async def setTtl(self,key,expire)-> bool:
+        return await self.write_redis.expire(key,expire)
 
     async def delete(self,key):
         await self.write_redis.delete(key)

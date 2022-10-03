@@ -34,7 +34,8 @@ class User(BaseModel):
 
 class FrontendUserRegisterPostOutShema(BaseModel):
     status: Literal['failed','success']
-    user: User
+    user: Optional[User]
+    msg:Optional[str]
 
 
 class FrontendUserLoginPostInShema(BaseModel):

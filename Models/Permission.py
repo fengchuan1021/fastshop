@@ -7,7 +7,7 @@ from openapi_schema_validator._validators import nullable
 
 import settings
 from component.snowFlakeId import snowFlack
-from sqlalchemy import Column, DateTime, Float, ForeignKey, text
+from sqlalchemy import Column, DateTime, Float, ForeignKey, text, Index, UniqueConstraint
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,6 +32,7 @@ from sqlalchemy import select
 
 class Permission(Base):
     __tablename__ = 'permission'
+    __table_args__ = (UniqueConstraint('role_id', "api_name", name="roleapi"),)
     id = Column(INTEGER, autoincrement=True, primary_key=True)
     role_id=Column(INTEGER,index=True)
     role_name=Column(VARCHAR(32))

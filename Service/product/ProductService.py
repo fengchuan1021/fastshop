@@ -1,4 +1,6 @@
 #type: ignore
+import typing
+
 from pydantic import BaseModel
 
 import Service
@@ -43,7 +45,8 @@ class VariantStaticService(CRUDBase[Models.VariantStatic]):
 
 
 
-from modules.backend.product.ProductShema import AddProductInShema,ProductImage,Attribute,SingleProduct
+if typing.TYPE_CHECKING:
+    from modules.backend.product.ProductShema import AddProductInShema, ProductImage, Attribute, SingleProduct
 
 class ProductService():
 
@@ -59,7 +62,7 @@ class ProductService():
         if with_dynamic_table:
             modelstatic.dynamic=results[1]
         return modelstatic
-    async def addsingleproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
+    async def addsingleproduct(self,db:AsyncSession,inSchema:'AddProductInShema')->Dict:
         VariantStatic=Models.VariantStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
 
         VariantDynamic=Models.VariantDynamic(**inSchema.dict(include={'stock'}))
@@ -69,7 +72,7 @@ class ProductService():
 
         db.add(VariantStatic)
         db.add(VariantDynamic)
-    async def addgroupproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
+    async def addgroupproduct(self,db:AsyncSession,inSchema:'AddProductInShema')->Dict:
         VariantStatic=Models.VariantStatic(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
 
         VariantDynamic=Models.VariantDynamic(**inSchema.dict(include={'stock'}))
@@ -80,7 +83,7 @@ class ProductService():
         db.add(VariantStatic)
         db.add(VariantDynamic)
 
-    async def addproduct(self,db:AsyncSession,inSchema:AddProductInShema)->Dict:
+    async def addproduct(self,db:AsyncSession,inSchema:'AddProductInShema')->Dict:
         if not inSchema.subproducts:
             return await self.addsingleproduct(inSchema)
         else:

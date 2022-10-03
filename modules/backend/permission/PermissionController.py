@@ -1,4 +1,4 @@
-# generated timestamp: 2022-10-03T15:11:26+00:00
+# generated timestamp: 2022-10-03T17:04:24+00:00
 
 from __future__ import annotations
 
@@ -24,7 +24,8 @@ from .PermissionShema import (
     BackendPermissionRolePostRequest,
     BackendPermissionRolePostResponse,
     BackendPermissionRouteGetResponse,
-    BackendPermissionSetrolepermissionPostResponse, Role,
+    BackendPermissionSetrolepermissionPostRequest,
+    BackendPermissionSetrolepermissionPostResponse,Role
 )
 from imp import reload
 router = APIRouter(dependencies=dependencies)
@@ -66,15 +67,18 @@ async def getroutelist(
     response_model=BackendPermissionSetrolepermissionPostResponse,
 )
 async def setrolepermission(
+    body: BackendPermissionSetrolepermissionPostRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
     setrolepermission
     """
-
+    if body.role_id not in [i.value for i in UserRole.UserRole]:
+        return {'status':'falied','msg':"user role not exists"}
+    await Service.permissionService.setUserRolePermission(db,body.role_id,body.apis)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendPermissionSetrolepermissionPostResponse()
+    return BackendPermissionSetrolepermissionPostResponse(status='success')
 
 
 # </editor-fold>

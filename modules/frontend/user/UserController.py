@@ -41,12 +41,19 @@ async def register(
     register
     """
     print('body:',body)
+    for i in ['email','phone','username']:
+        if i:
+            user=await Service.userService.getUserByPhoneOrUsernameOrEmail(db,getattr(body,i))
+        if user:
+            return {'status':'failed','msg':f"{i} has been registered"}
 
-    user=await Service.userService.getUserByPhoneOrUsernameOrEmail(db,body.email)
-    if user:
-        return {'status':'failed','msg':"email has been registered"}
     body.password=Service.userService.get_password_hash(body.password)
     newuser=await Service.userService.create(db,body)
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        return {'status':'failed','msg':"email has been registered"}
     # install pydantic plugin,press alt+enter auto complete the args.
     return FrontendUserRegisterPostOutShema(status='success', user=newuser)
 

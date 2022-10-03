@@ -16,9 +16,14 @@ class BackendPermissionRouteGetResponse(BaseModel):
     children:Optional[List[BackendPermissionRouteGetResponse| str]]
 
 
+class BackendPermissionSetrolepermissionPostRequest(BaseModel):
+    role_id: int
+    apis: List[str]
+
 
 class BackendPermissionSetrolepermissionPostResponse(BaseModel):
-    pass
+    status: Literal['failed','success']
+    msg: Optional[str] = None
 
 
 class BackendPermissionRolePostRequest(BaseModel):
