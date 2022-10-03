@@ -1,4 +1,4 @@
-# generated timestamp: 2022-10-03T14:41:27+00:00
+# generated timestamp: 2022-10-03T14:54:44+00:00
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import Service
 import settings
+from UserRole import UserRole
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from component.cache import cache
@@ -18,13 +19,14 @@ from component.xtjsonresponse import XTJsonResponse
 from .__init__ import dependencies
 from .PermissionShema import (
     BackendPermissionRoleGetResponse,
+    BackendPermissionRolePostRequest,
     BackendPermissionRolePostResponse,
     BackendPermissionRouteGetResponse,
     BackendPermissionSetrolepermissionPostResponse, Role,
 )
 
 router = APIRouter(dependencies=dependencies)
-from UserRole import UserRole
+
 
 # <editor-fold desc="getroutelist get: /backend/permission/route/">
 @router.get(
@@ -60,9 +62,9 @@ async def setrolepermission(
     """
     setrolepermission
     """
-    roles=[Role(role_name=r.name,id=r.value) for r in UserRole]
+
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendPermissionSetrolepermissionPostResponse(status='success',roles=roles)
+    return BackendPermissionSetrolepermissionPostResponse()
 
 
 # </editor-fold>
@@ -75,15 +77,14 @@ async def setrolepermission(
     response_model=BackendPermissionRolePostResponse,
 )
 async def createrole(
+    body: BackendPermissionRolePostRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
     createrole
     """
-    roles=[Role(role_name=r.name,id=r.value) for r in UserRole]
-    # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendPermissionSetrolepermissionPostResponse(status='success',roles=roles)
+
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendPermissionRolePostResponse()
 
