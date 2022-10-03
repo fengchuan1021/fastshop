@@ -26,9 +26,11 @@ class BackendPermissionSetrolepermissionPostResponse(BaseModel):
 
 class BackendPermissionRolePostResponse(BaseModel):
     pass
-
-
 class Status(Enum):
+    success = 'success'
+    failed = 'failed'
+
+class Status1(Enum):
     success = 'success'
     failed = 'failed'
 
@@ -37,9 +39,12 @@ class Role(BaseModel):
     id: int
     role_name: str
 
-
 class BackendPermissionRoleGetResponse(BaseModel):
     status: Status
+    msg: Optional[str] = None
+    roles: Optional[List[Role]] = None
+class BackendPermissionRoleGetResponse(BaseModel):
+    status: Status1
     msg: Optional[str] = None
     roles: Optional[List[Role]] = None
 
@@ -48,7 +53,7 @@ class BackendPermissionRoleGetResponse(BaseModel):
 import re
 
 enumarr = re.findall(r'(^class (\w+)\(Enum\)(.*?)^\n)',s, re.M | re.DOTALL)
-
+newbody=s
 if enumarr:
     enumdict = {}
     for item in enumarr:
@@ -62,6 +67,9 @@ if enumarr:
         values = re.findall(r'    (.*?) ', txt)
         if values:
             enumdict[key] = [total, "Literal[" + ','.join([v.__repr__() for v in values]) + "]"]
-    print(enumdict)
-    #for classname in enumdict:
-    #    newbody = newbody.replace(enumdict[classname][0], '').replace(classname, enumdict[classname][1])
+
+    for classname in enumdict:
+       newbody = newbody.replace(enumdict[classname][0], '')
+       newbody=re.sub(rf'{classname}(?!\w+)',enumdict[classname][1],newbody)
+    #.replace(classname, enumdict[classname][1])
+print(newbody)

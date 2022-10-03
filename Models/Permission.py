@@ -33,5 +33,6 @@ from sqlalchemy import select
 class Permission(Base):
     __tablename__ = 'permission'
     id = Column(INTEGER, autoincrement=True, primary_key=True)
-    role_id=Column(INTEGER)
+    role_id=Column(INTEGER,index=True)
+    role_name=Column(VARCHAR(32))
     api_name=Column(VARCHAR(255),comment="routes array the role has permission to access. ")

@@ -49,3 +49,5 @@ yarl==1.8.1
 azure-storage-blob
 celery-redbeat
 orjson
+elasticsearch=7.17.6
+elasticsearch-dsl=7.4.0

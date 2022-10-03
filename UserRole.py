@@ -5,3 +5,5 @@ class UserRole(Enum):
     admin=1<<1
     proxylevel1=1<<2
     proxylevel2=1<<3
+    makerteer=16
+

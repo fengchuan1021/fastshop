@@ -1,8 +1,7 @@
 #   timestamp: 2022-10-03T15:11:26+00:00
 
 from __future__ import annotations
-from typing import Literal
-
+from typing import Literal, Dict, Any
 
 from datetime import datetime
 from enum import Enum
@@ -13,7 +12,9 @@ from pydantic import BaseModel, Field
 
 
 class BackendPermissionRouteGetResponse(BaseModel):
-    pass
+    label:str
+    children:Optional[List[BackendPermissionRouteGetResponse| str]]
+
 
 
 class BackendPermissionSetrolepermissionPostResponse(BaseModel):

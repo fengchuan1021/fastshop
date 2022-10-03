@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends
@@ -10,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import Service
 import settings
-from UserRole import UserRole
+import UserRole
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from component.cache import cache
@@ -24,7 +26,7 @@ from .PermissionShema import (
     BackendPermissionRouteGetResponse,
     BackendPermissionSetrolepermissionPostResponse, Role,
 )
-
+from imp import reload
 router = APIRouter(dependencies=dependencies)
 
 
@@ -41,9 +43,17 @@ async def getroutelist(
     """
     getroutelist
     """
-
+    routes=await Service.permissionService.getroutelist()
+    def tolist(tmp):
+        if 'children' in tmp:
+            tmp['children'] = list(tmp['children'].values())
+            for item in tmp['children']:
+                tolist(item)
+    tolist(routes)
+    print('routes:',routes)
+    topmodel=BackendPermissionRouteGetResponse.parse_obj(routes)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendPermissionRouteGetResponse()
+    return topmodel
 
 
 # </editor-fold>
@@ -84,9 +94,18 @@ async def createrole(
     """
     createrole
     """
+    for i in UserRole.UserRole:
+        maxvalue=i.value
+        if i.name==body.rolename:
+            return {'status':'failed','msg':"role has exists"}
+    newmaxvalue=maxvalue*2
+
+    with open(os.path.join(settings.BASE_DIR,'UserRole.py'),'a',encoding='utf8') as f:
+        f.write(f"    {body.rolename}={newmaxvalue}\n")
+    reload(UserRole)
 
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendPermissionRolePostResponse()
+    return BackendPermissionRolePostResponse(status='success')
 
 
 # </editor-fold>
@@ -105,7 +124,7 @@ async def getrolelist(
     """
     getrolelist
     """
-    roles=[Role(role_name=r.name,id=r.value) for r in UserRole]
+    roles=[Role(role_name=r.name,id=r.value) for r in UserRole.UserRole]
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendPermissionRoleGetResponse(status='success',roles=roles)
 
