@@ -136,7 +136,7 @@ def generate_code(
         if body:
             print('', file=file)
             newbody=body.rstrip().replace('from __future__ import annotations','from __future__ import annotations\nfrom typing import Literal\n')
-            enumarr = re.findall(r'(^class (.*?)\(Enum\)(.*?)^\n)', body, re.M | re.DOTALL)
+            enumarr = re.findall(r'(^class (\w+)\(Enum\)(.*?)^\n)', body, re.M | re.DOTALL)
             if enumarr:
                 enumdict={}
                 for item in enumarr:
@@ -182,10 +182,11 @@ def mymain(content:str | bytes)->None:
                         del itemdata["responses"][code]
             folder=itemdata["x-apifox-folder"]
             controller=itemdata["operationId"]
+
             groups[(folder,controller)][item]=paths[item]
-            break
+
     def createdir(dirpath:Path)->None:
-        print('fuck',dirpath)
+
         if not dirpath.exists():
             if not dirpath.parent.exists():
                 createdir(dirpath.parent)
