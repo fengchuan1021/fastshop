@@ -19,12 +19,12 @@ class User(Base):
     __tablename__ = 'user'
 
 
-    loginname = Column(VARCHAR(32), nullable=True, unique=True)
+    username = Column(VARCHAR(32), nullable=True, unique=True)
     email = Column(VARCHAR(32),nullable=True,unique=True)
     nickname=Column(VARCHAR(32),default='',server_default=text("''"))
     #is_banned=Column(ENUM('normal', 'banned'),default='normal',server_default=text("'normal'"),index=True)
     #ban_enddate=Column(DateTime,index=True)
-    phone = Column(VARCHAR(16), index=True,server_default=text("''"),default='')
+    phone = Column(VARCHAR(16), nullable=True,unique=True)
     balance = Column(Float(asdecimal=True), server_default=text("'0'"))
     password = Column(VARCHAR(512), nullable=False)
     gender = Column(ENUM('man', 'woman'))

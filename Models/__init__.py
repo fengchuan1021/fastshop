@@ -1,6 +1,7 @@
 from .ModelBase import Base
 from typing import TypeVar
 ModelType = TypeVar("ModelType", bound=Base)
+from .Permission import Permission
 from .User import User
 from .product.Category import Category,ProductCategory
 from .product.Product import Product,VariantDynamic,VariantStatic

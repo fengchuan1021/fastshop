@@ -21,8 +21,8 @@ from sqlalchemy import select
 
 class UserService(CRUDBase[Models.User]):
 
-    async def getUserByPhoneOrUsername(self,db: AsyncSession,usernameOrPhone:str)->Optional[Models.User]:
-        query=select(self.model).filter(Models.User.username==usernameOrPhone)
+    async def getUserByPhoneOrUsernameOrEmail(self,db: AsyncSession,usernameOrPhone:str)->Optional[Models.User]:
+        query=select(self.model).filter(or_(Models.User.username==usernameOrPhone,Models.User.phone==usernameOrPhone,Models.User.email==usernameOrPhone))
         results = await db.execute(query)
         return results.scalar_one_or_none()
 
@@ -42,21 +42,30 @@ class UserService(CRUDBase[Models.User]):
         return passwordhash + ':' + salthash
 
     async def authenticate(self,dbSession: AsyncSession, username: str, password: str)->bool | Models.User:
-        user = await self.getUserByPhoneOrUsername(dbSession,username)
+        user = await self.getUserByPhoneOrUsernameOrEmail(dbSession,username)
         if not user:
             return False
         else:
             if not self.verify_password(password, user.password):#type: ignore
                 return False
         return user
-
-    def create_access_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None)->str:
+    async def create_refresh_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None)->str:
         to_encode = settings.UserTokenData.from_orm(data).dict()
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
-            expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        to_encode.update({"exp": expire})
+            expire = datetime.utcnow() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_SECONDS)
+        to_encode.update({"exp": expire,'type':'refresh'})
+        encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        return encoded_jwt
+
+    async def create_access_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None)->str:
+        to_encode = settings.UserTokenData.from_orm(data).dict()
+        if expires_delta:
+            expire = datetime.utcnow() + expires_delta
+        else:
+            expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+        to_encode.update({"exp": expire,'type':'access'})
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
         return encoded_jwt
 

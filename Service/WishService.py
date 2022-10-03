@@ -1,4 +1,4 @@
-#type: ignore
+
 import asyncio
 import datetime
 from typing import Generator
@@ -8,7 +8,7 @@ import settings
 import aiohttp
 from component.cache import cache
 class WishService():
-    async def init(self)->None:
+    async def init(self)->'WishService':
         self.baseurl = settings.WISH_BASEURL
         self.access_token = (await cache.get("wishtoken")).decode()
         if not self.access_token:
@@ -16,10 +16,10 @@ class WishService():
             await self.getAccessToken()
         self.session = aiohttp.ClientSession(base_url=self.baseurl,headers={'authorization': f'Bearer {self.access_token}'})
         return self
-    def __await__(self):
-        return self.init().__await__()
+    def __await__(self):#type: ignore
+        return self.init().__await__()#type: ignore
     def __init__(self)->None:
-        self.session=None
+        self.session=None#type: ignore
 
     async def getAccessToken(self)->None:
         url ="/api/v3/oauth/access_token"
@@ -52,20 +52,20 @@ class WishService():
             ret=await resp.json()
             print(ret)
 
-    async def getOrders(self,ordertype='WISH_EXPRESS'):
+    async def getOrders(self,ordertype='WISH_EXPRESS')->None:#type: ignore
         url='/api/v3/orders'
         params={'states':'REQUIRE_REVIEW'}
         async with self.session.get(url,params=params) as resp:
 
             ret=await resp.json()
             print('ret:',ret)
-    async def createProduct(self):
+    async def createProduct(self):#type: ignore
         url='/api/v3/products'
         async with self.session.post(url) as resp:
             ret=await resp.json()
 if __name__ == '__main__':
     import asyncio
-    async def test():
+    async def test():#type: ignore
         wishService=await WishService()
         #await wishService.getCurrencyList()
         #await wishService.getBrandList()

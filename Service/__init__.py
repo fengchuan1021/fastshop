@@ -12,6 +12,7 @@ from .base import CRUDBase
 ModelType = TypeVar("ModelType", bound=Models.Base)
 
 from .UploadService import UploadService
+from .WishService import WishService
 from .product.ProductService import VariantDynamicService,VariantStaticService,ProductService
 from .search.ProductSearchService import ProductSearchService
 from .user.UserService import UserService
@@ -35,6 +36,7 @@ def __getattr__(name: str) -> Any:
         return tmpinstance
     raise Exception(f'not found {name}')
 
+permissionService : CRUDBase[Models.Permission]
 userService : UserService
 categoryService : CRUDBase[Models.Category]
 productCategoryService : CRUDBase[Models.ProductCategory]
@@ -47,4 +49,5 @@ preDefineSpecificationService : CRUDBase[Models.PreDefineSpecification]
 preDefineSpecificationValueService : CRUDBase[Models.PreDefineSpecificationValue]
 productGroupSpecificationService : CRUDBase[Models.ProductGroupSpecification]
 uploadService : UploadService
+wishService : WishService
 productSearchService : ProductSearchService
