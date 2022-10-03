@@ -14,6 +14,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from fastapi_code_generator.parser import OpenAPIParser, Operation
 import os
+import re
 os.chdir(str(Path(__file__).parent.parent))
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
@@ -35,7 +36,7 @@ def _get_most_of_reference(data_type: DataType) -> Optional[Reference]:
             return reference
     return None
 
-import re
+
 def trimmode(input:str)->str:
     def f(matchs:Any)->str:
         return ''
@@ -71,7 +72,7 @@ def generate_code(
     elif isinstance(Models, str):
         output = output_dir / model_path
         modules = {output: (trimmode(Models), 'tmp.txt')}
-        print(f'{modules=}')
+
     else:
         raise Exception('Modular references are not supported in this version')
 
@@ -134,8 +135,18 @@ def generate_code(
         print(header.format(filename=filename), file=file)
         if body:
             print('', file=file)
-            print(body.rstrip(), file=file)
-
+            newbody=body.rstrip().replace('from __future__ import annotations','from __future__ import annotations\nfrom typing import Literal\n')
+            enumarr = re.findall(r'(^class (.*?)\(Enum\)(.*?)^\n)', body, re.M | re.DOTALL)
+            if enumarr:
+                enumdict={}
+                for item in enumarr:
+                    total,key,txt=item
+                    values = re.findall(r'    (.*?) ', txt)
+                    if values:
+                        enumdict[key] =[total, "Literal[" + ','.join([v.__repr__() for v in values]) + "]"]
+                for classname in enumdict:
+                    newbody=newbody.replace(enumdict[classname][0], '').replace(classname,enumdict[classname][1])
+            print(newbody, file=file)
         if file is not None:
             file.close()
 
