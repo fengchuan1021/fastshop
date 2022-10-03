@@ -7,7 +7,7 @@ from Models import Base
 import asyncio
 import datetime
 from functools import wraps
-from typing import Callable,Any
+from typing import Callable,Any,Dict
 from pydantic import BaseModel
 from elasticsearchclient import es
 

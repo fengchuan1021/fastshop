@@ -349,12 +349,12 @@ class OpenAPIParser(JsonSchemaParser):
             else:
                 request_body = operation.requestBody
             self.parse_request_body(
-                name=self._get_model_name(path_name, '', suffix='InShema'),
+                name=self._get_model_name(path_name, method, suffix='InShema'),
                 request_body=request_body,
                 path=[*path, 'requestBody'],
             )
         self.parse_responses(
-            name=self._get_model_name(path_name, '', suffix='OutShema'),
+            name=self._get_model_name(path_name, method, suffix='OutShema'),
             responses=operation.responses,
             path=[*path, 'responses'],
         )

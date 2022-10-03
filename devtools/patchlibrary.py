@@ -25,3 +25,5 @@ def patch()->None:
                         tf.write(content)
         except Exception as e:
             print(e)
+if __name__ == '__main__':
+    patch()

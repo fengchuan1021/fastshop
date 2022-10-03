@@ -19,8 +19,8 @@ class User(Base):
     __tablename__ = 'user'
 
 
-    username = Column(VARCHAR(32), nullable=False, unique=True)
-    email = Column(VARCHAR(32), index=True)
+    loginname = Column(VARCHAR(32), nullable=True, unique=True)
+    email = Column(VARCHAR(32),nullable=True,unique=True)
     nickname=Column(VARCHAR(32),default='',server_default=text("''"))
     #is_banned=Column(ENUM('normal', 'banned'),default='normal',server_default=text("'normal'"),index=True)
     #ban_enddate=Column(DateTime,index=True)

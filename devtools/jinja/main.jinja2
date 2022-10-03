@@ -10,12 +10,11 @@ from sqlalchemy.exc import IntegrityError
 import settings
 from typing import Dict,Any
 from common.globalFunctions import get_token
-from .__init__ import APIPREFIX
+
 from .__init__ import dependencies
 {{imports}}
 
 router = APIRouter(
-    prefix=APIPREFIX,
     dependencies=dependencies
 )
 
