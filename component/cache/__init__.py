@@ -207,8 +207,12 @@ class _Cache:
         await self.write_redis.close(True)
     async def hget(self,name,key) -> _StrType | None:
         return await self.read_redis.hget(name,key)
-    async def hset(self,name,key,value) -> int:
-        return await self.write_redis.hset(name,key,value)
+    async def hset(self,name,key,value,ttl=None) -> int:
+        if not ttl:
+            return await self.write_redis.hset(name,key,value)
+        else:
+            async with self.write_redis.pipeline(transaction=True) as pipe:
+                return await (pipe.hset(name,key,value).expire(key,ttl).execute())  # type: ignore
     async def setTtl(self,key,expire)-> bool:
         return await self.write_redis.expire(key,expire)
 
