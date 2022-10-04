@@ -27,7 +27,7 @@ from .PermissionShema import (
     BackendPermissionRolePostResponse,
     BackendPermissionRouteGetResponse,
     BackendPermissionSetrolepermissionPostRequest,
-    BackendPermissionSetrolepermissionPostResponse,Role
+    BackendPermissionSetrolepermissionPostResponse, Role, BackendPermissionPermissionlistGetRequest
 )
 from imp import reload
 router = APIRouter(dependencies=dependencies)
@@ -69,13 +69,14 @@ async def getroutelist(
     response_model=BackendPermissionPermissionlistGetResponse,
 )
 async def getrolepermissionlist(
+    body: BackendPermissionPermissionlistGetRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
     getrolepermissionlist
     """
-
+    Service.permissionService.getrolepermissionlist(db,body)
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendPermissionPermissionlistGetResponse()
 

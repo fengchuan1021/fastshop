@@ -50,17 +50,22 @@ class CRUDBase(Generic[ModelType]):
 
         return results.scalars().all()
 
-    async def pagination(self,dbSession: AsyncSession,pageNum:int=1,pageSize:int=20,filter:list=[],order_by:str='',calcTotalNum:bool=True,options:list=[])->Tuple[List[ModelType],int]:
-
+    async def pagination(self,dbSession: AsyncSession,pageNum:int=1,pageSize:int=20,filter:BaseModel | Dict={},order_by:str='',calcTotalNum:bool=True,options:list=[])->Tuple[List[ModelType],int]:
+        where,params=filterbuilder(filter)
+        txtwhere=text(where)
+        if not order_by:
+            txtorderby=text(f"{self.model.__tablename__}.id desc")
+        else:
+            txtorderby = text(order_by)
         if calcTotalNum:
-            totalstatment=select(func.count('*')).select_from(self.model).where(text(filterbuilder(filter)))
-            result=await dbSession.execute(totalstatment)
+            totalstatment=select(func.count('*')).select_from(self.model).where(txtwhere)
+            result=await dbSession.execute(totalstatment,params)
             totalNum=result.scalar_one()
         else:
             totalNum = 0
 
-        stament=select(self.model).options(*options).where(text(filterbuilder(filter))).limit(pageSize).offset((pageNum-1)*pageSize).order_by(text(order_by))
-        results=await dbSession.execute(stament)
+        stament=select(self.model).options(*options).where(txtwhere).offset((pageNum-1)*pageSize).limit(pageSize).order_by(txtorderby)
+        results=await dbSession.execute(stament,params)
         return results.scalars().all(),totalNum
 
 
