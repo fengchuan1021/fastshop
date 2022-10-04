@@ -1,4 +1,4 @@
-# generated timestamp: 2022-10-03T17:04:24+00:00
+# generated timestamp: 2022-10-04T14:12:31+00:00
 
 from __future__ import annotations
 
@@ -20,7 +20,9 @@ from component.xtjsonresponse import XTJsonResponse
 
 from .__init__ import dependencies
 from .PermissionShema import (
+    BackendPermissionPermissionlistGetResponse,
     BackendPermissionRoleGetResponse,
+    BackendPermissionRoleIdDeleteResponse,
     BackendPermissionRolePostRequest,
     BackendPermissionRolePostResponse,
     BackendPermissionRouteGetResponse,
@@ -60,6 +62,27 @@ async def getroutelist(
 # </editor-fold>
 
 
+# <editor-fold desc="getrolepermissionlist get: /backend/permission/permissionlist">
+@router.get(
+    '/backend/permission/permissionlist',
+    response_class=XTJsonResponse,
+    response_model=BackendPermissionPermissionlistGetResponse,
+)
+async def getrolepermissionlist(
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    getrolepermissionlist
+    """
+
+    # install pydantic plugin,press alt+enter auto complete the args.
+    return BackendPermissionPermissionlistGetResponse()
+
+
+# </editor-fold>
+
+
 # <editor-fold desc="setrolepermission post: /backend/permission/setrolepermission">
 @router.post(
     '/backend/permission/setrolepermission',
@@ -79,6 +102,41 @@ async def setrolepermission(
     await Service.permissionService.setUserRolePermission(db,body.role_id,body.apis)
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendPermissionSetrolepermissionPostResponse(status='success')
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="deleterole delete: /backend/permission/role/{id}">
+@router.delete(
+    '/backend/permission/role/{id}',
+    response_class=XTJsonResponse,
+    response_model=BackendPermissionRoleIdDeleteResponse,
+)
+async def deleterole(
+    id: int,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    deleterole
+    """
+    todel=''
+    for r in UserRole.UserRole:
+        if r.value==id:
+            todel='    '+r.name
+            break
+    if todel:
+        with open(os.path.join(settings.BASE_DIR,'UserRole.py'),'r',encoding='utf8') as f:
+            content=[l for l in f.readlines() if not l.startswith(todel)]
+        with open(os.path.join(settings.BASE_DIR, 'UserRole.py'), 'w', encoding='utf8') as f:
+            f.write(''.join(content))
+            reload(UserRole)
+            return {'status':'success'}
+    else:
+        return {'status': 'success','msg':'role not found'}
+
+
 
 
 # </editor-fold>

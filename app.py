@@ -33,7 +33,7 @@ else:
 from elasticsearchclient import es
 
 
-app = FastAPI(redoc_url=None,docs_url=None,openapi_url=None)
+app = FastAPI(redoc_url=None if settings.MODE=='main' else '/redoc',docs_url=None if settings.MODE=='main' else '/docs',openapi_url=None if settings.MODE=='main'  else '/openapi.json')
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,allow_methods=["*"],allow_headers=["*"],)
 
 @app.middleware("http")

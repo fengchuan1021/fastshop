@@ -1,7 +1,8 @@
-#   timestamp: 2022-10-03T15:11:26+00:00
+#   timestamp: 2022-10-04T14:12:31+00:00
 
 from __future__ import annotations
-from typing import Literal, Dict, Any
+from typing import Literal
+
 
 from datetime import datetime
 from enum import Enum
@@ -15,12 +16,34 @@ class BackendPermissionRouteGetResponse(BaseModel):
     children:Optional[List[BackendPermissionRouteGetResponse| str]]
 
 
+
+class Datum(BaseModel):
+    role_id: int
+    role_name: str
+    api_name: str
+
+
+class BackendPermissionPermissionlistGetResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+    data: Optional[List[Datum]] = None
+    total: int
+    curpage: int
+
+
 class BackendPermissionSetrolepermissionPostRequest(BaseModel):
     role_id: int
     apis: List[str]
 
 
+
 class BackendPermissionSetrolepermissionPostResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+
+
+
+class BackendPermissionRoleIdDeleteResponse(BaseModel):
     status: Literal['failed','success']
     msg: Optional[str] = None
 
@@ -36,15 +59,18 @@ class BackendPermissionRolePostRequest(BaseModel):
 
 
 class Role(BaseModel):
-    id:int
-    role_name:str
+    id: int
+    role_name: str
+
+
 class BackendPermissionRolePostResponse(BaseModel):
     status: Literal['failed','success']
     msg: Optional[str] = None
-    role:Optional[Role]
+    role: Optional[Role] = None
 
 
-class Role(BaseModel):
+
+class Role1(BaseModel):
     id: int
     role_name: str
 
@@ -52,4 +78,4 @@ class Role(BaseModel):
 class BackendPermissionRoleGetResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
-    roles: Optional[List[Role]] = None
+    roles: Optional[List[Role1]] = None
