@@ -7,8 +7,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel, Field, validator
 
 
 class BackendPermissionRouteGetResponse(BaseModel):
@@ -27,14 +26,22 @@ class BackendPermissionSetrolepermissionPostResponse(BaseModel):
 
 
 class BackendPermissionRolePostRequest(BaseModel):
-    rolename: str
+    role_name: str
+
+    @validator('role_name')
+    def checkrole_name(cls,v):
+        if not ('a'<= v[0].lower() >='Z'):
+            raise ValueError('role name must start with string')
+        return v
 
 
-
+class Role(BaseModel):
+    id:int
+    role_name:str
 class BackendPermissionRolePostResponse(BaseModel):
     status: Literal['failed','success']
     msg: Optional[str] = None
-
+    role:Optional[Role]
 
 
 class Role(BaseModel):

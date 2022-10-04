@@ -100,16 +100,16 @@ async def createrole(
     """
     for i in UserRole.UserRole:
         maxvalue=i.value
-        if i.name==body.rolename:
+        if i.name==body.role_name:
             return {'status':'failed','msg':"role has exists"}
     newmaxvalue=maxvalue*2
 
     with open(os.path.join(settings.BASE_DIR,'UserRole.py'),'a',encoding='utf8') as f:
-        f.write(f"    {body.rolename}={newmaxvalue}\n")
+        f.write(f"    {body.role_name}={newmaxvalue}\n")
     reload(UserRole)
 
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendPermissionRolePostResponse(status='success')
+    return BackendPermissionRolePostResponse(status='success',role={'id':newmaxvalue,'role_name':body.role_name})
 
 
 # </editor-fold>
