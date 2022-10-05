@@ -19,9 +19,9 @@ from collections import defaultdict
 
 from Service import CRUDBase
 from UserRole import UserRole
-from common.dbsession import getdbsession
+
 from common.filterbuilder import filterbuilder
-from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest
+#from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest
 
 
 class PermissionService(CRUDBase[Models.Permission]):
@@ -64,7 +64,10 @@ class PermissionService(CRUDBase[Models.Permission]):
         pass
 
 if __name__ == '__main__':
-    from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest,Filter
+    #from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest,Filter
+
+
+    from common.dbsession import getdbsession
     async def testfilter()->None:
         async with getdbsession() as db:
             filter= {"role_id__eq":4}

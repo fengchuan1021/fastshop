@@ -3,6 +3,8 @@ from typing import List,Dict,Literal, NewType,TypeAlias
 from pymysql.converters import escape_string #
 from pydantic import BaseModel
 def filterbuilder(filters:Dict | BaseModel,sep=' and ')->str:
+    if not filters:
+        return '',{}
     if type(filters)==dict:
         pass
     else:

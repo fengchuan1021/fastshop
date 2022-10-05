@@ -21,7 +21,8 @@ class Datum(BaseModel):
     role_id: int
     role_name: str
     api_name: str
-
+    class Config:
+        orm_mode = True
 
 class BackendPermissionPermissionlistGetResponse(BaseModel):
     status: Literal['success','failed']
@@ -40,6 +41,7 @@ class BackendPermissionPermissionlistGetRequest(BaseModel):
     filter: Optional[Filter] = None
     pagenum: Optional[int] = 1
     pagesize: Optional[int] = 30
+
 
 class BackendPermissionSetrolepermissionPostRequest(BaseModel):
     role_id: int
