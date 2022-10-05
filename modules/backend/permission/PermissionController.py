@@ -195,7 +195,6 @@ async def getrolelist(
     getrolelist
     """
     roles=[Role(role_name=r.name,id=r.value) for r in UserRole.UserRole]
-    # install pydantic plugin,press alt+enter auto complete the args.
     return BackendPermissionRoleGetResponse(status='success',roles=roles)
 
 
@@ -209,7 +208,7 @@ async def getrolelist(
     response_class=XTJsonResponse,
     response_model=BackendPermissionGetroledisplayedmenuGetResponse,
 )
-@cache
+
 async def getroledisplayedmenu(
 
     db: AsyncSession = Depends(get_webdbsession),
@@ -218,18 +217,7 @@ async def getroledisplayedmenu(
     """
     getroledisplayedmenu
     """
-    role_ids=[]
-    tmpid=token.userrole
-    j=1
-    while tmpid:
-        if tmpid & j:
-            role_ids.append(j)
-            tmpid-=j
-        j*=2
-
-    statment=select(Models.Roledisplayedmenu).where(Models.Roledisplayedmenu.role_id.in_(role_ids))
-    result=(await db.execute(statment)).scalars().all()
-    # install pydantic plugin,press alt+enter auto complete the args.
+    result=await Service.permissionService.getroledisplayedmenu(db,token.userrole)
     return BackendPermissionGetroledisplayedmenuGetResponse(status='success',menus=[r.menu_path for r in result])
 
 

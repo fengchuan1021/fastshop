@@ -1,8 +1,8 @@
 import importlib
 import os
-import re
+
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 from pydantic import BaseModel
 from sqlalchemy import insert, select, text
@@ -10,18 +10,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import Models
 import settings
-import uuid
-from azure.storage.blob import BlobServiceClient,BlobClient,PublicAccess
-from azure.core.exceptions import ResourceNotFoundError
+
 import Service
-from azure.storage.blob import ContentSettings
-from collections import defaultdict
+
 
 from Service import CRUDBase
 from UserRole import UserRole
 
 from common.filterbuilder import filterbuilder
-#from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest
+
+from component.cache import cache
 
 
 class PermissionService(CRUDBase[Models.Permission]):
@@ -61,7 +59,23 @@ class PermissionService(CRUDBase[Models.Permission]):
         statment=select(Models.Permission).where(text(where))
         result=await db.execute(statment,params)
         print(result.scalars().all())
-        pass
+
+    def getrolemenucachekey(self,func,func_args,func_annotations):
+        return f"{cache.get_prefix()}:rolemenu:{func_args.arguments.get('roleid')}"
+    @cache(key_builder='getrolemenucachekey')
+    async def getroledisplayedmenu(self,db:AsyncSession,roleid:int)->List[Models.Roledisplayedmenu]:
+        role_ids = []
+        tmpid = roleid
+        j = 1
+        while tmpid:
+            if tmpid & j:
+                role_ids.append(j)
+                tmpid -= j
+            j *= 2
+
+        statment = select(Models.Roledisplayedmenu).where(Models.Roledisplayedmenu.role_id.in_(role_ids))
+        result = (await db.execute(statment)).scalars().all()
+        return result
 
 if __name__ == '__main__':
     #from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest,Filter
