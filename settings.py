@@ -42,7 +42,7 @@ ELASTICSEARCHURL=os.getenv('ELASTICSEARCHURL','')
 DBURL=os.getenv("ASYNCDBURL",'')
 SLAVEDBURL=os.getenv("SLAVEDBURL",DBURL)
 SYNC_DBURL=os.getenv("SYNCDBURL",'')
-
+print(SYNC_DBURL)
 AZ_BLOB_CONNSTR=os.getenv('az_blob_connstr','')
 
 ENABLE_CACHE=True

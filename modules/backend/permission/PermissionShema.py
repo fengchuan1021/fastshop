@@ -91,3 +91,25 @@ class BackendPermissionRoleGetResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
     roles: Optional[List[Role1]] = None
+
+
+
+
+
+
+class BackendPermissionGetroledisplayedmenuGetResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+    menus: Optional[List[str]] = None
+
+
+class BackendPermissionSetdisplayedmenuPostRequest(BaseModel):
+    role_id: int
+    menus: List[str]
+
+
+
+class BackendPermissionSetdisplayedmenuPostResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+

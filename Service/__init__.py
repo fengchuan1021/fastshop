@@ -38,6 +38,7 @@ def __getattr__(name: str) -> Any:
     raise Exception(f'not found {name}')
 
 permissionService : PermissionService
+roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
 categoryService : CRUDBase[Models.Category]
 productCategoryService : CRUDBase[Models.ProductCategory]

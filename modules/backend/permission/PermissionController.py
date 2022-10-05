@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import Models
 import Service
 import settings
 import UserRole
@@ -27,7 +30,9 @@ from .PermissionShema import (
     BackendPermissionRolePostResponse,
     BackendPermissionRouteGetResponse,
     BackendPermissionSetrolepermissionPostRequest,
-    BackendPermissionSetrolepermissionPostResponse, Role, BackendPermissionPermissionlistGetRequest, Datum
+    BackendPermissionSetrolepermissionPostResponse, Role, BackendPermissionPermissionlistGetRequest, Datum,
+    BackendPermissionGetroledisplayedmenuGetResponse,
+    BackendPermissionSetdisplayedmenuPostResponse, BackendPermissionSetdisplayedmenuPostRequest
 )
 from imp import reload
 router = APIRouter(dependencies=dependencies)
@@ -196,3 +201,75 @@ async def getrolelist(
 
 
 # </editor-fold>
+
+
+# <editor-fold desc="getroledisplayedmenu get: /backend/permission/getroledisplayedmenu">
+@router.get(
+    '/backend/permission/getroledisplayedmenu',
+    response_class=XTJsonResponse,
+    response_model=BackendPermissionGetroledisplayedmenuGetResponse,
+)
+async def getroledisplayedmenu(
+
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    getroledisplayedmenu
+    """
+    role_ids=[]
+    tmpid=token.userrole
+    j=1
+    while tmpid:
+        if tmpid & j:
+            role_ids.append(j)
+            tmpid-=j
+        j*=2
+
+    statment=select(Models.Roledisplayedmenu).where(Models.Roledisplayedmenu.role_id.in_(role_ids))
+    result=(await db.execute(statment)).scalars().all()
+    # install pydantic plugin,press alt+enter auto complete the args.
+    return BackendPermissionGetroledisplayedmenuGetResponse(status='success',menus=[r.menu_path for r in result])
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="setroledisplayedmenu post: /backend/permission/setdisplayedmenu">
+@router.post(
+    '/backend/permission/setdisplayedmenu',
+    response_class=XTJsonResponse,
+    response_model=BackendPermissionSetdisplayedmenuPostResponse,
+)
+async def setroledisplayedmenu(
+    body: BackendPermissionSetdisplayedmenuPostRequest,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    setroledisplayedmenu
+    """
+    role_name=UserRole.UserRole(body.role_id).name
+    newmenu=[]
+    def addparentmenu(path):
+        nonlocal newmenu
+        parent,_=path.rsplit('/',1)
+        if parent:
+            newmenu.append(parent)
+            addparentmenu(parent)
+    if body.menus:
+        newmenu=body.menus.copy()
+        for m in body.menus:
+            addparentmenu(m)
+
+
+
+    sql=insert(Models.Roledisplayedmenu).prefix_with('ignore').values([{'role_id':body.role_id,'role_name':role_name,'menu_path':menu_path} for menu_path in newmenu])
+    await db.execute(sql)
+    await db.commit()
+    # install pydantic plugin,press alt+enter auto complete the args.
+    return BackendPermissionSetdisplayedmenuPostResponse(status='success')
+
+
+# </editor-fold>
+
