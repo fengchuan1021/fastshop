@@ -53,12 +53,7 @@ class PermissionService(CRUDBase[Models.Permission]):
         sql = insert(Models.Permission).prefix_with("ignore").values([{'role_id': roleid,'role_name':UserRole(roleid).name,'api_name':api} for api in apis])
         await db.execute(sql)
 
-    async def getrolepermissionlist(self,db:AsyncSession,pagenum:int=1,pagesize:int=30,filter:BaseModel | Dict={}):
 
-        where,params=filterbuilder(filter)
-        statment=select(Models.Permission).where(text(where))
-        result=await db.execute(statment,params)
-        print(result.scalars().all())
 
     def getrolemenucachekey(self,func,func_args,func_annotations):
         return f"{cache.get_prefix()}:rolemenu:{func_args.arguments.get('roleid')}"

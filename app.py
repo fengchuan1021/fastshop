@@ -74,7 +74,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         response=XTJsonResponse(jsonout,status_code=500)
     except Exception as e:
         #es
-        writelog(str(e),request=str(request))
+        await writelog(str(e),request=str(request))
 
         if settings.DEBUG:
             raise
