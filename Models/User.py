@@ -7,7 +7,7 @@ from jose import jwt
 import settings
 from component.snowFlakeId import snowFlack
 from sqlalchemy import Column, DateTime, Float, ForeignKey, text
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR
+from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union,Tuple
@@ -25,7 +25,7 @@ class User(Base):
     #is_banned=Column(ENUM('normal', 'banned'),default='normal',server_default=text("'normal'"),index=True)
     #ban_enddate=Column(DateTime,index=True)
     phone = Column(VARCHAR(16), nullable=True,unique=True)
-    balance = Column(Float(asdecimal=True), server_default=text("'0'"))
+    balance = Column(DECIMAL(10,2), server_default=text("'0'"))
     password = Column(VARCHAR(512), nullable=False)
     gender = Column(ENUM('man', 'woman'))
     userrole = Column(INTEGER(11),nullable=False,default=0,server_default=text("'0'"))

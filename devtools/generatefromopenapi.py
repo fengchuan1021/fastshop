@@ -115,6 +115,8 @@ def generate_code(
     for path_tmp, code in results.items():
         path=str(path_tmp)
         realname=path if path.endswith('.py') else path + '.py'
+        if output_dir.joinpath(realname).exists():
+            realname=realname.replace('.py',datetime.datetime.now().strftime("%Y%m%d%H%M%S")+'.py')
         with output_dir.joinpath(realname).open("wt") as file:
             print(header, file=file)
             print("", file=file)
@@ -130,6 +132,8 @@ def generate_code(
         else:
             if not path2.parent.exists():
                 path2.parent.mkdir(parents=True)
+            if path2.exists():
+                path2=Path(path2.__str__().replace('.py',datetime.datetime.now().strftime("%Y%m%d%H%M%S")+'.py'))
             file = path2.open('wt', encoding='utf8')
 
         print(header.format(filename=filename), file=file)

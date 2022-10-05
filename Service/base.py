@@ -50,7 +50,7 @@ class CRUDBase(Generic[ModelType]):
 
         return results.scalars().all()
 
-    async def pagination(self,dbSession: AsyncSession,pagenum:int=1,pagesize:int=20,filter:BaseModel | Dict={},order_by:str='',calcTotalNum:bool=True,options:list=[])->Tuple[List[ModelType],int]:
+    async def pagination(self,dbSession: AsyncSession,pagenum:int=1,pagesize:int=20,filter:BaseModel | Dict={},order_by:str='',calcTotalNum:bool=False,options:list=[],**kwargs)->Tuple[List[ModelType],int]:
         where,params=filterbuilder(filter)
         txtwhere=text(where)
         if not order_by:
