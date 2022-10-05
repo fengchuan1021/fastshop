@@ -9,7 +9,7 @@ import redis.asyncio as redis
 import Models
 import settings
 from component.cache.key_builder import default_key_builder
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from common.globalFunctions import toJson
 import asyncio
 from functools import wraps
@@ -91,7 +91,7 @@ class _Cache:
             if not self._enable:
                 return func
             funcsig=signature(func)
-
+            func_annotations=typing.get_type_hints(func)
             @wraps(func)
             async def inner(*args:Any, **kwargs:Any)->Any:
                 nonlocal expire
@@ -111,12 +111,12 @@ class _Cache:
                         if isinstance(key_builder,str) and classinstance:
                             key_builder =getattr(classinstance,key_builder)
                         calutedkey = key_builder(
-                            func,funcsig,func_args
+                            func,func_args,func_annotations
                         )
                         _key=key or calutedkey
                     ret = await self.get(_key)
                     if ret and (returndic:=json.loads(ret)):
-                        if isinstance(tmpClass:=func.__annotations__.get('return',int),typing._GenericAlias):
+                        if isinstance(tmpClass:=func_annotations.get('return',int),typing._GenericAlias):
                             returntype=tmpClass.__args__[0]
                             listtype=True if tmpClass.__origin__==list else False
                             if returntype==ModelType:

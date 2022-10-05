@@ -10,8 +10,8 @@ from typing import Any, Dict
 from fastapi import APIRouter, Depends
 from sqlalchemy import insert, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
+from sqlalchemy.ext.asyncio import AsyncSession
 import Models
 import Service
 import settings
@@ -30,7 +30,7 @@ from .PermissionShema import (
     BackendPermissionRolePostResponse,
     BackendPermissionRouteGetResponse,
     BackendPermissionSetrolepermissionPostRequest,
-    BackendPermissionSetrolepermissionPostResponse, Role, BackendPermissionPermissionlistGetRequest, Datum,
+    BackendPermissionSetrolepermissionPostResponse, Role, BackendPermissionPermissionlistGetRequest,
     BackendPermissionGetroledisplayedmenuGetResponse,
     BackendPermissionSetdisplayedmenuPostResponse, BackendPermissionSetdisplayedmenuPostRequest
 )
@@ -209,6 +209,7 @@ async def getrolelist(
     response_class=XTJsonResponse,
     response_model=BackendPermissionGetroledisplayedmenuGetResponse,
 )
+@cache
 async def getroledisplayedmenu(
 
     db: AsyncSession = Depends(get_webdbsession),
