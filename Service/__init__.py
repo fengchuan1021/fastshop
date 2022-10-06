@@ -6,7 +6,7 @@ import Models
 import sys
 
 import settings
-
+import typing
 thismodule = sys.modules[__name__]
 from .base import CRUDBase
 ModelType = TypeVar("ModelType", bound=Models.Base)
@@ -25,7 +25,7 @@ def getModelname(name:str)->str:
 def __getattr__(name: str) -> Any:
     for annotationname,classtype in thismodule.__annotations__.items():
         if annotationname==name:
-            if issubclass(classtype,CRUDBase):
+            if isinstance(classtype,typing._GenericAlias):
                 tmpinstance = classtype(model:=getattr(Models, getModelname(name)),model.__name__ not in settings.not_cache_models)
             else:
                 tmpinstance = classtype()
@@ -51,6 +51,8 @@ productImageService : CRUDBase[Models.ProductImage]
 preDefineSpecificationService : CRUDBase[Models.PreDefineSpecification]
 preDefineSpecificationValueService : CRUDBase[Models.PreDefineSpecificationValue]
 productGroupSpecificationService : CRUDBase[Models.ProductGroupSpecification]
+shopService : CRUDBase[Models.Shop]
+warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService
 wishService : WishService
 productSearchService : ProductSearchService
