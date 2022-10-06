@@ -33,9 +33,14 @@ class MyBase(object):
     def updated_at(self)->Column[DateTime]:
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
-    def __getattr__(self, item):
-        if item==self.__tablename__+'_id':
-            return self.id
+    def __getattr__(self,key):
+        try:
+            if key==self.__tablename__+'_id':
+                return self.id
+            else:
+                return super().__getattribute__(key)
+        except AttributeError as err:
+            raise
     def dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
         dic={}
         if self not in resolved:
