@@ -43,7 +43,7 @@ class MyBase(object):
                 if value not in resolved:
                     dic[key]=value.dict()
             else:
-                dic[f'{self.__tablename__}_id' if key=='id' else key]=value
+                dic[key]=value
         return dic
     def json(self)->str:
 
