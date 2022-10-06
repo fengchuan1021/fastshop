@@ -117,9 +117,13 @@ class _Cache:
                     ret = await self.get(_key)
                     if ret and (returndic:=json.loads(ret)):
                         if isinstance(tmpClass:=func_annotations.get('return',int),typing._GenericAlias):
+
                             returntype=tmpClass.__args__[0]
                             listtype=True if tmpClass.__origin__==list else False
-                            if returntype==ModelType:
+                            print('typeing:',tmpClass)
+                            print('returntype:', returntype)
+                            print('islist:',listtype)
+                            if returntype.__name__=='ModelType':#to fix returntype==ModelType
                                 returnclass=classinstance.model
                             elif issubclass(returntype, Models.Base):
                                 returnclass=tmpClass.__args__[0]

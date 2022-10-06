@@ -11,7 +11,7 @@ class Category(Base):
     parent_id = Column(BIGINT, ForeignKey('category.category_id', ondelete='NO ACTION'))
     parent_name = Column(VARCHAR(32))
     #children: List["Category"] = relationship('Category', uselist=True, backref=backref('parent', remote_side='category.id'))
-    catory_order=Column(INTEGER,default=0,server_default='0')
+    category_order=Column(INTEGER,default=0,server_default='0')
     shop_id=Column(INTEGER,server_default="0")
     description=Column(VARCHAR(512))
     category_image=Column(VARCHAR(512),server_default="",default='')

@@ -24,7 +24,7 @@ class CRUDBase(Generic[ModelType]):
     def disablecache(self)->None:
         self.usecache=False
 
-    def getpkcachename(self,func,funcsig,func_args)->str:#type: ignore
+    def getpkcachename(self,func,func_args,func_annotations)->str:#type: ignore
         # associated listener validredisListerer.py .dont change.
         return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"#type: ignore
 
@@ -75,3 +75,7 @@ class CRUDBase(Generic[ModelType]):
     async def delete(self,dbSession: AsyncSession, model:ModelType)->None:
         await dbSession.delete(model)
 
+    async def deleteByPk(self,db: AsyncSession,pk:str)->None:
+        model=await self.findByPk(db,pk)
+        if model:
+            await db.delete(model)

@@ -14,6 +14,7 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 from .UploadService import UploadService
 from .WishService import WishService
 from .backend.PermissionService import PermissionService
+from .product.CategoryService import CategoryService
 from .product.ProductService import VariantDynamicService,VariantStaticService,ProductService
 from .search.ProductSearchService import ProductSearchService
 from .user.UserService import UserService
@@ -40,7 +41,7 @@ def __getattr__(name: str) -> Any:
 permissionService : PermissionService
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
-categoryService : CRUDBase[Models.Category]
+categoryService : CategoryService
 productCategoryService : CRUDBase[Models.ProductCategory]
 productService : ProductService
 variantDynamicService : VariantDynamicService
