@@ -33,7 +33,7 @@ from sqlalchemy import select
 class Permission(Base):
     __tablename__ = 'permission'
     __table_args__ = (UniqueConstraint('role_id', "api_name", name="roleapi"),)
-    id = Column(INTEGER, autoincrement=True, primary_key=True)
+    id = Column('permission_id',INTEGER, autoincrement=True, primary_key=True)
     role_id=Column(INTEGER,index=True)
     role_name=Column(VARCHAR(32))
     api_name=Column(VARCHAR(255),comment="routes array the role has permission to access. ")
@@ -41,7 +41,7 @@ class Permission(Base):
 class Roledisplayedmenu(Base):
     __tablename__ = 'roledisplayedmenu'
     __table_args__ = (UniqueConstraint('role_id', "menu_path", name="roledispplayedmenu"),)
-    id = Column(INTEGER, autoincrement=True, primary_key=True)
+    id = Column('roledisplayedmenu_id',INTEGER, autoincrement=True, primary_key=True)
     role_id = Column(INTEGER, index=True)
     role_name = Column(VARCHAR(32))
 

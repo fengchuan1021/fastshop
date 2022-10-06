@@ -37,7 +37,7 @@ async def getuserlist(
     getuserlist
     """
     results,count=await Service.userService.pagination(db,**body.dict())
-    print(results[0].dict())
+
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendUserUserGetResponse(status='success', msg='', total=count, data=results)
 

@@ -32,7 +32,7 @@ class User(Base):
 
     mark=Column(VARCHAR(512))
 
-    parent_id = Column(BIGINT, ForeignKey('user.id',ondelete='NO ACTION'))
+    parent_id = Column(BIGINT, ForeignKey('user.user_id',ondelete='NO ACTION'))
     children:List["User"] = relationship('User',uselist=True, backref=backref('parent', remote_side='User.id'),join_depth=2)
 
 

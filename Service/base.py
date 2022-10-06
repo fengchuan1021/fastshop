@@ -57,7 +57,7 @@ class CRUDBase(Generic[ModelType]):
         where,params=filterbuilder(filter)
         txtwhere=text(where)
         if not order_by:
-            txtorderby=text(f"{self.model.__tablename__}.id desc")
+            txtorderby=text(f"{self.model.__tablename__}.{self.model.__tablename__}_id desc")
         else:
             txtorderby = text(order_by)
         if calcTotalNum:

@@ -18,11 +18,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union,Tuple
 
 class MyBase(object):
-    id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
-    #@declared_attr
-    #def id(self)->Column[BIGINT]:
-        #return Column(f'{self.__tablename__}_id',BIGINT(20), primary_key=True,default=snowFlack.getId)
-    #    return Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+
+    @declared_attr
+    def id(self)->Column[BIGINT]:
+        col=Column(f'{self.__tablename__}_id',BIGINT(20), primary_key=True,default=snowFlack.getId)
+        col._creation_order = 1
+        return col
     @declared_attr
     def created_at(self)->Column[DateTime]:
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP"))

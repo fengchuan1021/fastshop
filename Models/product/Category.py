@@ -8,9 +8,9 @@ from component.snowFlakeId import snowFlack
 class Category(Base):
     __tablename__ = 'category'
     category_name=Column(VARCHAR(32))
-    parent_id = Column(BIGINT, ForeignKey('category.id', ondelete='NO ACTION'))
+    parent_id = Column(BIGINT, ForeignKey('category.category_id', ondelete='NO ACTION'))
     parent_name = Column(VARCHAR(32))
-    children: List["Category"] = relationship('Category', uselist=True, backref=backref('parent', remote_side='cagetory.id'))
+    #children: List["Category"] = relationship('Category', uselist=True, backref=backref('parent', remote_side='category.id'))
     catory_order=Column(INTEGER,default=0,server_default='0')
     shop_id=Column(INTEGER,server_default="0")
     description=Column(VARCHAR(512))
@@ -18,6 +18,6 @@ class Category(Base):
 
 
 class ProductCategory(Base):
-    __tablename__ = 'product_cagetory'
+    __tablename__ = 'product_category'
     category_id = Column(INTEGER,)
     product_id=Column(INTEGER,)
