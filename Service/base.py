@@ -41,15 +41,16 @@ class CRUDBase(Generic[ModelType]):
         dbSession.add(db_model)
         return db_model
 
-    async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:list=[],order_by:str='')->List[ModelType]:
+    async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:BaseModel | Dict={},order_by:str='',options:list=[],**kwargs)->List[ModelType]:
 
-        #filter.append(Models.User.is_deleted==0)
-        stament=select(self.model).filter(*filter).order_by(text(order_by))
+        where,params=filterbuilder(filter)
+        txtwhere = text(where)
+        stament=select(self.model).options(*options).where(txtwhere).order_by(text(order_by))
         if offset:
             stament=stament.offset(offset)
         if limit:
             stament=stament.limit(limit)
-        results=await dbSession.execute(stament)
+        results=await dbSession.execute(stament,params)
 
         return results.scalars().all()
 
