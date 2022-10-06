@@ -1,0 +1,2596 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "myuniuid",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "frontend"
+    },
+    {
+      "name": "frontend/user"
+    },
+    {
+      "name": "frontend/product"
+    },
+    {
+      "name": "backend"
+    },
+    {
+      "name": "backend/product"
+    },
+    {
+      "name": "backend/order"
+    },
+    {
+      "name": "backend/permission"
+    },
+    {
+      "name": "backend/user"
+    }
+  ],
+  "paths": {
+    "/backend/user/createuser": {
+      "post": {
+        "summary": "createuser",
+        "x-apifox-folder": "backend/user",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserController",
+        "tags": [
+          "backend/user"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "userrole": {
+                    "type": "integer",
+                    "default": 0
+                  }
+                },
+                "x-apifox-orders": [
+                  "username",
+                  "password",
+                  "phone",
+                  "email",
+                  "userrole"
+                ],
+                "required": [
+                  "username",
+                  "password",
+                  "userrole"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/product/getcategorylist": {
+      "get": {
+        "summary": "getcategorylist",
+        "x-apifox-folder": "backend/product",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "get categorylist",
+        "operationId": "CategoryController",
+        "tags": [
+          "backend/product"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pagesize": {
+                    "type": "integer",
+                    "default": 20
+                  },
+                  "pagenum": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "filter": {
+                    "type": "object",
+                    "properties": {
+                      "parent_id": {
+                        "type": "string"
+                      }
+                    },
+                    "x-apifox-orders": [
+                      "parent_id"
+                    ],
+                    "x-apifox-ignore-properties": []
+                  }
+                },
+                "x-apifox-orders": [
+                  "pagesize",
+                  "pagenum",
+                  "filter"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "category_name": {
+                            "type": "string"
+                          },
+                          "category_id": {
+                            "type": "string"
+                          },
+                          "parent_name": {
+                            "type": "string"
+                          },
+                          "parent_id": {
+                            "type": "string"
+                          },
+                          "category_image": {
+                            "type": "string"
+                          }
+                        },
+                        "x-apifox-orders": [
+                          "category_name",
+                          "category_id",
+                          "parent_name",
+                          "parent_id",
+                          "category_image"
+                        ],
+                        "required": [
+                          "category_name",
+                          "category_id",
+                          "parent_name",
+                          "parent_id",
+                          "category_image"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "curpage": {
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "total": {
+                      "type": "integer",
+                      "default": 0
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg",
+                    "data",
+                    "curpage",
+                    "total"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/permission/getroledisplayedmenu": {
+      "get": {
+        "summary": "getroledisplayedmenu",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "menus": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg",
+                    "menus"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/permission/route/": {
+      "get": {
+        "summary": "getroutelist",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-ignore-properties": [],
+                  "x-apifox-orders": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/product/getcategorytree": {
+      "get": {
+        "summary": "getcategorytree",
+        "x-apifox-folder": "backend/product",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "CategoryController",
+        "tags": [
+          "backend/product"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "category_id": {
+                            "type": "string"
+                          },
+                          "category_name": {
+                            "type": "string"
+                          },
+                          "category_image": {
+                            "type": "string"
+                          },
+                          "children": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {},
+                              "x-apifox-ignore-properties": [],
+                              "x-apifox-orders": []
+                            }
+                          }
+                        },
+                        "x-apifox-orders": [
+                          "category_id",
+                          "category_name",
+                          "category_image",
+                          "children"
+                        ],
+                        "required": [
+                          "category_id",
+                          "category_name",
+                          "category_image"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg",
+                    "data"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/frontend/product/{id}/{lang}": {
+      "get": {
+        "summary": "getproductdetailbyid",
+        "x-apifox-folder": "frontend/product",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ProductController",
+        "tags": [
+          "frontend/product"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "productName": {
+                      "type": "string"
+                    },
+                    "productDescription": {
+                      "type": "string"
+                    },
+                    "brand": {
+                      "type": "string"
+                    },
+                    "price": {
+                      "type": "number"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "productName",
+                    "productDescription",
+                    "brand",
+                    "price"
+                  ],
+                  "required": [
+                    "productName",
+                    "productDescription",
+                    "brand",
+                    "price"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getList": {
+      "get": {
+        "summary": "getList",
+        "x-apifox-folder": "frontend/user",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "get user's list",
+        "operationId": "UserController",
+        "tags": [
+          "frontend/user"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-ignore-properties": [],
+                  "x-apifox-orders": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/permission/setdisplayedmenu": {
+      "post": {
+        "summary": "setroledisplayedmenu",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role_id": {
+                    "type": "integer"
+                  },
+                  "menus": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "x-apifox-orders": [
+                  "role_id",
+                  "menus",
+                  "01GEKT55PNZ28Z9P37PR953J8K"
+                ],
+                "required": [
+                  "role_id",
+                  "menus"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get/{id}": {
+      "get": {
+        "summary": "getbyid",
+        "x-apifox-folder": "frontend/user",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "admin get a user's info by user id",
+        "operationId": "UserController",
+        "tags": [
+          "frontend/user"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-ignore-properties": [],
+                  "x-apifox-orders": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/permission/permissionlist": {
+      "post": {
+        "summary": "getrolepermissionlist",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filter": {
+                    "type": "object",
+                    "properties": {
+                      "role_id": {
+                        "type": "integer"
+                      },
+                      "role_name": {
+                        "type": "string"
+                      },
+                      "api_name": {
+                        "type": "string"
+                      }
+                    },
+                    "x-apifox-orders": [
+                      "role_id",
+                      "role_name",
+                      "api_name"
+                    ],
+                    "x-apifox-ignore-properties": []
+                  },
+                  "pagenum": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "pagesize": {
+                    "type": "integer",
+                    "default": 30
+                  }
+                },
+                "x-apifox-orders": [
+                  "filter",
+                  "pagenum",
+                  "pagesize"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "role_id": {
+                            "type": "integer"
+                          },
+                          "role_name": {
+                            "type": "string"
+                          },
+                          "api_name": {
+                            "type": "string"
+                          }
+                        },
+                        "x-apifox-orders": [
+                          "role_id",
+                          "role_name",
+                          "api_name"
+                        ],
+                        "required": [
+                          "role_id",
+                          "role_name",
+                          "api_name"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "curpage": {
+                      "type": "integer"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg",
+                    "data",
+                    "total",
+                    "curpage"
+                  ],
+                  "required": [
+                    "status",
+                    "total",
+                    "curpage"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/frontend/user/login": {
+      "post": {
+        "summary": "login",
+        "x-apifox-folder": "frontend/user",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "all users login interface",
+        "operationId": "UserController",
+        "tags": [
+          "frontend/user"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "x-apifox-orders": [
+                  "username",
+                  "password"
+                ],
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "refreshtoken": {
+                      "type": "string"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "token",
+                    "refreshtoken",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          },
+          "500": {
+            "description": "errorhappend",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "validateerror",
+                        "neterror",
+                        "dberror",
+                        "tokenerror"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "validateerror": "",
+                          "neterror": "",
+                          "dberror": "",
+                          "tokenerror": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ]
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/permission/setrolepermission": {
+      "post": {
+        "summary": "setrolepermission",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role_id": {
+                    "type": "integer"
+                  },
+                  "apis": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "x-apifox-orders": [
+                  "role_id",
+                  "apis"
+                ],
+                "required": [
+                  "role_id",
+                  "apis"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/imageserver": {
+      "post": {
+        "summary": "imageserver",
+        "x-apifox-folder": "",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ImageController",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "container_name",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "astmpfile",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/permission/role/{id}": {
+      "delete": {
+        "summary": "deleterole",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "failed",
+                        "success"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "failed": "",
+                          "success": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/product/delcategory": {
+      "post": {
+        "summary": "delcategory",
+        "x-apifox-folder": "backend/product",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "get categorylist",
+        "operationId": "CategoryController",
+        "tags": [
+          "backend/product"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category_id": {
+                    "type": "string"
+                  }
+                },
+                "x-apifox-orders": [
+                  "category_id"
+                ],
+                "required": [
+                  "category_id"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/product/addcategory": {
+      "post": {
+        "summary": "addcategory",
+        "x-apifox-folder": "backend/product",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "get categorylist",
+        "operationId": "CategoryController",
+        "tags": [
+          "backend/product"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category_name": {
+                    "type": "string"
+                  },
+                  "parent_id": {
+                    "type": "string"
+                  },
+                  "category_order": {
+                    "type": "integer",
+                    "default": 0
+                  }
+                },
+                "x-apifox-orders": [
+                  "category_name",
+                  "parent_id",
+                  "category_order"
+                ],
+                "required": [
+                  "category_name",
+                  "parent_id"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/user/userlist/": {
+      "post": {
+        "summary": "getuserlist",
+        "x-apifox-folder": "backend/user",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserController",
+        "tags": [
+          "backend/user"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pagenum": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "pagesize": {
+                    "type": "integer",
+                    "default": 20
+                  },
+                  "total": {
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "filter": {
+                    "type": "object",
+                    "properties": {},
+                    "x-apifox-ignore-properties": [],
+                    "x-apifox-orders": []
+                  }
+                },
+                "x-apifox-orders": [
+                  "pagenum",
+                  "pagesize",
+                  "total",
+                  "filter"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "username": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "balance": {
+                            "type": "number"
+                          },
+                          "phone": {
+                            "type": "string"
+                          }
+                        },
+                        "x-apifox-orders": [
+                          "id",
+                          "username",
+                          "email",
+                          "balance",
+                          "phone"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg",
+                    "total",
+                    "data"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/permission/role/": {
+      "post": {
+        "summary": "createrole",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role_name": {
+                    "type": "string"
+                  }
+                },
+                "x-apifox-orders": [
+                  "role_name"
+                ],
+                "required": [
+                  "role_name"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "failed",
+                        "success"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "failed": "",
+                          "success": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "role_name": {
+                          "type": "string"
+                        }
+                      },
+                      "x-apifox-orders": [
+                        "id",
+                        "role_name"
+                      ],
+                      "required": [
+                        "id",
+                        "role_name"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg",
+                    "role"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "getrolelist",
+        "x-apifox-folder": "backend/permission",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PermissionController",
+        "tags": [
+          "backend/permission"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "",
+                      "enum": [
+                        "success",
+                        "failed"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "failed": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "roles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "role_name": {
+                            "type": "string"
+                          }
+                        },
+                        "x-apifox-orders": [
+                          "id",
+                          "role_name"
+                        ],
+                        "required": [
+                          "id",
+                          "role_name"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg",
+                    "roles"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/frontend/user/register": {
+      "post": {
+        "summary": "register",
+        "x-apifox-folder": "frontend/user",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserController",
+        "tags": [
+          "frontend/user"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 4,
+                    "maxLength": 32
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "repassword": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "minLength": 4,
+                    "maxLength": 32
+                  }
+                },
+                "x-apifox-orders": [
+                  "username",
+                  "password",
+                  "repassword",
+                  "phone",
+                  "email"
+                ],
+                "required": [
+                  "password",
+                  "repassword",
+                  "email"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "failed",
+                        "success"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "failed": "",
+                          "success": ""
+                        }
+                      },
+                      "nullable": true
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "phone": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "email": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      },
+                      "x-apifox-orders": [
+                        "username",
+                        "phone",
+                        "email"
+                      ],
+                      "required": [
+                        "username",
+                        "phone",
+                        "email"
+                      ],
+                      "x-apifox-ignore-properties": [],
+                      "nullable": true
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "user",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": [],
+                  "nullable": true
+                },
+                "examples": {}
+              }
+            }
+          },
+          "500": {
+            "description": "errorhappend",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "validateerror",
+                        "neterror",
+                        "dberror",
+                        "tokenerror"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "validateerror": "",
+                          "neterror": "",
+                          "dberror": "",
+                          "tokenerror": ""
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string"
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "msg"
+                  ],
+                  "required": [
+                    "status"
+                  ]
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/product/addproduct": {
+      "post": {
+        "summary": "addproduct",
+        "x-apifox-folder": "backend/product",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "productController",
+        "tags": [
+          "backend/product"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name_en": {
+                    "type": "string"
+                  },
+                  "description_en": {
+                    "type": "number"
+                  },
+                  "brand_en": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "number"
+                  },
+                  "sku": {
+                    "type": "string"
+                  },
+                  "stock": {
+                    "type": "integer"
+                  }
+                },
+                "x-apifox-orders": [
+                  "name_en",
+                  "description_en",
+                  "brand_en",
+                  "price",
+                  "sku",
+                  "stock"
+                ],
+                "required": [
+                  "name_en",
+                  "description_en",
+                  "brand_en",
+                  "price",
+                  "sku",
+                  "stock"
+                ],
+                "x-apifox-ignore-properties": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "",
+                      "enum": [
+                        "success",
+                        "skunotfound"
+                      ],
+                      "x-apifox": {
+                        "enumDescriptions": {
+                          "success": "",
+                          "skunotfound": ""
+                        }
+                      }
+                    },
+                    "product": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "productName": {
+                          "type": "string"
+                        },
+                        "price": {
+                          "type": "number"
+                        },
+                        "barcode": {
+                          "type": "string"
+                        },
+                        "skuId": {
+                          "type": "integer"
+                        }
+                      },
+                      "x-apifox-orders": [
+                        "id",
+                        "productName",
+                        "price",
+                        "barcode",
+                        "skuId"
+                      ],
+                      "required": [
+                        "id",
+                        "productName",
+                        "price",
+                        "barcode",
+                        "skuId"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "status",
+                    "product"
+                  ],
+                  "required": [
+                    "status",
+                    "product"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/backend/addorder": {
+      "post": {
+        "summary": "addorder",
+        "x-apifox-folder": "backend/order",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "operationId": "orderController.py",
+        "tags": [
+          "backend/order"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "",
+            "example": "{{ACCESS_TOKEN}}",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "transaxtionid": {
+                      "type": "string",
+                      "maxLength": 32
+                    }
+                  },
+                  "x-apifox-orders": [
+                    "transaxtionid"
+                  ],
+                  "x-apifox-ignore-properties": []
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DBtest": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": "32"
+          }
+        },
+        "required": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "name"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "id",
+          "name"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBpermission": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "baseurl": {
+            "type": "string",
+            "maxLength": "255"
+          },
+          "action": {
+            "type": "string",
+            "maxLength": "32"
+          },
+          "actionmark": {
+            "type": "string",
+            "maxLength": "32"
+          },
+          "role_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "baseurl",
+          "action",
+          "actionmark",
+          "role_id"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "id",
+          "baseurl",
+          "action",
+          "actionmark",
+          "role_id"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBrole": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": "16"
+          },
+          "mark": {
+            "type": "string",
+            "maxLength": "16"
+          }
+        },
+        "required": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "name",
+          "mark"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "id",
+          "name",
+          "mark"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBuser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": "32"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": "32"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": "16"
+          },
+          "balance": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": "512"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "man",
+              "woman"
+            ]
+          },
+          "user_role": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "phone",
+          "balance",
+          "password",
+          "gender",
+          "user_role"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "id",
+          "username",
+          "email",
+          "phone",
+          "balance",
+          "password",
+          "gender",
+          "user_role"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBuserrole": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "role_id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "role_id",
+          "user_id"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "id",
+          "role_id",
+          "user_id"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBlog": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "msg"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "id",
+          "msg"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBproduct": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": "64"
+          },
+          "price": {
+            "type": "string"
+          },
+          "presale_starttime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "presale_endtime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "in_presale": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "name",
+          "price",
+          "presale_starttime",
+          "presale_endtime",
+          "in_presale"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "id",
+          "name",
+          "price",
+          "presale_starttime",
+          "presale_endtime",
+          "in_presale"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBorder": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "user_id"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "id",
+          "user_id"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBalembic_version": {
+        "type": "object",
+        "properties": {
+          "version_num": {
+            "type": "string",
+            "maxLength": "32"
+          }
+        },
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "version_num"
+        ],
+        "x-apifox-folder": "DBschema"
+      },
+      "DBorderitem": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "order_id": {
+            "type": "integer"
+          },
+          "product_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "order_id",
+          "product_id"
+        ],
+        "x-apifox-ignore-properties": [],
+        "x-apifox-orders": [
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "id",
+          "order_id",
+          "product_id"
+        ],
+        "x-apifox-folder": "DBschema"
+      }
+    }
+  }
+}
