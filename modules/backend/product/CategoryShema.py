@@ -26,10 +26,11 @@ class BackendProductGetcategorylistGetRequest(BaseModel):
 class Datum(BaseModel):
     category_name: str
     category_id: str
-    parent_name: str
+    parent_name: str=''
     parent_id: str
     category_image: str
-
+    class Config:
+        orm_mode = True
 
 class BackendProductGetcategorylistGetResponse(BaseModel):
     status: Literal['success','failed']

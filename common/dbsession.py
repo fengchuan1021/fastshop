@@ -51,8 +51,7 @@ class getdbsession:
         return self.session
 
     async def __aexit__(self,*args):#type: ignore
-        print('fuck iam commit?')
-        print(self.session)
+
         await self.session.commit()
         if self.session._updateArr:
             await Broadcast.fireAfterUpdated(set(self.session._updateArr), self.session,self.token, background=True)  # type: ignore

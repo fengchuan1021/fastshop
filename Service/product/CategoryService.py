@@ -40,7 +40,6 @@ class CategoryService(CRUDBase[Models.Category]):
                 for child in nodedict['children']:
                     await getchildren(child)
 
-            #nodedict['children']=results
         await getchildren(root)
         return arr
 

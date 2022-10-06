@@ -32,7 +32,7 @@ router = APIRouter(dependencies=dependencies)
 
 
 # <editor-fold desc="getcategorylist get: /backend/product/getcategorylist">
-@router.get(
+@router.post(
     '/backend/product/getcategorylist',
     response_class=XTJsonResponse,
     response_model=BackendProductGetcategorylistGetResponse,
@@ -45,9 +45,10 @@ async def getcategorylist(
     """
     getcategorylist
     """
+    result,total=await Service.categoryService.pagination(db,**body.dict())
 
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendProductGetcategorylistGetResponse()
+    return BackendProductGetcategorylistGetResponse(status='success',data=result,total=total,curpage=body.pagenum)
 
 
 # </editor-fold>

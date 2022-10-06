@@ -33,7 +33,9 @@ class MyBase(object):
     def updated_at(self)->Column[DateTime]:
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
-
+    def __getattr__(self, item):
+        if item==self.__tablename__+'_id':
+            return self.id
     def dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
         dic={}
         if self not in resolved:
@@ -45,7 +47,7 @@ class MyBase(object):
                 if value not in resolved:
                     dic[key]=value.dict()
             else:
-                dic[key]=value
+                dic[f'{self.__tablename__}_id' if key=='id' else key]=value
         return dic
     def json(self)->str:
 
