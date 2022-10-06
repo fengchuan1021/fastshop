@@ -18,7 +18,7 @@ from sqlalchemy import select
 class User(Base):
     __tablename__ = 'user'
 
-
+    user_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     username = Column(VARCHAR(32), nullable=True, unique=True)
     email = Column(VARCHAR(32),nullable=True,unique=True)
     nickname=Column(VARCHAR(32),default='',server_default=text("''"))
@@ -32,8 +32,8 @@ class User(Base):
 
     mark=Column(VARCHAR(512))
 
-    parent_id = Column(BIGINT, ForeignKey('user.user_id',ondelete='NO ACTION'))
-    children:List["User"] = relationship('User',uselist=True, backref=backref('parent', remote_side='User.id'),join_depth=2)
+    parent_id = Column(BIGINT,index=True)
+    children:List["User"] = relationship('User',uselist=True, primaryjoin='foreign(User.parent_id) == User.user_id',backref=backref('parent', remote_side='User.user_id'))
 
 
 

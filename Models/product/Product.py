@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, List
 from .ProductImage import ProductImage
 class Product(Base):
     __tablename__ = 'product'
+    product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     sku = Column(VARCHAR(80))
 
     name_en= deferred(Column(VARCHAR(255),nullable=True), group='en')
@@ -25,7 +26,7 @@ class Product(Base):
 
 class VariantDynamic(Base):
     __tablename__ = 'variant_dynamic'
-
+    variant_dynamic_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     is_hot=Column(ENUM("TRUE","FALSE"),server_default="FALSE",default="FALSE",index=True)
     is_recommend=Column(ENUM("TRUE","FALSE"),server_default="FALSE",default="FALSE",index=True)
     collect_cnt=Column(INTEGER,server_default="0",default="0",index=True)
@@ -37,7 +38,7 @@ class VariantDynamic(Base):
 
 class VariantStatic(Base):
     __tablename__ = 'variant_static'
-
+    variant_static_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     sku=Column(VARCHAR(80))
     barcode=Column(VARCHAR(32))
     hscode=Column(VARCHAR(32))

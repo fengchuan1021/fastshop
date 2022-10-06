@@ -16,7 +16,7 @@ from sqlalchemy import select
 class Warehouse(Base):
     __tablename__ = 'warehouse'
 
-
+    warehouse_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     warehouse_name = Column(VARCHAR(32),unique=True)
 
     company_name = Column(VARCHAR(32),nullable=True)

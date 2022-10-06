@@ -32,12 +32,15 @@ class CategoryService(CRUDBase[Models.Category]):
         root={'category_id':0,'category_name':'webroot','category_image':'','children':[]}
         arr=[root]
         async def getchildren(nodedict):
-            cols=[Models.Category.id.label('category_id'),Models.Category.category_name,Models.Category.category_image,Models.Category.parent_id,Models.Category.parent_name]
+            print('nodedist:',nodedict)
+            cols=[Models.Category.category_id,Models.Category.category_name,Models.Category.category_image,Models.Category.parent_id,Models.Category.parent_name]
             statment=select(*cols).filter(Models.Category.parent_id==nodedict['category_id']).order_by(Models.Category.category_order.asc())
             results=(await  db.execute(statment)).all()
+            #print('result:',results.sc)
             if results:
                 nodedict['children']=[child._asdict() for child in results]
                 for child in nodedict['children']:
+                    print('child:',child)
                     await getchildren(child)
 
         await getchildren(root)

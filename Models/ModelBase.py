@@ -16,14 +16,12 @@ if TYPE_CHECKING:
     from .User import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union,Tuple
-
+from sqlalchemy.ext.hybrid import hybrid_property
 class MyBase(object):
 
-    @declared_attr
-    def id(self)->Column[BIGINT]:
-        col=Column(f'{self.__tablename__}_id',BIGINT(20), primary_key=True,default=snowFlack.getId)
-        col._creation_order = 1
-        return col
+    @hybrid_property
+    def id(self):
+        return getattr(self,f'{self.__tablename__}_id')
     @declared_attr
     def created_at(self)->Column[DateTime]:
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
@@ -33,14 +31,7 @@ class MyBase(object):
     def updated_at(self)->Column[DateTime]:
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
-    def __getattr__(self,key):
-        try:
-            if key==self.__tablename__+'_id':
-                return self.id
-            else:
-                return super().__getattribute__(key)
-        except AttributeError as err:
-            raise
+
     def dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
         dic={}
         if self not in resolved:

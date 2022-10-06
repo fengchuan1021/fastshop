@@ -8,6 +8,7 @@ from component.snowFlakeId import snowFlack
 
 class ProductAttribute(Base):
     __tablename__ = 'product_attribute'
+    product_attribute_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     product_id = Column(BIGINT,ForeignKey("product.product_id"))
     attribute_name_en=Column(VARCHAR(32))
     attribute_name_cn = Column(VARCHAR(32))

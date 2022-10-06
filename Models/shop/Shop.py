@@ -13,7 +13,7 @@ from sqlalchemy import select
 class Shop(Base):
     __tablename__ = 'shop'
 
-
+    shop_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     shop_name = Column(VARCHAR(32),unique=True)
     company_name = Column(VARCHAR(32),nullable=True)
     company_id=Column(BIGINT,nullable=True)
