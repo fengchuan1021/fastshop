@@ -66,7 +66,7 @@ async def createuser(
     # except IntegrityError:
     #     await db.rollback()
     #     return {'status':'failed','msg':"user existed"}
-    # install pydantic plugin,press alt+enter auto complete the args.
+
     return BackendUserCreateuserPostResponse(status='success',msg='add user success')
 
 

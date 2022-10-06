@@ -1,4 +1,4 @@
-
+import Service
 from Service.base import CRUDBase
 import Models
 from typing import Union
@@ -13,6 +13,9 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import hashlib
 import random
+
+
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 from sqlalchemy import select
@@ -71,3 +74,11 @@ class UserService(CRUDBase[Models.User]):
 
 
 
+if __name__ == '__main__':
+    import  asyncio
+    from common.dbsession import getdbsession
+    async def t():
+        async with getdbsession() as db:
+            await Service.userService.create(db,{"userrole":5,"username":"5556677","password":"ffffff"})
+
+    asyncio.run(t())

@@ -51,6 +51,8 @@ class getdbsession:
         return self.session
 
     async def __aexit__(self,*args):#type: ignore
+        print('fuck iam commit?')
+        print(self.session)
         await self.session.commit()
         if self.session._updateArr:
             await Broadcast.fireAfterUpdated(set(self.session._updateArr), self.session,self.token, background=True)  # type: ignore
@@ -68,9 +70,10 @@ class getdbsession:
 
 
 async def get_webdbsession(request:Request,token: settings.UserTokenData=Depends(get_token)) -> AsyncSession:#type: ignore
-    async with getdbsession(request,token) as session:
-        request.state.db_client = session
-        yield session
+    db_client=getdbsession(request,token)
+    request.state.db_client = db_client
+    return db_client.session
+
 
 
 

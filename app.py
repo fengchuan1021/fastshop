@@ -31,7 +31,7 @@ else:
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from elasticsearchclient import es
-
+from starlette.background import BackgroundTask
 
 app = FastAPI(redoc_url=None if settings.MODE=='main' else '/redoc',docs_url=None if settings.MODE=='main' else '/docs',openapi_url=None if settings.MODE=='main'  else '/openapi.json')
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,allow_methods=["*"],allow_headers=["*"],)
@@ -44,7 +44,9 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
 
     try:
         response = await call_next(request)  # This request will be modified and sent
-
+        if db_client:=request.state._state.get('db_client',None):
+            backgroundtasks = BackgroundTask(db_client.__aexit__)
+            response.background =backgroundtasks
     except OperationalError as e:
         jsonout = Common500OutShema(status=Common500Status.dberror,msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
@@ -74,6 +76,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         response=XTJsonResponse(jsonout,status_code=500)
     except Exception as e:
         #es
+        print(e)
         await writelog(str(e),request=str(request))
 
         if settings.DEBUG:

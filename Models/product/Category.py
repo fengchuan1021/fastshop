@@ -6,15 +6,16 @@ from typing import List
 from component.snowFlakeId import snowFlack
 
 class Category(Base):
-    __tablename__ = 'cagetory'
-    caegoryName=Column(VARCHAR(255),nullable=True)
-    parent_id = Column(BIGINT, ForeignKey('cagetory.id', ondelete='NO ACTION'))
-    #children: List["Category"] = relationship('Category', uselist=True, backref=backref('parent', remote_side='Category.id'),join_depth=2)
-    catory_order=Column(INTEGER)
+    __tablename__ = 'category'
+    category_name=Column(VARCHAR(32))
+    parent_id = Column(BIGINT, ForeignKey('category.id', ondelete='NO ACTION'))
+    parent_name = Column(VARCHAR(32))
+    children: List["Category"] = relationship('Category', uselist=True, backref=backref('parent', remote_side='cagetory.id'))
+    catory_order=Column(INTEGER,default=0,server_default='0')
     shop_id=Column(INTEGER,server_default="0")
     description=Column(VARCHAR(512))
-    image=Column(VARCHAR(512),server_default="",default='')
-    name=Column(VARCHAR(32))
+    category_image=Column(VARCHAR(512),server_default="",default='')
+
 
 class ProductCategory(Base):
     __tablename__ = 'product_cagetory'

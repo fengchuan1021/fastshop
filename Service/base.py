@@ -33,8 +33,11 @@ class CRUDBase(Generic[ModelType]):
         results=await dbSession.execute(select(self.model).where(self.model.id==id))
         return results.scalar_one_or_none()
 
-    async def create(self,dbSession: AsyncSession,shema_in:BaseModel) -> ModelType:
-        db_model = self.model(**shema_in.dict())
+    async def create(self,dbSession: AsyncSession,shema_in:BaseModel|Dict) -> ModelType:
+        if isinstance(shema_in,dict):
+            db_model = self.model(**shema_in)
+        else:
+            db_model = self.model(**shema_in.dict())
         dbSession.add(db_model)
         return db_model
 
