@@ -14,7 +14,7 @@ class PreDefineSpecification(Base):
 class PreDefineSpecificationValue(Base):
     __tablename__ = 'predefine_specification_value'
     predefine_specification_value_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
-    PreDefineSpecification_id=Column(BIGINT,ForeignKey("predefine_specification.predefine_specification_id"))
+    PreDefineSpecification_id=Column(BIGINT,index=True)#ForeignKey("predefine_specification.predefine_specification_id")
 
     value_en=Column(VARCHAR(32),server_default="",default='')
     value_cn = Column(VARCHAR(32), server_default="", default='')
