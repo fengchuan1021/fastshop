@@ -47,4 +47,23 @@ class BackendShopShoplistPostResponse(BaseModel):
     data: Optional[List[Datum]] = None
 
 
+class BackendShopDelshopDeleteRequest(BaseModel):
+    shop_id: str
 
+
+
+class BackendShopDelshopDeleteResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+
+class BackendShopEditshopPostRequest(BaseModel):
+    shop_name: str
+    warehouse_id: str
+    warehouse_name: str
+    shop_id: str
+
+
+
+class BackendShopEditshopPostResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None

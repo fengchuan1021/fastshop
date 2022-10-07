@@ -47,7 +47,7 @@ productService : ProductService
 variantDynamicService : VariantDynamicService
 variantStaticService : VariantStaticService
 productAttributeService : CRUDBase[Models.ProductAttribute]
-productImageService : CRUDBase[Models.ProductImage]
+variantImageService : CRUDBase[Models.VariantImage]
 preDefineSpecificationService : CRUDBase[Models.PreDefineSpecification]
 preDefineSpecificationValueService : CRUDBase[Models.PreDefineSpecificationValue]
 productGroupSpecificationService : CRUDBase[Models.ProductGroupSpecification]

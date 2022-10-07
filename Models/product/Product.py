@@ -6,7 +6,6 @@ from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,T
 from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING, List
 
-from .ProductImage import ProductImage
 class Product(Base):
     __tablename__ = 'product'
     product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
@@ -55,6 +54,6 @@ class VariantStatic(Base):
     brand_cn=deferred(Column(VARCHAR(24),nullable=True), group='cn')
 
     #dynamic:"ProductDynamic" = relationship(ProductDynamic, uselist=False, backref="product_static")
-    images:List[ProductImage] = relationship('ProductImage', backref='Product',uselist=True)
+    #images:List[ProductImage] = relationship('ProductImage', backref='Product',uselist=True)
 
 

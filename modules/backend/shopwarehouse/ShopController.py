@@ -20,7 +20,8 @@ from .ShopShema import (
     BackendShopAddshopPostRequest,
     BackendShopAddshopPostResponse,
     BackendShopShoplistPostRequest,
-    BackendShopShoplistPostResponse,
+    BackendShopShoplistPostResponse, BackendShopDelshopDeleteRequest, BackendShopDelshopDeleteResponse,
+    BackendShopEditshopPostResponse, BackendShopEditshopPostRequest,
 )
 
 router = APIRouter(dependencies=dependencies)
@@ -71,3 +72,45 @@ async def shoplist(
 
 
 
+# <editor-fold desc="delshop delete: /backend/shop/delshop">
+@router.post(
+    '/backend/shop/delshop',
+    response_class=XTJsonResponse,
+    response_model=BackendShopDelshopDeleteResponse,
+)
+async def delshop(
+    body: BackendShopDelshopDeleteRequest,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    delshop
+    """
+    await Service.shopService.deleteByPk(db,body.shop_id)
+    await db.commit()
+    # install pydantic plugin,press alt+enter auto complete the args.
+    return BackendShopDelshopDeleteResponse(status='success')
+
+
+# </editor-fold>
+
+# <editor-fold desc="editshop post: /backend/shop/editshop">
+@router.post(
+    '/backend/shop/editshop',
+    response_class=XTJsonResponse,
+    response_model=BackendShopEditshopPostResponse,
+)
+async def editshop(
+    body: BackendShopEditshopPostRequest,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    editshop
+    """
+    await Service.shopService.updateByPk(db, body.shop_id, body)
+    # install pydantic plugin,press alt+enter auto complete the args.
+    return BackendShopEditshopPostResponse(status='success')
+
+
+# </editor-fold>

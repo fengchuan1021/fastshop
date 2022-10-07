@@ -38,3 +38,24 @@ class BackendShopAddwarehousePostRequest(BaseModel):
 class BackendShopAddwarehousePostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
+
+class BackendShopDelwarehouseDeleteRequest(BaseModel):
+    warehouse_id: str
+
+
+
+class BackendShopDelwarehouseDeleteResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+
+
+class BackendShopEditwarehousePostRequest(BaseModel):
+    warehouse_name: str
+    warehouse_mark: Optional[str] = ''
+    warehouse_id: str
+
+
+
+class BackendShopEditwarehousePostResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None

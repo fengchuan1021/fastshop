@@ -104,6 +104,7 @@ class _Cache:
                 usecache=True
                 _key=key
                 if classinstance:
+                    db=args[1]
                     usecache=getattr(classinstance,'usecache')
                 if usecache:
                     if not key:
@@ -120,9 +121,6 @@ class _Cache:
 
                             returntype=tmpClass.__args__[0]
                             listtype=True if tmpClass.__origin__==list else False
-                            print('typeing:',tmpClass)
-                            print('returntype:', returntype)
-                            print('islist:',listtype)
                             if returntype.__name__=='ModelType':#to fix returntype==ModelType
                                 returnclass=classinstance.model
                             elif issubclass(returntype, Models.Base):
@@ -131,27 +129,31 @@ class _Cache:
                             if not listtype:
                                 tmpmodel=returnclass(**returndic)
                                 tmpmodel._sa_instance_state.committed_state = {}
-                                tmpmodel._sa_instance_state.key = (returnclass, (returndic['id'],), None)
+                                tmpmodel._sa_instance_state.key = (returnclass, (tmpmodel.id,), None)
+                                db.add(tmpmodel)
                                 return tmpmodel
                             if listtype:
                                 arr=[]
                                 for item in returndic:
                                     tmpmodel=returnclass(**item)
                                     tmpmodel._sa_instance_state.committed_state = {}
-                                    tmpmodel._sa_instance_state.key = (returnclass, (item['id'],), None)
+                                    tmpmodel._sa_instance_state.key = (returnclass, (tmpmodel.id,), None)
+                                    db.add(tmpmodel)
                                     arr.append(tmpmodel)
                                 return arr
 
                         elif tmpClass==ModelType:
                             tmpmodel=classinstance.model(**returndic)
                             tmpmodel._sa_instance_state.committed_state = {}
-                            tmpmodel._sa_instance_state.key = (classinstance.model, (returndic['id'],), None)
+                            tmpmodel._sa_instance_state.key = (classinstance.model, (tmpmodel.id,), None)
+                            db.add(tmpmodel)
                             return tmpmodel
 
                         elif isclass(tmpClass) and issubclass(tmpClass,Models.Base):
                             tmpmodel = tmpClass(**returndic)
                             tmpmodel._sa_instance_state.committed_state = {}
-                            tmpmodel._sa_instance_state.key = (tmpClass, (returndic['id'],), None)
+                            tmpmodel._sa_instance_state.key = (tmpClass, (tmpmodel.id,), None)
+                            db.add(tmpmodel)
                             return tmpmodel
                         return returndic
 

@@ -41,11 +41,12 @@ class CRUDBase(Generic[ModelType]):
         dbSession.add(db_model)
         return db_model
 
-    async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:BaseModel | Dict={},order_by:str='',options:list=[],**kwargs)->List[ModelType]:
-
+    async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:BaseModel | Dict={},order_by:Any='',options:list=[],**kwargs)->List[ModelType]:
+        if not order_by:
+             order_by=self.model.id.desc()
         where,params=filterbuilder(filter)
         txtwhere = text(where)
-        stament=select(self.model).options(*options).where(txtwhere).order_by(text(order_by))
+        stament=select(self.model).options(*options).where(txtwhere).order_by(text(order_by) if isinstance(order_by,str) else order_by)
         if offset:
             stament=stament.offset(offset)
         if limit:
@@ -80,3 +81,14 @@ class CRUDBase(Generic[ModelType]):
         model=await self.findByPk(db,pk)
         if model:
             await db.delete(model)
+
+    async def updateByPk(self,db:AsyncSession,pk:int,shema_in:BaseModel | Dict):
+        model=await self.findByPk(db,pk)
+        if model:
+            if not isinstance(shema_in, dict):
+                dic=shema_in.dict()
+            else:
+                dic=shema_in
+            for key,value in dic.items():
+                setattr(model,key,value)
+

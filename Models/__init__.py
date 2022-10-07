@@ -6,7 +6,7 @@ from .User import User
 from .product.Category import Category,ProductCategory
 from .product.Product import Product,VariantDynamic,VariantStatic
 from .product.ProductAttribute import ProductAttribute
-from .product.ProductImage import ProductImage
+from .product.ProductImage import VariantImage
 from .product.Specification import PreDefineSpecification,PreDefineSpecificationValue,ProductGroupSpecification
 from .shop.Shop import Shop
 from .shop.Warehouse import Warehouse

@@ -19,8 +19,9 @@ async def defmodelcachefromredis(model:Models.VariantStatic,db:AsyncSession,toke
 
 @Broadcast.AfterModelUpdated('*',background=True)
 async def resetcache(model:Models.VariantStatic,db:AsyncSession,token:settings.UserTokenData=None)->None:
-    print('modelname:',model.__class__.__name__)
-    service=Service.getInstanceForModel(model)
-    if service.usecache:
+    tmpname=model.__class__.__name__
+    servciename=tmpname[0].lower()+tmpname[1:]+'Service'
+    tmpservice=getattr(Service,servciename)
+    if tmpservice.usecache:
         cachekey = f"{cache.get_prefix()}:modelcache:{model.__tablename__}:{model.id}"
         await cache.set(cachekey,model.json())
