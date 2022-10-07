@@ -1,7 +1,6 @@
-
 from sqlalchemy.orm import deferred, relationship
 from Models.ModelBase import Base
-from sqlalchemy import Column, DateTime, Float, ForeignKey, text
+from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT
 
 from component.snowFlakeId import snowFlack

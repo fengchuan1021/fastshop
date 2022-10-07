@@ -1,7 +1,7 @@
 from sqlalchemy.orm import deferred, relationship, backref
 from Models.ModelBase import Base
-from sqlalchemy import Column, DateTime, Float, ForeignKey, text, Index
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT
+from sqlalchemy import Column, text, Index
+from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
 
 from component.snowFlakeId import snowFlack
 
