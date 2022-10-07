@@ -1,4 +1,4 @@
-from openapi_schema_validator._validators import nullable
+
 from sqlalchemy.orm import deferred, relationship
 from Models.ModelBase import Base
 from sqlalchemy import Column, DateTime, Float, ForeignKey, text

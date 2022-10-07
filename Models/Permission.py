@@ -3,7 +3,7 @@ from datetime import timedelta,datetime
 
 
 from jose import jwt
-from openapi_schema_validator._validators import nullable
+
 
 import settings
 from component.snowFlakeId import snowFlack
