@@ -6,7 +6,7 @@ services:
       - db.env
     environment:
       - BUILDBOT_CONFIG_DIR=config
-      - BUILDBOT_CONFIG_URL=https://raw.fastgit.org/fengchuan1021/tmapi/stage/buildbot/main.cfg
+      - BUILDBOT_CONFIG_URL=https://raw.githubusercontent.com/fengchuan1021/tmapi/stage/buildbot/main.cfg
       - BUILDBOT_WORKER_PORT=9989
       - BUILDBOT_WEB_URL=http://47.99.237.132:8010/
       - BUILDBOT_WEB_PORT=tcp:port=8010
@@ -25,6 +25,9 @@ services:
 
   worker:
     image: "buildbot/buildbot-worker:master"
+    volumes:
+      - /root/conda/envs/python310/bin/docker-compose:/bin/docker-compose
+      - /user/bin/docker:/user/bin/docker
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989
