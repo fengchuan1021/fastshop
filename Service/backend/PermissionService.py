@@ -2,7 +2,7 @@ import importlib
 import os
 
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from pydantic import BaseModel
 from sqlalchemy import insert, select, text
@@ -23,16 +23,16 @@ from component.cache import cache
 
 
 class PermissionService(CRUDBase[Models.Permission]):
-    async def getroutelist(self,*args):
+    async def getroutelist(self,*args:Any)->Dict:
         tree={'label':'backend','children':{},'key':'backend'}
-        def addchildren(arrname,children):
+        def addchildren(arrname:Any,children:Any)->None:
 
             nonlocal tree
             tmppath=tree
             for name in arrname:
                 if name not in tmppath['children']:
-                    tmppath['children'][name]={'label':name,'children':{}}
-                    tmppath=tmppath['children'][name]
+                    tmppath['children'][name]={'label':name,'children':{}}#type: ignore
+                    tmppath=tmppath['children'][name]#type: ignore
             tmppath['children']=children
         for f in Path(settings.BASE_DIR).joinpath('modules', 'backend').rglob('*.py'):
             if f.__fspath__().endswith('Controller.py'):
@@ -47,13 +47,17 @@ class PermissionService(CRUDBase[Models.Permission]):
                 #addchildren(arr,{0:[{'label':route.name} for route in controller.router.routes]})
         return tree
 
-    async def setUserRolePermission(self,db:AsyncSession,roleid:int,apis:str):
+    async def setUserRolePermission(self,db:AsyncSession,roleid:int,apis:List[str])->None:
+        oldpermissions=await self.getList(db,filters={'roleid':roleid})
+        for oldpermission in oldpermissions:
+            if oldpermission.api_name not in apis:
+                await db.delete(oldpermission)
         sql = insert(Models.Permission).prefix_with("ignore").values([{'role_id': roleid,'role_name':UserRole(roleid).name,'api_name':api} for api in apis])
         await db.execute(sql)
 
 
 
-    def getrolemenucachekey(self,func,func_args,func_annotations):
+    def getrolemenucachekey(self,func,func_args,func_annotations)->str:#type: ignore
         return f"{cache.get_prefix()}:rolemenu:{func_args.arguments.get('roleid')}"
     @cache(key_builder='getrolemenucachekey')
     async def getroledisplayedmenu(self,db:AsyncSession,roleid:int)->List[Models.Roledisplayedmenu]:
@@ -69,7 +73,33 @@ class PermissionService(CRUDBase[Models.Permission]):
         statment = select(Models.Roledisplayedmenu).where(Models.Roledisplayedmenu.role_id.in_(role_ids))
         result = (await db.execute(statment)).scalars().all()
         return result
+    async def setRoleDisplayedMenu(self,db:AsyncSession,role_id:int,menus:List[str]=[])->None:
+        role_name = UserRole(role_id).name
+        newmenu = []
+        def addparentmenu(path:str)->None:
+            nonlocal newmenu
+            parent, _ = path.rsplit('/', 1)
+            if parent:
+                newmenu.append(parent)
+                addparentmenu(parent)
 
+        if menus:
+            newmenu = menus.copy()
+            for m in menus:
+                addparentmenu(m)
+
+        sqloldmenus = select(Models.Roledisplayedmenu).filter(Models.Roledisplayedmenu.role_id == role_id)
+        results = (await db.execute(sqloldmenus)).scalars().all()
+        for result in results:
+            if result.menu_path not in newmenu:
+                await db.delete(result)
+
+        sql = insert(Models.Roledisplayedmenu).prefix_with('ignore').values(
+            [{'role_id': role_id, 'role_name': role_name, 'menu_path': menu_path} for menu_path in newmenu])
+        await db.execute(sql)
+        await db.commit()
+        print('delet:',f"{cache.get_prefix()}:rolemenu:{role_id}")
+        await cache.delete(f"{cache.get_prefix()}:rolemenu:{role_id}")
 if __name__ == '__main__':
     #from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest,Filter
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import insert, select
@@ -32,7 +32,8 @@ from .PermissionShema import (
     BackendPermissionSetrolepermissionPostRequest,
     BackendPermissionSetrolepermissionPostResponse, Role, BackendPermissionPermissionlistGetRequest,
     BackendPermissionGetroledisplayedmenuGetResponse,
-    BackendPermissionSetdisplayedmenuPostResponse, BackendPermissionSetdisplayedmenuPostRequest
+    BackendPermissionSetdisplayedmenuPostResponse, BackendPermissionSetdisplayedmenuPostRequest,
+    BackendPermissionDelrolepermissionPermissionIdDeleteResponse
 )
 from imp import reload
 router = APIRouter(dependencies=dependencies)
@@ -54,7 +55,7 @@ async def getroutelist(
     """
     routes=await Service.permissionService.getroutelist()
 
-    def tolist(tmp):
+    def tolist(tmp:Dict)->None:
         if 'children' in tmp:
             tmp['children'] = list(tmp['children'].values())
             for item in tmp['children']:
@@ -85,7 +86,7 @@ async def getrolepermissionlist(
     getrolepermissionlist
     """
 
-    results,totalnum=await Service.permissionService.pagination(db,**body.dict())
+    results,totalnum=await Service.permissionService.pagination(db,calcTotalNum=True,**body.dict())
 
     return BackendPermissionPermissionlistGetResponse(status='success', msg='',
                                                       data=results, total=totalnum, curpage=body.pagenum)
@@ -213,7 +214,6 @@ async def getrolelist(
 )
 
 async def getroledisplayedmenu(
-
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
@@ -221,6 +221,27 @@ async def getroledisplayedmenu(
     getroledisplayedmenu
     """
     result=await Service.permissionService.getroledisplayedmenu(db,token.userrole)
+    return BackendPermissionGetroledisplayedmenuGetResponse(status='success',menus=[r.menu_path for r in result])
+
+
+# </editor-fold>
+
+# <editor-fold desc="admingetroledisplayedmenu get: /backend/permission/admingetroledisplayedmenu">
+@router.get(
+    '/backend/permission/admingetroledisplayedmenu',
+    response_class=XTJsonResponse,
+    response_model=BackendPermissionGetroledisplayedmenuGetResponse,
+)
+
+async def admingetroledisplayedmenu(
+    role_id: int,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    getroledisplayedmenu
+    """
+    result=await Service.permissionService.getroledisplayedmenu(db,role_id)
     return BackendPermissionGetroledisplayedmenuGetResponse(status='success',menus=[r.menu_path for r in result])
 
 
@@ -241,27 +262,32 @@ async def setroledisplayedmenu(
     """
     setroledisplayedmenu
     """
-    role_name=UserRole.UserRole(body.role_id).name
-    newmenu=[]
-    def addparentmenu(path):
-        nonlocal newmenu
-        parent,_=path.rsplit('/',1)
-        if parent:
-            newmenu.append(parent)
-            addparentmenu(parent)
-    if body.menus:
-        newmenu=body.menus.copy()
-        for m in body.menus:
-            addparentmenu(m)
-
-
-
-    sql=insert(Models.Roledisplayedmenu).prefix_with('ignore').values([{'role_id':body.role_id,'role_name':role_name,'menu_path':menu_path} for menu_path in newmenu])
-    await db.execute(sql)
-    await db.commit()
+    await Service.permissionService.setRoleDisplayedMenu(db,body.role_id,body.menus)
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendPermissionSetdisplayedmenuPostResponse(status='success')
 
 
 # </editor-fold>
 
+
+# <editor-fold desc="delerolepermission delete: /backend/permission/delrolepermission/{permission_id}">
+@router.post(
+    '/backend/permission/delrolepermission/{permission_id}',
+    response_class=XTJsonResponse,
+    response_model=BackendPermissionDelrolepermissionPermissionIdDeleteResponse,
+)
+async def delerolepermission(
+    permission_id: str,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    delerolepermission
+    """
+    await Service.permissionService.deleteByPk(db,permission_id)
+    await db.commit()
+    # install pydantic plugin,press alt+enter auto complete the args.
+    return BackendPermissionDelrolepermissionPermissionIdDeleteResponse(status='success')
+
+
+# </editor-fold>

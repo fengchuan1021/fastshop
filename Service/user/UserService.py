@@ -77,7 +77,7 @@ class UserService(CRUDBase[Models.User]):
 if __name__ == '__main__':
     import  asyncio
     from common.dbsession import getdbsession
-    async def t():
+    async def t()->None:
         async with getdbsession() as db:
             await Service.userService.create(db,{"userrole":5,"username":"5556677","password":"ffffff"})
 

@@ -25,7 +25,7 @@ def getModelname(name:str)->str:
 def __getattr__(name: str) -> Any:
     for annotationname,classtype in thismodule.__annotations__.items():
         if annotationname==name:
-            if isinstance(classtype,typing._GenericAlias) or issubclass(classtype,CRUDBase):
+            if isinstance(classtype,typing._GenericAlias) or issubclass(classtype,CRUDBase):#type: ignore
                 tmpinstance = classtype(model:=getattr(Models, getModelname(name)),model.__name__ not in settings.not_cache_models)
             else:
                 tmpinstance = classtype()

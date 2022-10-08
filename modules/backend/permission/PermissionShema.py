@@ -19,6 +19,7 @@ class BackendPermissionRouteGetResponse(BaseModel):
 
 
 class Datum(BaseModel):
+    permission_id:int
     role_id: int
     role_name: str
     api_name: str
@@ -35,7 +36,7 @@ class BackendPermissionPermissionlistGetResponse(BaseModel):
 class Filter(BaseModel):
     role_id: Optional[int] = None
     role_name: Optional[str] = None
-    api_name: Optional[str] = None
+    api_name__contains: Optional[str] = None
 
 
 class BackendPermissionPermissionlistGetRequest(BaseModel):
@@ -65,7 +66,7 @@ class BackendPermissionRolePostRequest(BaseModel):
     role_name: str
 
     @validator('role_name')
-    def checkrole_name(cls,v):
+    def checkrole_name(cls,v:str)->str:
         if not ('a'<= v[0].lower() >='Z'):
             raise ValueError('role name must start with string')
         return v
@@ -114,3 +115,6 @@ class BackendPermissionSetdisplayedmenuPostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
 
+class BackendPermissionDelrolepermissionPermissionIdDeleteResponse(BaseModel):
+    status: Literal['failed','success']
+    msg: Optional[str] = None

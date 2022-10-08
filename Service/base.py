@@ -41,7 +41,7 @@ class CRUDBase(Generic[ModelType]):
         dbSession.add(db_model)
         return db_model
 
-    async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:BaseModel | Dict={},order_by:Any='',options:list=[],**kwargs)->List[ModelType]:
+    async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:BaseModel | Dict={},order_by:Any='',options:list=[],**kwargs:Dict)->List[ModelType]:
         if not order_by:
              order_by=self.model.id.desc()
         where,params=filterbuilder(filter)
@@ -55,11 +55,11 @@ class CRUDBase(Generic[ModelType]):
 
         return results.scalars().all()
 
-    async def pagination(self,dbSession: AsyncSession,pagenum:int=1,pagesize:int=20,filter:BaseModel | Dict={},order_by:str='',calcTotalNum:bool=False,options:list=[],**kwargs)->Tuple[List[ModelType],int]:
+    async def pagination(self,dbSession: AsyncSession,pagenum:int=1,pagesize:int=20,filter:BaseModel | Dict={},order_by:str='',calcTotalNum:bool=False,options:list=[],**kwargs:Dict)->Tuple[List[ModelType],int]:
         where,params=filterbuilder(filter)
         txtwhere=text(where)
         if not order_by:
-            txtorderby=text(f"{self.model.__tablename__}.{self.model.__tablename__}_id desc")
+            txtorderby=text(f"{self.model.__tablename__}.{self.model.__tablename__}_id desc")#type: ignore
         else:
             txtorderby = text(order_by)
         if calcTotalNum:
@@ -82,7 +82,7 @@ class CRUDBase(Generic[ModelType]):
         if model:
             await db.delete(model)
 
-    async def updateByPk(self,db:AsyncSession,pk:int,shema_in:BaseModel | Dict):
+    async def updateByPk(self,db:AsyncSession,pk:int,shema_in:BaseModel | Dict)->None:
         model=await self.findByPk(db,pk)
         if model:
             if not isinstance(shema_in, dict):

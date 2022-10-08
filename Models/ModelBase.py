@@ -11,7 +11,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 class MyBase(object):
 
     @hybrid_property
-    def id(self):
+    def id(self):#type: ignore
         return getattr(self,f'{self.__tablename__}_id')
     @declared_attr
     def created_at(self)->Column[DateTime]:
