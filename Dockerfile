@@ -8,7 +8,7 @@ ENV MODE ${BRANCH_NAME}
 COPY requirements/requirements_${BRANCH_NAME}.txt /etc/requirements_${BRANCH_NAME}.txt
 RUN /bin/cp /usr/share/zoneinfo/Europe/London /etc/localtime && echo 'Europe/London' >/etc/timezone
 RUN pip3 install -r /etc/requirements_${BRANCH_NAME}.txt
-RUN if [[ -z "$SE_TUNA" ]] ; then pip3 install -r /etc/requirements_${BRANCH_NAME}.txt ; else pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r /etc/requirements_${BRANCH_NAME}.txt ; fi
+RUN if [[ -z "$USE_TUNA" ]] ; then pip3 install -r /etc/requirements_${BRANCH_NAME}.txt ; else pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r /etc/requirements_${BRANCH_NAME}.txt ; fi
 COPY . /app
 RUN python3 manage.py initall
 EXPOSE 80
