@@ -111,4 +111,4 @@ def forazureping()->dict:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=80, log_level="info",reload=settings.DEBUG)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, log_level="info",reload=settings.DEBUG)
