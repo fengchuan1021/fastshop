@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  python:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+
+    expose:
+      - "80"
+
+    environment:
+      MODE: "${MODE:-stage}"
+      CMD: "${CMD:-APP}"
+
+    restart: always
