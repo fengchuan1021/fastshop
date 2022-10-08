@@ -13,3 +13,4 @@ async def test()->None:
     await db.commit()
 asyncio.run(test())
 print('123')
+print("helloworld")
