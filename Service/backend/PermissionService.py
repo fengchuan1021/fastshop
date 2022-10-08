@@ -23,8 +23,8 @@ from component.cache import cache
 
 
 class PermissionService(CRUDBase[Models.Permission]):
-    async def getroutelist(self):
-        tree={'label':'backend','children':{}}
+    async def getroutelist(self,*args):
+        tree={'label':'backend','children':{},'key':'backend'}
         def addchildren(arrname,children):
 
             nonlocal tree
@@ -40,13 +40,11 @@ class PermissionService(CRUDBase[Models.Permission]):
                 arr=filepath.split('\\')
                 #*tmparr,controllername=arr
 
-
-                controller = importlib.import_module(
-                    str(f.relative_to(settings.BASE_DIR)).replace(os.sep, '.')[0:-3]
-
-                )
-                addchildren(arr,{i:route.name for i,route in enumerate(controller.router.routes)})
-
+                _filename=str(f.relative_to(settings.BASE_DIR)).replace(os.sep, '.')[0:-3]
+                controller = importlib.import_module(_filename)
+                #addchildren(arr,{i:route.name for i,route in enumerate(controller.router.routes)})
+                addchildren(arr, {route.name: {'label':route.name,'key':f'{_filename.replace("modules.","")}.{route.name}'} for route in controller.router.routes})
+                #addchildren(arr,{0:[{'label':route.name} for route in controller.router.routes]})
         return tree
 
     async def setUserRolePermission(self,db:AsyncSession,roleid:int,apis:str):
@@ -81,11 +79,11 @@ if __name__ == '__main__':
         async with getdbsession() as db:
             filter= {"role_id__eq":4}
 
-            #await Service.permissionService.getrolepermissionlist(db,filter=filter)
+            results=await Service.permissionService.getroutelist(db)
 
 
-            results,total=await Service.permissionService.pagination(db, filter=filter)
+            #results,total=await Service.permissionService.pagination(db, filter=filter)
             print(results)
-            print(total)
+            #print(total)
     import asyncio
     asyncio.run(testfilter())

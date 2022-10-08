@@ -28,14 +28,11 @@ async def checkpermission(db: AsyncSession,request: Request,token: settings.User
                 sql=select(Models.Permission).filter(Models.Permission.role_id==i).filter(Models.Permission.api_name==api_name)
                 haspermission=(await db.execute(sql)).scalar_one_or_none()
                 if haspermission:
-                    #await
                     await cache.hset(f"xtadmin:rolepermission{token.userrole}",api_name,1,3600*24)
-                    #await cache.setTtl(f"xtadmin:rolepermission{token.userrole}",3600*24)
                     return
                 roleid=roleid -i
 
         await cache.hset(f"xtadmin:rolepermission{token.userrole}",api_name,0,3600*24)
-        #await cache.setTtl(f"xtadmin:rolepermission{token.userrole}", 3600 * 24)
         raise PermissionException(msg="you dont have permission access this api")
 
 

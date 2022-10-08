@@ -43,6 +43,7 @@ router = APIRouter(dependencies=dependencies)
     '/backend/permission/route/',
     response_class=XTJsonResponse,
     response_model=BackendPermissionRouteGetResponse,
+    response_model_exclude_unset=True
 )
 async def getroutelist(
     db: AsyncSession = Depends(get_webdbsession),
@@ -52,6 +53,7 @@ async def getroutelist(
     getroutelist
     """
     routes=await Service.permissionService.getroutelist()
+
     def tolist(tmp):
         if 'children' in tmp:
             tmp['children'] = list(tmp['children'].values())
@@ -59,9 +61,10 @@ async def getroutelist(
                 tolist(item)
     tolist(routes)
     print('routes:',routes)
-    topmodel=BackendPermissionRouteGetResponse.parse_obj(routes)
+    return routes
+    #topmodel=BackendPermissionRouteGetResponse.parse_obj(routes)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return topmodel
+    #return topmodel
 
 
 # </editor-fold>

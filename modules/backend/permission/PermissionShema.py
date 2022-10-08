@@ -13,7 +13,8 @@ from pydantic import BaseModel, Field, validator
 
 class BackendPermissionRouteGetResponse(BaseModel):
     label:str
-    children:Optional[List[BackendPermissionRouteGetResponse| str]]
+    key:Optional[str]
+    children:Optional[List[BackendPermissionRouteGetResponse]]
 
 
 
