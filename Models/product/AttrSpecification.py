@@ -1,0 +1,50 @@
+import typing
+
+from sqlalchemy.orm import deferred, relationship, backref
+from Models.ModelBase import Base
+from sqlalchemy import Column, text, Index
+from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
+import enum
+if typing.TYPE_CHECKING:
+    from .Product import Product
+from component.snowFlakeId import snowFlack
+class AttrOrSpecific(enum.Enum):
+    specification = 1
+    attribute= 2
+
+class PreAttrSpecification(Base):
+    __tablename__ = 'preattrspecific'
+    preattrspecific_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    name_en =Column(VARCHAR(32),server_default="",default='')
+    name_cn=Column(VARCHAR(32),server_default="",default='')
+    value_en=Column(TEXT,default='')
+    value_cn = Column(TEXT, default='')
+    type=Column(ENUM(AttrOrSpecific),index=True)
+    singlefield=Column(INTEGER,default=1,server_default="1")
+
+
+class ProductAttribute(Base):
+    __tablename__ = 'product_attribute'
+    product_attribute_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    preattrspecific_id=Column(BIGINT(20),default=0,index=True,server_default='0')
+    product_id = Column(BIGINT,index=True)
+    attributename_en=Column(VARCHAR(32))
+    attributename_cn = Column(VARCHAR(32))
+    attributevalue_en=Column(VARCHAR(32))
+    attributevalue_cn = Column(VARCHAR(32))
+    display_order = Column(INTEGER, default=0, server_default="0")
+    product:Product=relationship('Product',uselist=False,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',backref=backref('Attributes'))
+
+class ProductSpecification(Base):
+    __tablename__ = 'product_specification'
+    product_specification_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    preattrspecific_id=Column(BIGINT(20),default=0,index=True,server_default='0')
+    product_id=Column(INTEGER,index=True)
+    specificationname_en=Column(VARCHAR(32))
+    specificationname_cn = Column(VARCHAR(32))
+    specificationvalue_en=Column(VARCHAR(32))
+    specificationvalue_cn = Column(VARCHAR(32))
+    display_order=Column(INTEGER,default=0,server_default="0")
+    product:Product = relationship('Product', uselist=False,
+                           primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
+                           backref=backref('Specifications'))
