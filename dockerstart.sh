@@ -14,6 +14,9 @@ if [ "$CMD" = "APP" ] ; then
     #gunicorn app:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
     gunicorn app:app --workers $CPUNUMBER --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
   else
+    mkdir -p /app/alembic/versions
+    alembic revision --autogenerate -m "auto"
+    alembic upgrade head
     uvicorn app:app --reload --port 8000 --host=0.0.0.0
   fi
 elif [ "$CMD" = "CELERY" ] ; then

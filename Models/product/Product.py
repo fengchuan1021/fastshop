@@ -10,7 +10,7 @@ class Product(Base):
     __tablename__ = 'product'
     product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     sku = Column(VARCHAR(80))
-
+    brand_id =Column(INTEGER,index=True,server_default='0',default=0)
     name_en= deferred(Column(VARCHAR(255),nullable=True), group='en')
     description_en=deferred(Column(TEXT(),nullable=True), group='en')
     brand_en=deferred(Column(VARCHAR(24),nullable=True), group='en')
