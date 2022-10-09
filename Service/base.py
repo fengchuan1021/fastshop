@@ -82,7 +82,7 @@ class CRUDBase(Generic[ModelType]):
         if model:
             await db.delete(model)
 
-    async def updateByPk(self,db:AsyncSession,pk:int,shema_in:BaseModel | Dict)->None:
+    async def updateByPk(self,db:AsyncSession,pk:int|str,shema_in:BaseModel | Dict)->None:
         model=await self.findByPk(db,pk)
         if model:
             if not isinstance(shema_in, dict):

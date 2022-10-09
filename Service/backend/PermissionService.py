@@ -97,7 +97,6 @@ class PermissionService(CRUDBase[Models.Permission]):
         sql = insert(Models.Roledisplayedmenu).prefix_with('ignore').values(
             [{'role_id': role_id, 'role_name': role_name, 'menu_path': menu_path} for menu_path in newmenu])
         await db.execute(sql)
-        await db.commit()
         print('delet:',f"{cache.get_prefix()}:rolemenu:{role_id}")
         await cache.delete(f"{cache.get_prefix()}:rolemenu:{role_id}")
 if __name__ == '__main__':

@@ -43,6 +43,7 @@ async def delpreattrspecific(
     """
     delpreattrspecific
     """
+    await Service.preAttrSpecificationService.deleteByPk(db,preattrspecific_id)
 
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendProductDelpreattrspecificPreattrspecificIdPostResponse(status='success')
@@ -112,7 +113,7 @@ async def addpreattrspecific(
     """
     body.value_en=body.value_en.strip(',')
     model=await Service.preAttrSpecificationService.create(db,body)
-    await db.commit()
+
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendProductAddpreattrspecificPostResponse(status='success', data=model.dict())
 

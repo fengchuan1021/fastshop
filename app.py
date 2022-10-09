@@ -45,7 +45,8 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
     try:
         response = await call_next(request)  # This request will be modified and sent
         if db_client:=request.state._state.get('db_client',None):
-            backgroundtasks = BackgroundTask(db_client.__aexit__)
+            await db_client.session.commit()
+            backgroundtasks = BackgroundTask(db_client.__aexit__,skipcommit=True)
             response.background =backgroundtasks
     except OperationalError as e:
         jsonout = Common500OutShema(status=Common500Status.dberror,msg=str(e))
@@ -55,6 +56,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         # except:
         #     pass
     except IntegrityError as e:
+        await db_client.session.rollback()
         jsonout = Common500OutShema(status=Common500Status.dberror, msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
         # try:

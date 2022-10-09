@@ -87,7 +87,7 @@ async def delshop(
     delshop
     """
     await Service.shopService.deleteByPk(db,body.shop_id)
-    await db.commit()
+
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendShopDelshopDeleteResponse(status='success')
 

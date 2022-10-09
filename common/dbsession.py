@@ -50,9 +50,9 @@ class getdbsession:
     async def __aenter__(self)->AsyncSession:
         return self.session
 
-    async def __aexit__(self,*args):#type: ignore
-
-        await self.session.commit()
+    async def __aexit__(self,*args,skipcommit=False):#type: ignore
+        if not skipcommit:
+            await self.session.commit()
         if self.session._updateArr:
             await Broadcast.fireAfterUpdated(set(self.session._updateArr), self.session,self.token, background=True)  # type: ignore
         if self.session._createdArr:

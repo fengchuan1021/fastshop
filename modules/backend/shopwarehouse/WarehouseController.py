@@ -64,7 +64,7 @@ async def addwarehouse(
     """
 
     await Service.warehouseService.create(db,body)
-    await db.commit()
+
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendShopAddwarehousePostResponse(status='success',msg='add warehouse success')
 
@@ -87,7 +87,7 @@ async def delwarehouse(
     delwarehouse
     """
     await Service.warehouseService.deleteByPk(db,body.warehouse_id)
-    await db.commit()
+
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendShopDelwarehouseDeleteResponse(status='success')
 

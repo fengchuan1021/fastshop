@@ -285,7 +285,7 @@ async def delerolepermission(
     delerolepermission
     """
     await Service.permissionService.deleteByPk(db,permission_id)
-    await db.commit()
+
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendPermissionDelrolepermissionPermissionIdDeleteResponse(status='success')
 
