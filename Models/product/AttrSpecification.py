@@ -8,9 +8,7 @@ import enum
 if typing.TYPE_CHECKING:
     from .Product import Product
 from component.snowFlakeId import snowFlack
-class AttrOrSpecific(enum.Enum):
-    specification = 1
-    attribute= 2
+
 
 class PreAttrSpecification(Base):
     __tablename__ = 'preattrspecific'
@@ -19,7 +17,7 @@ class PreAttrSpecification(Base):
     name_cn=Column(VARCHAR(32),server_default="",default='')
     value_en=Column(TEXT,default='')
     value_cn = Column(TEXT, default='')
-    type=Column(ENUM(AttrOrSpecific),index=True)
+    type=Column(ENUM('specification','attribute'),index=True)
     singlefield=Column(INTEGER,default=1,server_default="1")
 
 
@@ -33,7 +31,7 @@ class ProductAttribute(Base):
     attributevalue_en=Column(VARCHAR(32))
     attributevalue_cn = Column(VARCHAR(32))
     display_order = Column(INTEGER, default=0, server_default="0")
-    product:Product=relationship('Product',uselist=False,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',backref=backref('Attributes'))
+    product:'Product'=relationship('Product',uselist=False,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',backref=backref('Attributes'))
 
 class ProductSpecification(Base):
     __tablename__ = 'product_specification'
@@ -45,6 +43,6 @@ class ProductSpecification(Base):
     specificationvalue_en=Column(VARCHAR(32))
     specificationvalue_cn = Column(VARCHAR(32))
     display_order=Column(INTEGER,default=0,server_default="0")
-    product:Product = relationship('Product', uselist=False,
+    product:'Product' = relationship('Product', uselist=False,
                            primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
                            backref=backref('Specifications'))
