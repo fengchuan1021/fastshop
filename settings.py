@@ -28,7 +28,7 @@ from UserRole import UserRole
 NODEID=int(os.getenv("NODEID", 0))
 REDISURL:str=os.getenv('REDISURL','')
 SLAVEREDISURL:str=os.getenv('SLAVEREDISURL','')
-CELERY_BROKER_URL=os.getenv('AMQPURL','')
+CELERY_BROKER_URL=os.getenv('AMQPURL',REDISURL)
 CELERY_RESULT_BACKEND=os.getenv('REDISURL','')
 CELERY_RESULT_EXPIRED=3600
 WISH_BASEURL=os.getenv("WISH_BASEURL","")
