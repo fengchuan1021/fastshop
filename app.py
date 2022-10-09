@@ -100,7 +100,7 @@ for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
             str(f.relative_to(settings.BASE_DIR)).replace(os.sep,'.')[0:-3]
         )
 
-        app.include_router(controller.router)
+        app.include_router(controller.router,prefix='/api')
 
 
 
