@@ -36,7 +36,7 @@ router = APIRouter(dependencies=dependencies)
     response_model=BackendProductDelpreattrspecificPreattrspecificIdPostResponse,
 )
 async def delpreattrspecific(
-    preattrspecific_id: int,
+    preattrspecific_id: str,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
