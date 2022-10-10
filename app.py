@@ -103,7 +103,9 @@ for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
         )
 
         app.include_router(controller.router,prefix='/api')
-
+if not settings.AZ_BLOB_CONNSTR:
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/img", StaticFiles(directory="img"), name="img")
 
 
 
