@@ -13,7 +13,7 @@ from common.globalFunctions import get_token
 router = APIRouter()
 @router.post('/uploadimg')
 async def uploadimg(file: UploadFile,
-    container_name: Optional[str] = None,
+    container_name: Optional[str] = 'tmp',
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
     )->Dict:
