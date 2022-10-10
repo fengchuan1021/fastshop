@@ -10,7 +10,7 @@ from functools import wraps
 from typing import Callable,Any,Dict
 from pydantic import BaseModel
 from elasticsearchclient import es
-
+from jose.jwt import ExpiredSignatureError
 
 async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
     try:
@@ -21,10 +21,11 @@ async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
         if tokenstr:
             payload = jwt.decode(tokenstr, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             data = settings.UserTokenData.parse_obj(payload)
-            print("gettoken:",data)
             return data
         else:
             raise Exception("has not token in header or cookie")
+    # except ExpiredSignatureError:
+    #     raise
     except Exception as e:
         guest_token=settings.UserTokenData(id=snowFlack.getId(),is_guest=True)
         return guest_token

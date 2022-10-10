@@ -39,7 +39,7 @@ app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,all
 async def validate_tokenandperformevent(request: Request, call_next:Any)->Response:
     #todo: need verify the token expire date.and add refresh token.
     request.state.token=await getorgeneratetoken(request)
-    print('token:',request.state.token)
+
 
     try:
         response = await call_next(request)  # This request will be modified and sent

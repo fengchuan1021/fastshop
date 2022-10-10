@@ -69,6 +69,7 @@ class UserTokenData(BaseModel):
     username=''
     nickname:Optional[str]=''
     is_guest=False
+    exp:int=0
     @property
     def is_admin(self)->int:
         if not self.userrole:
