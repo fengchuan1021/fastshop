@@ -9,6 +9,8 @@ print('111111111111111111111')
 import time
 
 def before_appstart()->None:
+    Path(settings.BASE_DIR).joinpath('img').mkdir(parents=True,exist_ok=True)
+    Path(settings.BASE_DIR).joinpath('alembic','versions').mkdir(parents=True, exist_ok=True)
     allmodelclasses=generateModel.generate_model()
     serviceTpl=open(os.path.join(settings.BASE_DIR, 'devtools','template', 'Service__init__.py.tpl'), 'r', encoding='utf8').read()
     arr={}
