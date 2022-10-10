@@ -52,3 +52,4 @@ orjson
 elasticsearch==7.17.6
 elasticsearch-dsl==7.4.0
 alembic==1.8.1
+python-multipart
