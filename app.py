@@ -30,7 +30,6 @@ if os.name!='nt':
 else:
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-from elasticsearchclient import es
 from starlette.background import BackgroundTask
 
 app = FastAPI(redoc_url=None if settings.MODE=='main' else '/redoc',docs_url=None if settings.MODE=='main' else '/docs',openapi_url=None if settings.MODE=='main'  else '/openapi.json')

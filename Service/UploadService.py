@@ -45,19 +45,7 @@ class UploadService():
             return 0,str(e)
 
     async def uploadimg(self,imgata:bytes,containername:str='tmp')->Tuple[int,str]:
-        if not settings.AZ_BLOB_CONNSTR:
+        if not settings.AZ_BLOB_CONNSTR:#store in localdriver if not has azure storage key
             return await self.storelocal(imgata,containername)
         else:
             return await self.storeazure(imgata,containername)
-
-
-
-
-if __name__ == '__main__':
-    async def testupload()->None:
-        with open(r'd:\1.png','rb') as f:
-            data=f.read()
-            print(await Service.uploadService.uploadimg(data,'product'))
-
-    import asyncio
-    asyncio.run(testupload())
