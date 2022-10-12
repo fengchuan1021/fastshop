@@ -1,5 +1,5 @@
 from sqlalchemy.orm import deferred, relationship
-from twisted.words.im.locals import OFFLINE
+
 
 from Models.ModelBase import Base
 from sqlalchemy import Column, text
