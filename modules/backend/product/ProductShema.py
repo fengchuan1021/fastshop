@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 
 class AddProductOutShema(BaseModel):
@@ -35,3 +35,17 @@ class AddProductInShema(BaseModel):
     # subproducts: List[SingleProduct] = []
     # images: List[ProductImage] = []
 
+class BackendProductAddproductimgPostRequest(BaseModel):
+    file: bytes
+
+
+
+class BackendProductAddproductimgPostResponse(BaseModel):
+    status: Literal['success','failed']
+    fileurl: str
+
+
+
+class BackendProductPrefetchproductidGetResponse(BaseModel):
+    status: Literal['success','failed']
+    product_id: str

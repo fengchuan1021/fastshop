@@ -1,4 +1,6 @@
 from sqlalchemy.orm import deferred, relationship
+from twisted.words.im.locals import OFFLINE
+
 from Models.ModelBase import Base
 from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT
@@ -18,7 +20,7 @@ class Product(Base):
     name_cn= deferred(Column(VARCHAR(255),nullable=True), group='cn')
     description_cn=deferred(Column(TEXT(),nullable=True), group='cn')
     brand_cn=deferred(Column(VARCHAR(24),nullable=True), group='cn')
-
+    status=Column(ENUM("ONLINE","OFFLINE","EDITING"),server_default="OFFLINE",default='EDITING')
     image=Column(VARCHAR(512),nullable=True,comment="product image.when any of variants are not chosed.can set as same as the defualt variant's fisrt image.")
     video=Column(VARCHAR(512),nullable=True)
 
@@ -33,7 +35,7 @@ class VariantDynamic(Base):
     min_price=Column(INTEGER,server_default="0")
     max_price=Column(INTEGER,server_default="0")
     stock=Column(INTEGER,server_default="0")
-
+    status = Column(ENUM("ONLINE", "OFFLINE","EDITING"), server_default="OFFLINE", default='EDITING')
 class VariantStatic(Base):
     __tablename__ = 'variant_static'
     variant_static_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)

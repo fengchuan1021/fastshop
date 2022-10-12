@@ -50,6 +50,7 @@ productService : ProductService
 variantDynamicService : VariantDynamicService
 variantStaticService : VariantStaticService
 variantImageService : CRUDBase[Models.VariantImage]
+productImgLogService : CRUDBase[Models.ProductImgLog]
 shopService : CRUDBase[Models.Shop]
 warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService
