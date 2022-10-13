@@ -1,4 +1,7 @@
 import settings
+from common import getShopInfo
+from common.getShopInfo import getshopfinfo
+import Models
 if settings.MODE=='dev':
     import subprocess
     import sys
@@ -13,7 +16,7 @@ from component.xtjsonresponse import XTJsonResponse
 from sqlalchemy.exc import IntegrityError,OperationalError
 import importlib
 from typing import Any
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from redis.exceptions import ConnectionError
 
 from component.cache import cache
@@ -110,8 +113,9 @@ if not settings.AZ_BLOB_CONNSTR:
 
 
 @app.get('/')
-def forazureping(request:Request)->dict:
+def forazureping(request:Request, shop: "Models.Shop" =Depends(getshopfinfo))->dict:
     print(request.headers.get('host'))
+    print('shop:',shop.shop_name)
     return {"status": 'success'}
 
 if __name__ == "__main__":

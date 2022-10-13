@@ -7,6 +7,5 @@ import Service
 
 async def getshopfinfo(request:Request,db: AsyncSession = Depends(get_webdbsession))->Models.Shop:#type: ignore
     domainname=request.headers.get('host')
-
     shop=await Service.shopService.findByDomainname(db,domainname)
     return shop

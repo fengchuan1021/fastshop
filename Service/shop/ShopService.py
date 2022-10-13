@@ -12,6 +12,6 @@ from component.cache import cache
 
 class ShopService(CRUDBase[Models.Shop]):
     @cache
-    async def findByDomainname(self,db:AsyncSession,domainname:str)->Models.Shop | None:
+    async def findByDomainname(self,db:AsyncSession,domainname:str)->Models.Shop:
         statment=select(Models.Shop).where(Models.Shop.domainname==domainname)
-        return (await db.execute(statment)).scalar_one_or_none()
+        return (await db.execute(statment)).scalar_one()

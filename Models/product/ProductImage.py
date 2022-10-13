@@ -15,8 +15,8 @@ class VariantImage(Base):
     image_url=Column(XTVARCHAR(512))
     image_alt=Column(XTVARCHAR(255))
     image_order=Column(INTEGER,server_default="0")
-    Variant:'Variant' = relationship('VariantStatic', uselist=False,
-                           primaryjoin='foreign(VariantStatic.variant_static_id) == VariantImage.variant_id',
+    Variant:'Variant' = relationship('Variant', uselist=False,
+                           primaryjoin='foreign(Variant.variant_id) == VariantImage.variant_id',
                            backref=backref('Images'))
 
 class ProductImgLog(Base):
