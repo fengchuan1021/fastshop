@@ -1,7 +1,7 @@
 import orjson
 from sqlalchemy.orm import deferred
 from sqlalchemy import Column, DateTime,text
-
+import settings
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.ext.declarative import declared_attr
@@ -16,7 +16,10 @@ class XTVARCHAR(types.TypeDecorator):
     impl = types.String
     cache_ok = True
     def process_bind_param(self, value:str, dialect:Any)->str:#type: ignore
-        return value[:self.impl.length]
+        if settings.AUTO_TRUNCATE_COLUMN:
+            return value[:self.impl.length]
+        else:
+            return value
 
     def copy(self, **kwargs:Any)->'XTVARCHAR':
         return XTVARCHAR(self.impl.length)
