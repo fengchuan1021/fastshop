@@ -5,7 +5,7 @@ from .Permission import Permission,Roledisplayedmenu
 from .User import User
 from .product.AttrSpecification import PreAttrSpecification,ProductAttribute,ProductSpecification
 from .product.Category import Category,ProductCategory
-from .product.Product import Product,VariantDynamic,VariantStatic
+from .product.Product import Product,VariantStatis,Variant
 from .product.ProductImage import VariantImage,ProductImgLog
 from .shop.Shop import Shop
 from .shop.Warehouse import Warehouse

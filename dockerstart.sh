@@ -18,7 +18,7 @@ if [ "$CMD" = "APP" ] ; then
   else
     mkdir -p /app/alembic/versions
     mkdir -p /app/img
-    python manage.py resetdb
+    migratedb=1 python manage.py resetdb
     uvicorn app:app --reload --port 8000 --host=0.0.0.0
   fi
 elif [ "$CMD" = "CELERY" ] ; then

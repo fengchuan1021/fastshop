@@ -83,6 +83,7 @@ NODEID="66"
 
 @app.command()
 def migratedb()->None:
+    os.environ['migratedb']='1'
     from alembic import command
     import settings
     from alembic.config import Config
@@ -94,6 +95,7 @@ def migratedb()->None:
 
 @app.command()
 def resetdb()->None:
+    os.environ['migratedb'] = '1'
     from alembic import command
     import settings
 

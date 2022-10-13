@@ -12,6 +12,7 @@ class Shop(Base):
 
     shop_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     shop_name = Column(XTVARCHAR(32),unique=True)
+    domainname=Column(XTVARCHAR(64),unique=True,index=True)
     company_name = Column(XTVARCHAR(32),nullable=True)
     company_id=Column(BIGINT,nullable=True)
     warehouse_id=Column(BIGINT,index=True)

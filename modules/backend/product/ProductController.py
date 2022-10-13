@@ -19,29 +19,33 @@ from component.cache import cache
 from component.xtjsonresponse import XTJsonResponse
 
 from modules.backend import dependencies
-from .ProductShema import AddProductInShema, AddProductOutShema, BackendProductPrefetchproductidGetResponse, \
-    BackendProductAddproductimgPostResponse
+from .ProductShema import BackendProductPrefetchproductidGetResponse, \
+    BackendProductAddproductimgPostResponse, BackendProductAddproductPostResponse, BackendProductAddproductPostRequest
 
 router = APIRouter(dependencies=dependencies)#type: ignore
 from component.snowFlakeId import snowFlack
+
+# <editor-fold desc="addproduct post: /backend/product/addproduct">
 @router.post(
     '/backend/product/addproduct',
     response_class=XTJsonResponse,
-    response_model=AddProductOutShema,
+    response_model=BackendProductAddproductPostResponse,
 )
-async def getproductdetailbyid(
-    inShema:AddProductInShema,
+async def addproduct(
+    body: BackendProductAddproductPostRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
-    getproductdetailbyid
+    addproduct
     """
-    print(inShema)
-    await Service.productService.addproduct(inShema)
-
+    await Service.productService.addproduct(db,body)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return AddProductOutShema(status='ok')
+    return BackendProductAddproductPostResponse(status='success',product='')#type :ignore
+
+
+# </editor-fold>
+
 
 # <editor-fold desc="addproductimg post: /backend/product/addproductimg">
 @router.post(

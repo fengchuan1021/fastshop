@@ -15,8 +15,9 @@ from .UploadService import UploadService
 from .WishService import WishService
 from .backend.PermissionService import PermissionService
 from .product.CategoryService import CategoryService
-from .product.ProductService import VariantDynamicService,VariantStaticService,ProductService
+from .product.ProductService import VariantService,ProductService
 from .search.ProductSearchService import ProductSearchService
+from .shop.ShopService import ShopService
 from .user.UserService import UserService
 
 def getModelname(name:str)->str:
@@ -47,11 +48,11 @@ productSpecificationService : CRUDBase[Models.ProductSpecification]
 categoryService : CategoryService
 productCategoryService : CRUDBase[Models.ProductCategory]
 productService : ProductService
-variantDynamicService : VariantDynamicService
-variantStaticService : VariantStaticService
+variantStatisService : CRUDBase[Models.VariantStatis]
+variantService : VariantService
 variantImageService : CRUDBase[Models.VariantImage]
 productImgLogService : CRUDBase[Models.ProductImgLog]
-shopService : CRUDBase[Models.Shop]
+shopService : ShopService
 warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService
 wishService : WishService

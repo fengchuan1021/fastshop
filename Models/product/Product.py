@@ -26,35 +26,33 @@ class Product(Base):
     price=Column(DECIMAL(10,2))
 
 
-class VariantDynamic(Base):
-    __tablename__ = 'variant_dynamic'
-    variant_dynamic_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+class VariantStatis(Base):
+    __tablename__ = 'variant_Statis'
+    variant_Statis_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     is_hot=Column(ENUM("TRUE","FALSE"),server_default="FALSE",default="FALSE",index=True)
     is_recommend=Column(ENUM("TRUE","FALSE"),server_default="FALSE",default="FALSE",index=True)
     collect_cnt=Column(INTEGER,server_default="0",default="0",index=True)
     sale_cnt=Column(INTEGER,server_default="0",default="0",index=True)
-    price=Column(INTEGER,server_default="0")
-    min_price=Column(INTEGER,server_default="0")
-    max_price=Column(INTEGER,server_default="0")
     stock=Column(INTEGER,server_default="0")
-    status = Column(ENUM("ONLINE", "OFFLINE","EDITING"), server_default="OFFLINE", default='EDITING')
-class VariantStatic(Base):
-    __tablename__ = 'variant_static'
-    variant_static_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+
+class Variant(Base):
+    __tablename__ = 'variant'
+    variant_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     sku=Column(XTVARCHAR(80))
     barcode=Column(XTVARCHAR(32))
     hscode=Column(XTVARCHAR(32))
-    group_id=Column(BIGINT,server_default="0")
-
+    product_id=Column(BIGINT,server_default="0")
+    price = Column(DECIMAL(10,2), server_default="0",default=0)
+    status = Column(ENUM("ONLINE", "OFFLINE", "EDITING"), server_default="OFFLINE", default='EDITING')
     specification_en=Column(XTVARCHAR(12),server_default='')
     specification_cn = Column(XTVARCHAR(12), server_default='')
 
     name_en= deferred(Column(XTVARCHAR(255),nullable=True), group='en')
-    description_en=deferred(Column(TEXT(),nullable=True), group='en')
+
     brand_en=deferred(Column(XTVARCHAR(24),nullable=True), group='en')
 
     name_cn= deferred(Column(XTVARCHAR(255),nullable=True), group='cn')
-    description_cn=deferred(Column(TEXT(),nullable=True), group='cn')
+
     brand_cn=deferred(Column(XTVARCHAR(24),nullable=True), group='cn')
 
     #dynamic:"ProductDynamic" = relationship(ProductDynamic, uselist=False, backref="product_static")

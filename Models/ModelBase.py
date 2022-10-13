@@ -10,19 +10,21 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy.ext.hybrid import hybrid_property
 
 import sqlalchemy.types as types
+import os
+if os.getenv('migratedb',''):
+    from sqlalchemy.dialects.mysql import VARCHAR as XTVARCHAR#type: ignore
+else:
+    class XTVARCHAR(types.TypeDecorator):#type: ignore
+        impl = types.String
+        cache_ok = True
+        def process_bind_param(self, value:str, dialect:Any)->str:#type: ignore
+            if settings.AUTO_TRUNCATE_COLUMN:
+                return value[:self.impl.length]
+            else:
+                return value
 
-
-class XTVARCHAR(types.TypeDecorator):
-    impl = types.String
-    cache_ok = True
-    def process_bind_param(self, value:str, dialect:Any)->str:#type: ignore
-        if settings.AUTO_TRUNCATE_COLUMN:
-            return value[:self.impl.length]
-        else:
-            return value
-
-    def copy(self, **kwargs:Any)->'XTVARCHAR':
-        return XTVARCHAR(self.impl.length)
+        def copy(self, **kwargs:Any)->'XTVARCHAR':#type: ignore
+            return XTVARCHAR(self.impl.length)#type: ignore
 
 
 class MyBase(object):

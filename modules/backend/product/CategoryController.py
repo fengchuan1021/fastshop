@@ -41,6 +41,7 @@ async def getcategorylist(
     body: BackendProductGetcategorylistGetRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
+
 ) -> Any:
     """
     getcategorylist

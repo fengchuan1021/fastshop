@@ -41,6 +41,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
     request.state.token=await getorgeneratetoken(request)
 
 
+
     try:
         response = await call_next(request)  # This request will be modified and sent
         if db_client:=request.state._state.get('db_client',None):
@@ -109,7 +110,8 @@ if not settings.AZ_BLOB_CONNSTR:
 
 
 @app.get('/')
-def forazureping()->dict:
+def forazureping(request:Request)->dict:
+    print(request.headers.get('host'))
     return {"status": 'success'}
 
 if __name__ == "__main__":
