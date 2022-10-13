@@ -6,8 +6,22 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.ext.declarative import declared_attr
 
-from typing import Any, Dict,List
+from typing import Any, Dict, List, Optional
 from sqlalchemy.ext.hybrid import hybrid_property
+
+import sqlalchemy.types as types
+
+
+class XTVARCHAR(types.TypeDecorator):
+    impl = types.String
+    cache_ok = True
+    def process_bind_param(self, value:str, dialect:Any)->str:#type: ignore
+        return value[:self.impl.length]
+
+    def copy(self, **kwargs:Any)->'XTVARCHAR':
+        return XTVARCHAR(self.impl.length)
+
+
 class MyBase(object):
 
     @hybrid_property
