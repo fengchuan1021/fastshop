@@ -16,11 +16,11 @@ class Product(Base):
     sku = Column(XTVARCHAR(80))
     brand_id =Column(INTEGER,index=True,server_default='0',default=0)
     name_en= deferred(Column(XTVARCHAR(255),nullable=False,default='',server_default=''), group='en')
-    description_en=deferred(Column(TEXT(),nullable=False,default='',server_default=''), group='en')
+    description_en=deferred(Column(TEXT(),nullable=False,default=''), group='en')
     brand_en=deferred(Column(XTVARCHAR(24),nullable=False,default='',server_default=''), group='en')
 
     name_cn= deferred(Column(XTVARCHAR(255),nullable=False,default='',server_default=''), group='cn')
-    description_cn=deferred(Column(TEXT(),nullable=False,default='',server_default=''), group='cn')
+    description_cn=deferred(Column(TEXT(),nullable=False,default=''), group='cn')
     brand_cn=deferred(Column(XTVARCHAR(24),nullable=False,default='',server_default=''), group='cn')
     status=Column(ENUM("ONLINE","OFFLINE","EDITING"),server_default="OFFLINE",default='EDITING')
     image=Column(XTVARCHAR(512),nullable=True,comment="product image.when any of variants are not chosed.can set as same as the defualt variant's fisrt image.")

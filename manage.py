@@ -42,7 +42,7 @@ def inidb()->None:
     with open('environment/DEV.LOCAL.env', 'w', encoding='utf8') as conf:
         conf.write(f'''ASYNCDBURL="mysql+aiomysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 SYNCDBURL="mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
-SLAVEDBURL="mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
+SLAVEDBURL="mysql+aiomysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset=utf8mb4"
 AMQPURL="{AMQPURL}"
 REDISURL="{REDISURL}"
 SLAVEREDISURL="{REDISURL}"
@@ -127,7 +127,7 @@ def resetdb()->None:
     click.secho('Success: db reset successfuly', fg='green')
 @app.command()
 def initall()->None:
-
+    os.environ['migratedb'] = '1'
     from devtools import patchlibrary
     print('begin patch library:')
     patchlibrary.patch()
