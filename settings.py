@@ -21,9 +21,20 @@ if MODE=='dev':
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.env'))
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.LOCAL.env'))
 elif MODE=='stage':
-    load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
+    if os.getenv('KUBERNETES_SERVICE_HOST',None):#run in k8s,load k8s config
+        load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.K8S.env'))
+        # calc node id from hostname
+        nodeid=sum([ord[i] for i in os.getenv('HOSTNAME').split('-')[-1]])#type: ignore
+        os.environ['NODEID']=str(nodeid)
+    else:
+        load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
 else:
-    load_dotenv(os.path.join(BASE_DIR, 'environment/PROD.env'))
+    if os.getenv('KUBERNETES_SERVICE_HOST', None):  # run in k8s,load k8s config
+        load_dotenv(os.path.join(BASE_DIR, 'environment/PROD.K8S.env'))
+        nodeid = sum([ord[i] for i in os.getenv('HOSTNAME').split('-')[-1]])#type: ignore
+        os.environ['NODEID'] = str(nodeid)
+    else:
+        load_dotenv(os.path.join(BASE_DIR, 'environment/PROD.env'))
 from UserRole import UserRole
 NODEID=int(os.getenv("NODEID", 0))
 REDISURL:str=os.getenv('REDISURL','')
@@ -43,7 +54,7 @@ DBURL=os.getenv("ASYNCDBURL",'')
 SLAVEDBURL=os.getenv("SLAVEDBURL",DBURL)
 SYNC_DBURL=os.getenv("SYNCDBURL",'')
 AUTO_TRUNCATE_COLUMN=os.getenv('AUTO_TRUNCATE_COLUMN',False)
-print(SYNC_DBURL)
+
 AZ_BLOB_CONNSTR=os.getenv('az_blob_connstr','')
 FILE_STORETYPE=os.getenv('FILE_STORETYPE','LOCAL')
 ENABLE_CACHE=True

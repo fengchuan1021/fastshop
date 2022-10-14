@@ -92,4 +92,3 @@ async def fireAfterCreated(newModels:Iterable[Model],db: AsyncSession,token:sett
             else:
                 raise Exception("call back must be a async function")
 
-print('test11')
