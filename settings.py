@@ -19,7 +19,7 @@ MODE=os.getenv("MODE","dev")
 if MODE=='dev':
     DEBUG = True
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.env'))
-    load_dotenv(os.path.join(BASE_DIR, 'environment/DEVCONNECT.env'))
+    load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.LOCAL.env'))
 elif MODE=='stage':
     load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
 else:

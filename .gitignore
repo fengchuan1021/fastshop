@@ -14,4 +14,4 @@ venv.bak/
 .dmypy.json
 dmypy.json
 /alembic/
-environment/DEVCONNECT.env
+environment/DEV.LOCAL.env
