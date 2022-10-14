@@ -58,7 +58,7 @@ docker run --add-host=host.docker.internal:host-gateway --restart=always --log-o
 
 docker run --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name elasticsearch  -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "xpack.security.enabled=false" elasticsearch:8.4.1
 
-docker run --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name kibana  -p 5601:5601 kibana:8.4.1
+docker run --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name kibana  -p 5601:5601 kibana:8.2.3
 ###other command.
 alembic revision --autogenerate -m "add root_cause table"
 alembic upgrade head
