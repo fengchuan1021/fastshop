@@ -45,6 +45,7 @@ userService : UserService
 preAttrSpecificationService : CRUDBase[Models.PreAttrSpecification]
 productAttributeService : CRUDBase[Models.ProductAttribute]
 productSpecificationService : CRUDBase[Models.ProductSpecification]
+brandService : CRUDBase[Models.Brand]
 categoryService : CategoryService
 productCategoryService : CRUDBase[Models.ProductCategory]
 productService : ProductService

@@ -4,6 +4,7 @@ ModelType = TypeVar("ModelType", bound=Base)
 from .Permission import Permission,Roledisplayedmenu
 from .User import User
 from .product.AttrSpecification import PreAttrSpecification,ProductAttribute,ProductSpecification
+from .product.Brand import Brand
 from .product.Category import Category,ProductCategory
 from .product.Product import Product,VariantStatis,Variant
 from .product.VariantImage import VariantImage,ProductImgLog
