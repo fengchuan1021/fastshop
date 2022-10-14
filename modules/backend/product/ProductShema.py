@@ -1,9 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional, Literal
-
-
-
-
+from typing import List, Optional, Literal, Dict, Any
 
 
 class ProductImage(BaseModel):
@@ -74,3 +70,23 @@ class BackendProductAddproductPostResponse(BaseModel):
     status: Literal['success','skunotfound']
     product: Optional[Product]
     msg:Optional[str]
+
+class BackendProductProductlistGetRequest(BaseModel):
+    pagenum: int
+    pagesize: int
+    filter: Dict[str, Any]
+
+
+
+class Datum(BaseModel):
+    product_id: str
+    name_en: str
+    brand_en: str
+    variant: Optional[List[Dict[str, Any]]] = None
+    class Config:
+        orm_mode = True
+
+class BackendProductProductlistGetResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+    data: Optional[List[Datum]] = None

@@ -45,7 +45,7 @@ class VariantService(CRUDBase[Models.Variant]):
 
 from modules.backend.product.ProductShema import BackendProductAddproductPostRequest
 from modules.backend.product.ProductShema import Variant as VariantSchema
-class ProductService():
+class ProductService(CRUDBase[Models.Product]):
     @cache(key_builder='getpkcachename', expire=3600 * 48)
     async def findByPk(self,db:AsyncSession,id:int,lang:str=''):
         if lang:

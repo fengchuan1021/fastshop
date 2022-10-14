@@ -9,6 +9,7 @@ from typing import Any, Dict, Literal
 from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import undefer_group
 
 import Models
 import Service
@@ -20,7 +21,8 @@ from component.xtjsonresponse import XTJsonResponse
 
 from modules.backend import dependencies
 from .ProductShema import BackendProductPrefetchproductidGetResponse, \
-    BackendProductAddproductimgPostResponse, BackendProductAddproductPostResponse, BackendProductAddproductPostRequest
+    BackendProductAddproductimgPostResponse, BackendProductAddproductPostResponse, BackendProductAddproductPostRequest, \
+    BackendProductProductlistGetResponse, BackendProductProductlistGetRequest
 
 router = APIRouter(dependencies=dependencies)#type: ignore
 from component.snowFlakeId import snowFlack
@@ -91,6 +93,28 @@ async def prefetchproductid(
 
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendProductPrefetchproductidGetResponse(status='success', product_id=snowFlack.getId())
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="productlist get: /backend/product/productlist">
+@router.post(
+    '/backend/product/productlist',
+    response_class=XTJsonResponse,
+    response_model=BackendProductProductlistGetResponse,
+)
+async def productlist(
+    body: BackendProductProductlistGetRequest,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    productlist
+    """
+    result,total=await Service.productService.pagination(db,options=[undefer_group('en')],calcTotalNum=True,**body.dict())
+    # install pydantic plugin,press alt+enter auto complete the args.
+    return BackendProductProductlistGetResponse(status='success',data=result)
 
 
 # </editor-fold>
