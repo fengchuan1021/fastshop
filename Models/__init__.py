@@ -7,5 +7,5 @@ from .product.AttrSpecification import PreAttrSpecification,ProductAttribute,Pro
 from .product.Category import Category,ProductCategory
 from .product.Product import Product,VariantStatis,Variant
 from .product.ProductImage import VariantImage,ProductImgLog
-from .shop.Shop import Shop
-from .shop.Warehouse import Warehouse
+from .site.Site import Site
+from .site.Warehouse import Warehouse

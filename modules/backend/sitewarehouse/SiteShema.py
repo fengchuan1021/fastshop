@@ -12,19 +12,19 @@ from pydantic import BaseModel, Field
 
 
 
-class BackendShopAddshopPostRequest(BaseModel):
-    shop_name: str
+class BackendSiteAddsitePostRequest(BaseModel):
+    site_name: str
     warehouse_id: str
     warehouse_name: str
 
 
 
-class BackendShopAddshopPostResponse(BaseModel):
+class BackendSiteAddsitePostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
 
 
-class BackendShopShoplistPostRequest(BaseModel):
+class BackendSiteSitelistPostRequest(BaseModel):
     pagesize: Optional[int] = 20
     pagenum: Optional[int] = 1
     filter: Optional[Dict[str, Any]] = None
@@ -32,38 +32,36 @@ class BackendShopShoplistPostRequest(BaseModel):
 
 
 class Datum(BaseModel):
-    shop_name: str
-    shop_id: str
-    company_id: Optional[str]
-    compayn_name: Optional[str]
+    site_name: str
+    site_id: str
     warehouse_id: str
     warehouse_name: str
     class Config:
         orm_mode = True
 
-class BackendShopShoplistPostResponse(BaseModel):
+class BackendSiteSitelistPostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
     data: Optional[List[Datum]] = None
 
 
-class BackendShopDelshopDeleteRequest(BaseModel):
-    shop_id: str
+class BackendSiteDelsiteDeleteRequest(BaseModel):
+    site_id: str
 
 
 
-class BackendShopDelshopDeleteResponse(BaseModel):
+class BackendSiteDelsiteDeleteResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
 
-class BackendShopEditshopPostRequest(BaseModel):
-    shop_name: str
+class BackendSiteEditsitePostRequest(BaseModel):
+    site_name: str
     warehouse_id: str
     warehouse_name: str
-    shop_id: str
+    site_id: str
 
 
 
-class BackendShopEditshopPostResponse(BaseModel):
+class BackendSiteEditsitePostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None

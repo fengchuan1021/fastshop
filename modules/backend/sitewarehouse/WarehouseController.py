@@ -19,19 +19,19 @@ from component.xtjsonresponse import XTJsonResponse
 from .__init__ import dependencies
 from .WarehouseShema import (
 
-    BackendShopWarehouselistPostResponse, BackendShopAddwarehousePostResponse, BackendShopAddwarehousePostRequest,
-    BackendShopDelwarehouseDeleteResponse, BackendShopDelwarehouseDeleteRequest, BackendShopEditwarehousePostResponse,
-    BackendShopEditwarehousePostRequest,
+    BackendSiteWarehouselistPostResponse, BackendSiteAddwarehousePostResponse, BackendSiteAddwarehousePostRequest,
+    BackendSiteDelwarehouseDeleteResponse, BackendSiteDelwarehouseDeleteRequest, BackendSiteEditwarehousePostResponse,
+    BackendSiteEditwarehousePostRequest,
 )
 
 router = APIRouter(dependencies=dependencies)
 
 
-# <editor-fold desc="warehouselist post: /backend/shop/warehouselist">
+# <editor-fold desc="warehouselist post: /backend/site/warehouselist">
 @router.post(
-    '/backend/shop/warehouselist',
+    '/backend/site/warehouselist',
     response_class=XTJsonResponse,
-    response_model=BackendShopWarehouselistPostResponse,
+    response_model=BackendSiteWarehouselistPostResponse,
 )
 async def warehouselist(
 
@@ -43,19 +43,19 @@ async def warehouselist(
     """
     results=await Service.warehouseService.getList(db)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendShopWarehouselistPostResponse(status='success', msg='', data=results)
+    return BackendSiteWarehouselistPostResponse(status='success', msg='', data=results)
 
 
 # </editor-fold>
 
-# <editor-fold desc="addwarehouse post: /backend/shop/addwarehouse">
+# <editor-fold desc="addwarehouse post: /backend/site/addwarehouse">
 @router.post(
-    '/backend/shop/addwarehouse',
+    '/backend/site/addwarehouse',
     response_class=XTJsonResponse,
-    response_model=BackendShopAddwarehousePostResponse,
+    response_model=BackendSiteAddwarehousePostResponse,
 )
 async def addwarehouse(
-    body: BackendShopAddwarehousePostRequest,
+    body: BackendSiteAddwarehousePostRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
@@ -66,20 +66,20 @@ async def addwarehouse(
     await Service.warehouseService.create(db,body)
 
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendShopAddwarehousePostResponse(status='success',msg='add warehouse success')
+    return BackendSiteAddwarehousePostResponse(status='success',msg='add warehouse success')
 
 
 # </editor-fold>
 
 
-# <editor-fold desc="delwarehouse delete: /backend/shop/delwarehouse">
+# <editor-fold desc="delwarehouse delete: /backend/site/delwarehouse">
 @router.post(
-    '/backend/shop/delwarehouse',
+    '/backend/site/delwarehouse',
     response_class=XTJsonResponse,
-    response_model=BackendShopDelwarehouseDeleteResponse,
+    response_model=BackendSiteDelwarehouseDeleteResponse,
 )
 async def delwarehouse(
-    body: BackendShopDelwarehouseDeleteRequest,
+    body: BackendSiteDelwarehouseDeleteRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
@@ -89,19 +89,19 @@ async def delwarehouse(
     await Service.warehouseService.deleteByPk(db,body.warehouse_id)
 
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendShopDelwarehouseDeleteResponse(status='success')
+    return BackendSiteDelwarehouseDeleteResponse(status='success')
 
 
 # </editor-fold>
 
-# <editor-fold desc="editwarehouse post: /backend/shop/editwarehouse">
+# <editor-fold desc="editwarehouse post: /backend/site/editwarehouse">
 @router.post(
-    '/backend/shop/editwarehouse',
+    '/backend/site/editwarehouse',
     response_class=XTJsonResponse,
-    response_model=BackendShopEditwarehousePostResponse,
+    response_model=BackendSiteEditwarehousePostResponse,
 )
 async def editwarehouse(
-    body: BackendShopEditwarehousePostRequest,
+    body: BackendSiteEditwarehousePostRequest,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
@@ -110,7 +110,7 @@ async def editwarehouse(
     """
     await Service.warehouseService.updateByPk(db,body.warehouse_id,body)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendShopEditwarehousePostResponse(status='success')
+    return BackendSiteEditwarehousePostResponse(status='success')
 
 
 # </editor-fold>

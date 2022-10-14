@@ -12,7 +12,7 @@ class Category(Base):
     parent_id = Column(BIGINT,index=True)
     parent_name = Column(XTVARCHAR(32),server_default='',default='')
     category_order=Column(INTEGER,default=0,server_default='0')
-    shop_id=Column(INTEGER,server_default="0")
+    site_id=Column(INTEGER,server_default="0")
     description=Column(XTVARCHAR(512))
     category_image=Column(XTVARCHAR(512),server_default="",default='')
     #use virtual foreign key.

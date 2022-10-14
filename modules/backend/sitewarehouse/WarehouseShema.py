@@ -25,37 +25,37 @@ class Datum(BaseModel):
         orm_mode = True
 
 
-class BackendShopWarehouselistPostResponse(BaseModel):
+class BackendSiteWarehouselistPostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
     data: Optional[List[Datum]] = None
-class BackendShopAddwarehousePostRequest(BaseModel):
+class BackendSiteAddwarehousePostRequest(BaseModel):
     warehouse_name: str
     warehouse_mark: Optional[str] = ''
 
 
 
-class BackendShopAddwarehousePostResponse(BaseModel):
+class BackendSiteAddwarehousePostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
 
-class BackendShopDelwarehouseDeleteRequest(BaseModel):
+class BackendSiteDelwarehouseDeleteRequest(BaseModel):
     warehouse_id: str
 
 
 
-class BackendShopDelwarehouseDeleteResponse(BaseModel):
+class BackendSiteDelwarehouseDeleteResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
 
 
-class BackendShopEditwarehousePostRequest(BaseModel):
+class BackendSiteEditwarehousePostRequest(BaseModel):
     warehouse_name: str
     warehouse_mark: Optional[str] = ''
     warehouse_id: str
 
 
 
-class BackendShopEditwarehousePostResponse(BaseModel):
+class BackendSiteEditwarehousePostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None

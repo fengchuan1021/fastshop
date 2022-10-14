@@ -1,6 +1,6 @@
 import settings
-from common import getShopInfo
-from common.getShopInfo import getshopfinfo
+
+from common.getSiteInfo import getSiteInfo
 import Models
 if settings.MODE=='dev':
     import subprocess
@@ -113,9 +113,9 @@ if not settings.AZ_BLOB_CONNSTR:
 
 
 @app.get('/')
-def forazureping(request:Request, shop: "Models.Shop" =Depends(getshopfinfo))->dict:
+def forazureping(request:Request, site: "Models.Site" =Depends(getSiteInfo))->dict:
     print(request.headers.get('host'))
-    print('shop:',shop.shop_name)
+    print('shop:',site.site_name)
     return {"status": 'success'}
 
 if __name__ == "__main__":
