@@ -41,7 +41,7 @@ async def addproduct(
     """
     await Service.productService.addproduct(db,body)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendProductAddproductPostResponse(status='success',product='')#type :ignore
+    return BackendProductAddproductPostResponse(status='success')#type :ignore
 
 
 # </editor-fold>
@@ -66,7 +66,7 @@ async def addproductimg(
     flag,fileurl=await Service.uploadService.uploadimg(data,'product')
     if not flag:
         return {'status':'falied','msg':'upload pic failed'}
-    productimglog=Models.ProductImgLog(product_id=product_id,image_url=fileurl)
+    productimglog=Models.ProductImgLog(product_id=product_id,image_url=fileurl)#type: ignore
     db.add(productimglog)
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendProductAddproductimgPostResponse(status='success',fileurl=fileurl)

@@ -3,7 +3,6 @@ from pathlib import Path
 import os
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import event
 import settings
 from fastapi import Request
@@ -13,9 +12,7 @@ from sqlalchemy.util.concurrency import await_only
 from elasticsearchclient import es
 from common.routingDBsession import AsyncSessionMaker,engines
 
-for f in Path(settings.BASE_DIR).joinpath('listeners').rglob('*.py'):
-    if f.name.endswith('Listener.py'):
-        importlib.import_module(str(f.relative_to(settings.BASE_DIR)).replace(os.sep,'.')[0:-3])
+
 
 class getdbsession:
     def __init__(self,request:Request=None,token: settings.UserTokenData=None):
@@ -74,5 +71,7 @@ async def get_webdbsession(request:Request,token: settings.UserTokenData=Depends
     return db_client.session
 
 
-
+for f in Path(settings.BASE_DIR).joinpath('listeners').rglob('*.py'):
+    if f.name.endswith('Listener.py'):
+        importlib.import_module(str(f.relative_to(settings.BASE_DIR)).replace(os.sep,'.')[0:-3])
 

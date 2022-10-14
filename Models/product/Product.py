@@ -5,9 +5,11 @@ from Models.ModelBase import Base,XTVARCHAR
 from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR, TEXT, DECIMAL
 
+
 from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING, List
-
+if TYPE_CHECKING:
+    from Models.product.VariantImage import VariantImage
 class Product(Base):
     __tablename__ = 'product'
     product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
@@ -46,7 +48,7 @@ class Variant(Base):
     status = Column(ENUM("ONLINE", "OFFLINE", "EDITING"), server_default="OFFLINE", default='EDITING')
     specification_en=Column(XTVARCHAR(12),server_default='')
     specification_cn = Column(XTVARCHAR(12), server_default='')
-
+    brand_id=Column(INTEGER,default=0,server_default="0")
     name_en= deferred(Column(XTVARCHAR(255),nullable=True), group='en')
 
     brand_en=deferred(Column(XTVARCHAR(24),nullable=True), group='en')
@@ -56,6 +58,9 @@ class Variant(Base):
     brand_cn=deferred(Column(XTVARCHAR(24),nullable=True), group='cn')
 
     #dynamic:"ProductDynamic" = relationship(ProductDynamic, uselist=False, backref="product_static")
-    #images:List[ProductImage] = relationship('ProductImage', backref='Product',uselist=True)
+    Images:List['VariantImage'] = relationship('VariantImage',uselist=True,
+
+                                               primaryjoin='foreign(VariantImage.variant_id) == Variant.variant_id')
+
 
 

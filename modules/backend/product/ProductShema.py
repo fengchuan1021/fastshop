@@ -43,6 +43,7 @@ class Variant(BaseModel):
     sku: str
     product_id: Optional[str]
     image:List[str]
+
 class BackendProductAddproductPostRequest(BaseModel):
     name_en: str
     description_en: Optional[str]
@@ -56,7 +57,7 @@ class BackendProductAddproductPostRequest(BaseModel):
     product_id: Optional[str]
     specifications: Optional[List[str]]
     subproduct: Optional[List['Variant']]
-    image:List[str] | str
+    image:List[str]
     video:Optional[str]
 
 
@@ -71,4 +72,5 @@ class Product(BaseModel):
 
 class BackendProductAddproductPostResponse(BaseModel):
     status: Literal['success','skunotfound']
-    product: Product
+    product: Optional[Product]
+    msg:Optional[str]

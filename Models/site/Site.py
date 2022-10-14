@@ -1,3 +1,4 @@
+from openapi_schema_validator._validators import nullable
 
 import settings
 from component.snowFlakeId import snowFlack
@@ -10,7 +11,7 @@ from ..ModelBase import Base,XTVARCHAR
 class Site(Base):
     __tablename__ = 'site'
 
-    site_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    site_id = Column(INTEGER, primary_key=True, autoincrement=True)
     site_name = Column(XTVARCHAR(32),unique=True)
     domainname=Column(XTVARCHAR(64),unique=True,index=True)
 

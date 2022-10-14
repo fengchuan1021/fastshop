@@ -19,6 +19,8 @@ else:
         cache_ok = True
         def process_bind_param(self, value:str, dialect:Any)->str:#type: ignore
             if settings.AUTO_TRUNCATE_COLUMN:
+                if not value:
+                    return ''
                 return value[:self.impl.length]
             else:
                 return value
@@ -26,6 +28,10 @@ else:
         def copy(self, **kwargs:Any)->'XTVARCHAR':#type: ignore
             return XTVARCHAR(self.impl.length)#type: ignore
 
+def obj2dict(obj:Any)->Dict:#type: ignore
+    if isinstance(obj,Base):
+        return obj.dict()
+    raise Exception("object are not jsonable")
 
 class MyBase(object):
 
@@ -56,7 +62,6 @@ class MyBase(object):
                 dic[key]=value
         return dic
     def json(self)->str:
-
-        return orjson.dumps(self.dict()).decode()
+        return orjson.dumps(self.dict(),default=obj2dict).decode()
 
 Base = declarative_base(cls=MyBase)

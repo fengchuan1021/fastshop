@@ -18,10 +18,7 @@ from sqlalchemy.orm import undefer_group
 
 from sqlalchemy import select,text
 from component.cache import cache
-
-if typing.TYPE_CHECKING:
-    from modules.backend.product.ProductShema import BackendProductAddproductPostRequest
-
+from component.snowFlakeId import snowFlack
 
 
 class VariantService(CRUDBase[Models.Variant]):
@@ -46,7 +43,8 @@ class VariantService(CRUDBase[Models.Variant]):
 
 
 
-
+from modules.backend.product.ProductShema import BackendProductAddproductPostRequest
+from modules.backend.product.ProductShema import Variant as VariantSchema
 class ProductService():
     @cache(key_builder='getpkcachename', expire=3600 * 48)
     async def findByPk(self,db:AsyncSession,id:int,lang:str=''):
@@ -57,10 +55,6 @@ class ProductService():
         results = await db.execute(statment)
         return results.scalar_one_or_none()
 
-    async def addtovariant_table(self,db:AsyncSession,inSchema:'BackendProductAddproductPostRequest'):
-        Variant = Models.Variant(**inSchema.dict(exclude={'stock', 'attributes', 'subproduct', 'images'}))
-
-        VariantDynamic = Models.VariantDynamic(**inSchema.dict(include={'stock'}))
 
     async def addproduct(self,db:AsyncSession,inSchema:'BackendProductAddproductPostRequest')->Dict:
         #add to product table.
@@ -73,33 +67,29 @@ class ProductService():
 
 
         #add variant
-        #variant split to 2 table,one for static column,one for dynamic Column
-
         #if inparams has no subproduct(variant),add proudct as itself's variant
         #every product must have a variant,search engine require this.
 
+        variantarr = []
         if not inSchema.subproduct:
-
-            await Service.VariantService.create(inSchema)
-            await Service.variantDynamicService.create(inSchema)
+            tmpvariant=VariantSchema.parse_obj(inSchema)
+            variantarr.append(tmpvariant)
         else:
-            variantarr = []
             for subproduct in inSchema.subproducts:
                 subproduct.brand_en=inSchema.brand_en
                 subproduct.brand_id=inSchema.brand_id
                 subproduct.status=inSchema.status
                 subproduct.product_id=productmodel.product_id
+                variantarr.append(subproduct)
+        for variantShema in variantarr:
+            variantmodel=Models.Variant(**variantShema.dict(exclude={'image'}))
+            variantmodel.variant_id=snowFlack.getId()
+            for img in variantShema.image:
+                imgmodel=Models.VariantImage(variant_id=variantmodel.variant_id,image_url=img)
+                variantmodel.Images.append(imgmodel)
 
+            db.add(variantmodel)
 
-        Variant=Models.Variant(**inSchema.dict(exclude={'stock','attributes','subproduct','images'}))
-
-        VariantDynamic=Models.VariantDynamic(**inSchema.dict(include={'stock'}))
-
-        for attribute in inSchema.attributes:
-            Variant.images.append(Models.ProductAttribute(**attribute.dict()))
-
-        db.add(Variant)
-        db.add(VariantDynamic)
 
 if __name__ == "__main__":
     pass
