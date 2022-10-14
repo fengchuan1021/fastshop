@@ -16,7 +16,7 @@ class BackendSiteAddsitePostRequest(BaseModel):
     site_name: str
     warehouse_id: str
     warehouse_name: str
-
+    domainname:str
 
 
 class BackendSiteAddsitePostResponse(BaseModel):
@@ -36,6 +36,7 @@ class Datum(BaseModel):
     site_id: str
     warehouse_id: str
     warehouse_name: str
+    domainname:str
     class Config:
         orm_mode = True
 
@@ -59,6 +60,7 @@ class BackendSiteEditsitePostRequest(BaseModel):
     warehouse_id: str
     warehouse_name: str
     site_id: str
+
 
 
 

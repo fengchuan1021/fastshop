@@ -16,4 +16,4 @@ class Site(Base):
 
     warehouse_id=Column(BIGINT,index=True)
     warehouse_name=Column(XTVARCHAR(32))
-    warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) == site.warehouse_id',backref=backref('sites'))
+    warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) == Site.warehouse_id',backref=backref('sites'))
