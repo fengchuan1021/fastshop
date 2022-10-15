@@ -1,16 +1,20 @@
-import asyncio
 
+import asyncio
 import Models
 from common.dbsession import getdbsession
-from passlib.context import CryptContext
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import Service
 
-async def adddefaultadmin():
-    u = Models.User(username='fengchuan', password=pwd_context.hash('123456'), userrole=2)
-    db=await getdbsession()
-    db.add(u)
-    await db.commit()
+async def adddefaultadmin()->None:
+    async with getdbsession() as db:
 
+        root = Models.User(username='root', password=Service.userService.get_password_hash('root'), userrole=1)
+        await Service.userService.create(db,root)#type: ignore
 
+        await db.commit()
+
+def addroot()->None:
+    import asyncio
+    loop=asyncio.get_event_loop()
+    loop.run_until_complete(adddefaultadmin())
 if __name__ == '__main__':
     asyncio.run(adddefaultadmin())

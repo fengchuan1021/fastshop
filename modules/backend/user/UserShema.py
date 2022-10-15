@@ -20,11 +20,12 @@ class BackendUserUserGetRequest(BaseModel):
 
 
 class Data(BaseModel):
-    id: int=None
+    id: int
     username: str
     email: str
     balance: float=0
     phone: str
+    userrole:int
     class Config:
         orm_mode = True
 

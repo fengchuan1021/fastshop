@@ -128,7 +128,7 @@ def resetdb()->None:
 @app.command()
 def initall()->None:
     os.environ['migratedb'] = '1'
-    from devtools import patchlibrary
+    from devtools import patchlibrary,addadmin
     print('begin patch library:')
     patchlibrary.patch()
     print('end patch library')
@@ -139,7 +139,9 @@ def initall()->None:
         print('end setup git hook')
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':
         inidb()
-
+    if os.getenv('MODE','main')!='main':
+        addadmin.addroot()
+        click.secho('Success: backend username:root,password:root', fg='red')
     click.secho('Success: project has init successfully', fg='green')
 
 
