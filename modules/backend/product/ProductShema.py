@@ -30,6 +30,9 @@ class Attribute(BaseModel):
     key: str
     value: str
 
+class Image(BaseModel):
+    image_url:str
+    image_alt:Optional[str]=''
 class Variant(BaseModel):
     name_en: str
     brand_en: str
@@ -38,7 +41,7 @@ class Variant(BaseModel):
     price: float
     sku: str
     product_id: Optional[str]
-    image:List[str]
+    image:List[Image]
 
 class BackendProductAddproductPostRequest(BaseModel):
     name_en: str
@@ -53,7 +56,7 @@ class BackendProductAddproductPostRequest(BaseModel):
     product_id: Optional[str]
     specifications: Optional[List[str]]
     subproduct: Optional[List['Variant']]
-    image:List[str]
+    image:List[Image]
     video:Optional[str]
 
 

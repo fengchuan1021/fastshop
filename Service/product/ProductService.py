@@ -59,8 +59,8 @@ class ProductService(CRUDBase[Models.Product]):
     async def addproduct(self,db:AsyncSession,inSchema:'BackendProductAddproductPostRequest')->Dict:
         #add to product table.
         dic = inSchema.dict(exclude={'attributes', 'specifications', 'subproduct'})
-        if isinstance(dic['image'], list):
-            dic['image'] = dic['image'][0]
+
+        dic['image'] = dic['image'][0]['image_url']
         productmodel = Models.Product(**dic)
         db.add(productmodel)
 
@@ -83,9 +83,9 @@ class ProductService(CRUDBase[Models.Product]):
                 variantarr.append(subproduct)
         for variantShema in variantarr:
             variantmodel=Models.Variant(**variantShema.dict(exclude={'image'}))
-            variantmodel.variant_id=snowFlack.getId()
+
             for img in variantShema.image:
-                imgmodel=Models.VariantImage(variant_id=variantmodel.variant_id,image_url=img)
+                imgmodel=Models.VariantImage(image_url=img.image_url,image_alt=img.image_alt)
                 variantmodel.Images.append(imgmodel)
 
             db.add(variantmodel)
