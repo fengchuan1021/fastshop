@@ -16,21 +16,12 @@ from component.cache import cache
 class VariantSiteService(CRUDBase[Models.VariantSite]):
     async def getproductsitestockdetail(self,db:AsyncSession,product_id:str)->MappingResult:
         #statment=select(Models.Variant).options(selectinload(Models.Variant.Images),joinedload(Models.Variant.Sites),undefer_group('en')).filter(Models.Variant.product_id == product_id)
-        statment=select(Models.Variant,Models.VariantSite).options(Load(Models.Variant).load_only(Models.Variant.sku)).outerjoin(Models.Variant.Sites)
+        statment=select(Models.Variant,Models.VariantSite).options(Load(Models.Variant).load_only(Models.Variant.sku)).outerjoin(Models.Variant.Sites).filter(Models.Variant.product_id == product_id)
         print(str(statment))
         results=(await db.execute(statment.__str__())).mappings()#type: ignore
-        for row in results:
-            print(row)
+
         return results
-        # for row in results:
-        #     print(row)
-        # print(results)
-        # for row in results:
-        #     print(row)
-        # print(results)
-        # return results
-        #print(results)
-        #return arr
+
 
 
 if __name__ == "__main__":
