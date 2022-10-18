@@ -84,7 +84,7 @@ class ProductService(CRUDBase[Models.Product]):
                 variantarr.append(subproduct)
         for variantShema in variantarr:
             print('????')
-            variantmodel=Models.Variant(**variantShema.dict(exclude={'image'}))
+            variantmodel=Models.Variant(image=VariantSchema.image[0],**variantShema.dict(exclude={'image'}))
 
             for img in variantShema.image:
                 imgmodel=Models.VariantImage(image_url=img.image_url,image_alt=img.image_alt)
