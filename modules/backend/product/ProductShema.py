@@ -27,7 +27,7 @@ class BackendProductPrefetchproductidGetResponse(BaseModel):
 
 
 class Attribute(BaseModel):
-    key: str
+    name: str
     value: str
 
 class Image(BaseModel):
@@ -35,14 +35,16 @@ class Image(BaseModel):
     image_alt:Optional[str]=''
 class Variant(BaseModel):
     name_en: str
-    brand_en: str
-    brand_id:str
-    status:Literal["ONLINE","OFFLINE","EDITING"]
+    brand_en: Optional[str]
+    brand_id:Optional[str]
+    status:Optional[Literal["ONLINE","OFFLINE","EDITING"]]
     price: float
     sku: str
     product_id: Optional[str]
     image:List[Image]
-
+class Specification(BaseModel):
+    name:str
+    value:List[str]
 class BackendProductAddproductPostRequest(BaseModel):
     name_en: str
     description_en: Optional[str]
@@ -54,8 +56,8 @@ class BackendProductAddproductPostRequest(BaseModel):
 
     attributes: Optional[List[Attribute]] = None
     product_id: Optional[str]
-    specifications: Optional[List[str]]
-    subproduct: Optional[List['Variant']]
+    specifications: Optional[List[Specification]]
+    subproducts: Optional[List['Variant']]
     image:List[Image]
     video:Optional[str]
 

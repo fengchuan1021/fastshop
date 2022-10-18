@@ -112,11 +112,13 @@ if not settings.AZ_BLOB_CONNSTR:
 
 
 
-@app.get('/')
-def forazureping(request:Request, site: "Models.Site" =Depends(getSiteInfo))->dict:
-    print(request.headers.get('host'))
-    print('shop:',site.site_name)
-    return {"status": 'success'}
+@app.post('/')
+async def forazureping(request:Request, site: "Models.Site" =Depends(getSiteInfo))->dict:
+    #print(request.headers.get('host'))
+    #print('shop:',site.site_name)
+    print(request.headers)
+    print(await request.json())
+    return {"status": 'success','hello':'world'}
 
 if __name__ == "__main__":
     import uvicorn

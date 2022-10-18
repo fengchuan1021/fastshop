@@ -58,7 +58,7 @@ class ProductService(CRUDBase[Models.Product]):
 
     async def addproduct(self,db:AsyncSession,inSchema:'BackendProductAddproductPostRequest')->Dict:
         #add to product table.
-        dic = inSchema.dict(exclude={'attributes', 'specifications', 'subproduct'})
+        dic = inSchema.dict(exclude={'attributes', 'specifications', 'subproducts'})
 
         dic['image'] = dic['image'][0]['image_url']
         productmodel = Models.Product(**dic)
@@ -71,10 +71,11 @@ class ProductService(CRUDBase[Models.Product]):
         #every product must have a variant,search engine require this.
 
         variantarr = []
-        if not inSchema.subproduct:
+        if not inSchema.subproducts:
             tmpvariant=VariantSchema.parse_obj(inSchema)
             variantarr.append(tmpvariant)
         else:
+            print('else::::')
             for subproduct in inSchema.subproducts:
                 subproduct.brand_en=inSchema.brand_en
                 subproduct.brand_id=inSchema.brand_id
@@ -82,6 +83,7 @@ class ProductService(CRUDBase[Models.Product]):
                 subproduct.product_id=productmodel.product_id
                 variantarr.append(subproduct)
         for variantShema in variantarr:
+            print('????')
             variantmodel=Models.Variant(**variantShema.dict(exclude={'image'}))
 
             for img in variantShema.image:

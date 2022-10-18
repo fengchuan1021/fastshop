@@ -8,5 +8,6 @@ from .product.Brand import Brand
 from .product.Category import Category,ProductCategory
 from .product.Product import Product,VariantStatis,Variant
 from .product.VariantImage import VariantImage,ProductImgLog
+from .product.VariantSite import VariantSite
 from .site.Site import Site
 from .site.Warehouse import Warehouse

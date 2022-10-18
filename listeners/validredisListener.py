@@ -25,3 +25,11 @@ async def resetcache(model:Models.Variant,db:AsyncSession,token:settings.UserTok
     if tmpservice.usecache:
         cachekey = f"{cache.get_prefix()}:modelcache:{model.__tablename__}:{model.id}"
         await cache.set(cachekey,model.json())
+
+@Broadcast.AfterModelUpdated(Models.Category,background=True)
+async def delcategorytree(model:Models.Category,db:AsyncSession,token:settings.UserTokenData=None)->None:
+    await cache.delete('xt:admin:categorytree')
+
+@Broadcast.AfterModelDeleted(Models.Category,background=True)
+async def delcategorytree2(model:Models.Category,db:AsyncSession,token:settings.UserTokenData=None)->None:
+    await cache.delete('xt:admin:categorytree')

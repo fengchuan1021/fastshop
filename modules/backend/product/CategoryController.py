@@ -61,6 +61,7 @@ async def getcategorylist(
     response_class=XTJsonResponse,
     response_model=BackendProductGetcategorytreeGetResponse,
 )
+@cache(key='xt:admin:categorytree')
 async def getcategorytree(
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),

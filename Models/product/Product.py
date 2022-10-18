@@ -1,5 +1,4 @@
-from sqlalchemy.orm import deferred, relationship
-
+from sqlalchemy.orm import deferred, relationship, backref
 
 from Models.ModelBase import Base,XTVARCHAR
 from sqlalchemy import Column, text
@@ -10,6 +9,7 @@ from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
     from Models.product.VariantImage import VariantImage
+    from .VariantSite import VariantSite
 class Product(Base):
     __tablename__ = 'product'
     product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
@@ -27,6 +27,7 @@ class Product(Base):
     video=Column(XTVARCHAR(512),nullable=True)
     price=Column(DECIMAL(10,2))
 
+    Variants:'Variant'=relationship('Variant',uselist=True, primaryjoin='foreign(Variant.product_id) == Product.product_id',backref=backref('Product'))
 
 class VariantStatis(Base):
     __tablename__ = 'variant_Statis'
@@ -48,6 +49,7 @@ class Variant(Base):
     status = Column(ENUM("ONLINE", "OFFLINE", "EDITING"), server_default="OFFLINE", default='EDITING')
     specification_en=Column(XTVARCHAR(12),server_default='')
     specification_cn = Column(XTVARCHAR(12), server_default='')
+    image=Column(XTVARCHAR(512),nullable=True,comment="variant image.")
     brand_id=Column(INTEGER,default=0,server_default="0")
     name_en= deferred(Column(XTVARCHAR(255),nullable=True), group='en')
 
@@ -57,10 +59,14 @@ class Variant(Base):
 
     brand_cn=deferred(Column(XTVARCHAR(24),nullable=True), group='cn')
 
+
     #dynamic:"ProductDynamic" = relationship(ProductDynamic, uselist=False, backref="product_static")
     Images:List['VariantImage'] = relationship('VariantImage',uselist=True,
 
                                                primaryjoin='foreign(VariantImage.variant_id) == Variant.variant_id')
 
 
-
+    Sites:List['VariantSite']=relationship('VariantSite',uselist=True,
+                                           primaryjoin='foreign(VariantSite.variant_id) == Variant.variant_id',
+                                           backref=backref('Variant')
+                                           )
