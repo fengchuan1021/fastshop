@@ -45,7 +45,7 @@ class Variant(Base):
     barcode=Column(XTVARCHAR(32))
     hscode=Column(XTVARCHAR(32))
     product_id=Column(BIGINT,server_default="0")
-    price = Column(DECIMAL(10,2), server_default="0",default=0)
+    #price = Column(DECIMAL(10,2), server_default="0",default=0)
     status = Column(ENUM("ONLINE", "OFFLINE", "EDITING"), server_default="OFFLINE", default='EDITING')
     specification_en=Column(XTVARCHAR(12),server_default='')
     specification_cn = Column(XTVARCHAR(12), server_default='')

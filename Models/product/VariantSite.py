@@ -16,3 +16,5 @@ class VariantSite(Base):
     price=Column(DECIMAL(10,2))
     qty=Column(INTEGER)
     status = Column(ENUM("ONLINE", "OFFLINE"), server_default="OFFLINE", default="OFFLINE")
+    warehouse_id=Column(BIGINT(20), index=True)
+    warehouse_name = Column(XTVARCHAR(32))

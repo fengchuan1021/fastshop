@@ -53,7 +53,8 @@ class VariantSite(BaseModel):
     price:Optional[float]
     status:Optional[str]
     qty:Optional[int]
-
+    warehouse_name:Optional[str]
+    warehouse_id:Optional[str]
 
     class Config:
         orm_mode = True
@@ -63,3 +64,18 @@ class BackendSitewarehouseGetproductsitestockdetailProductIdGetResponse(BaseMode
     status: Literal['success','failed']
     msg: Optional[str] = None
     data: Optional[List[VariantSite]] = None
+
+class BackendSiteSetvariantsitestatusPostRequest(BaseModel):
+    status: Literal['ONLINE','OFFLINE']
+    price: Optional[float] = None
+    qty: Optional[int] = None
+    variant_id: str
+    site_id: str
+    site_name:Optional[str]
+    warehouse_name:Optional[str]=None
+    warehouse_id: Optional[str] = None
+    product_id:Optional[str]=None
+
+class BackendSiteSetvariantsitestatusPostResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
