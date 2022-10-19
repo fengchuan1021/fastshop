@@ -11,6 +11,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 import sqlalchemy.types as types
 import os
+from decimal import Decimal
 if os.getenv('migratedb',''):
     from sqlalchemy.dialects.mysql import VARCHAR as XTVARCHAR#type: ignore
 else:
@@ -28,9 +29,11 @@ else:
         def copy(self, **kwargs:Any)->'XTVARCHAR':#type: ignore
             return XTVARCHAR(self.impl.length)#type: ignore
 
-def obj2dict(obj:Any)->Dict:#type: ignore
+def obj2dict(obj:Any)->Any:#type: ignore
     if isinstance(obj,Base):
         return obj.dict()
+    elif isinstance(obj,Decimal):
+        return str(obj)
     raise Exception("object are not jsonable")
 
 class MyBase(object):

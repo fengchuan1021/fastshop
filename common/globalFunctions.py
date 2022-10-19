@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -39,9 +41,11 @@ async def get_token(request:Request)->settings.UserTokenData:
     return request.state.token
 
 
-def obj2dict(obj:Any)->Dict:#type: ignore
+def obj2dict(obj:Any)->Any:#type: ignore
     if isinstance(obj,(BaseModel,Base)):
         return obj.dict()
+    elif isinstance(obj,Decimal):
+        return str(obj)
     raise Exception("object are not jsonable")
 
 def toBytesJson(obj:Any)->bytes:

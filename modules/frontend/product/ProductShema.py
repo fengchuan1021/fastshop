@@ -1,34 +1,19 @@
-#   timestamp: 2022-09-21T05:46:37+00:00
+#   timestamp: 2022-10-19T08:41:48+00:00
 
 from __future__ import annotations
+from typing import Literal
+
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, constr
-
-
-class Testforxxx(BaseModel):
-    created_at: datetime
-    updated_at: datetime
-    deleted_at: datetime
-    id: Optional[int] = None
-    order_id: int
-    product_id: int
+from pydantic import BaseModel, Field
 
 
-class Fff(BaseModel):
-    fff: str
 
 
-class Gender(Enum):
-    man = 'man'
-    woman = 'woman'
-
-
-class FrontendProductIdLangOutShema(BaseModel):
-    productName: str
-    productDescription: str
-    brand: str
-    price: float
+class FrontendProductbyvariantidVariantidGetResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+    data: Any

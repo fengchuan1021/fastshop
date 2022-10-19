@@ -5,6 +5,8 @@ from pydantic import BaseModel
 
 import Service
 import asyncio
+
+from Models import Variant, Product
 from Service.base import CRUDBase
 import Models
 from typing import Union, Optional, List, Dict
@@ -14,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import and_, or_
 from common.filterbuilder import filterbuilder
 
-from sqlalchemy.orm import undefer_group
+from sqlalchemy.orm import undefer_group, joinedload
 
 from sqlalchemy import select,text
 from component.cache import cache
@@ -54,6 +56,24 @@ class ProductService(CRUDBase[Models.Product]):
             statment = select(Models.Product).where(self.model.id==id)
         results = await db.execute(statment)
         return results.scalar_one_or_none()
+
+    #for frontend show product detail. frontend shall use ssr generate static html.
+    #only when cache missed,the function will be called.
+    async def productdetailbyvariantid(self,db:AsyncSession,variantid:str):
+        # statment=select(Product).select_from(Variant).join(Product,Product.product_id==Variant.product_id).filter(Variant.variant_id==variantid)
+        # product=(await db.execute(statment)).scalar_one_or_none()
+        # print(product)
+        # variantsstatment=select(Variant).filter(Variant.product_id==product.product_id)
+        # variants = (await db.execute(variantsstatment)).scalars().all()
+        # print(variants)
+        productidstatment= select(Variant.product_id).filter(Variant.variant_id == variantid).subquery()
+        statment=select(Product).options(joinedload(Product.Variants)).filter(Product.product_id==productidstatment)
+
+        result=(await db.execute(statment)).unique().scalar_one_or_none()
+        print(result.json())
+        return result
+
+
 
 
     async def addproduct(self,db:AsyncSession,inSchema:'BackendProductAddproductPostRequest')->Dict:
@@ -95,12 +115,12 @@ class ProductService(CRUDBase[Models.Product]):
 
 if __name__ == "__main__":
     pass
-    # from common.globalFunctions import async2sync
-    # from common.dbsession import getdbsession
-    # async def findbyproductpk():
-    #     async with getdbsession() as db:
-    #         tmp=await Service.productService.findByPk(db,68451662070547522)
-    #         print(tmp)
-    # async2sync(findbyproductpk)()
+    from common.globalFunctions import async2sync
+    from common.dbsession import getdbsession
+    async def productdetailbyvariantid():
+        async with getdbsession() as db:
+            tmp=await Service.productService.productdetailbyvariantid(db,87318319723451458)
+            print(tmp)
+    async2sync(productdetailbyvariantid)()
 
 
