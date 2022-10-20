@@ -95,3 +95,8 @@ class BackendProductProductlistGetResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
     data: Optional[List[Datum]] = None
+
+class BackendProductPreviewproductbyvariantidVariantidGetResponse(BaseModel):
+    status: Literal['success','failed']
+    msg: Optional[str] = None
+    data: Any

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Request
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,17 +31,19 @@ router = APIRouter(dependencies=dependencies)
 )
 async def productbyvariantid(
     variantid: str,
+    request:Request,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
     productbyvariantid
     """
-    data=await Service.productService.productdetailbyvariantid(db,variantid)
+    data=await Service.productService.productdetailbyvariantid(db,variantid,request.state.siteinfo['lang'])
     if not data:
         return FrontendProductbyvariantidVariantidGetResponse(status='failed', msg="cant find the product")
     # install pydantic plugin,press alt+enter auto complete the args.
-
+    data=data.dict()
+    data['specification']=[{"name":"colour","value":["blue",'red','black']},{"name":"size","value":["x","xxl","M"]}]
     return FrontendProductbyvariantidVariantidGetResponse(status='success',data=data)
 
 

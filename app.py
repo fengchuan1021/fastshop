@@ -42,7 +42,7 @@ app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,all
 async def validate_tokenandperformevent(request: Request, call_next:Any)->Response:
     #todo: need verify the token expire date.and add refresh token.
     request.state.token=await getorgeneratetoken(request)
-    request.state.siteinfo={"lang":"_en","domainname":"english.com"}
+    request.state.siteinfo={"lang":"en","domainname":"english.com"}
 
 
     try:

@@ -14,7 +14,7 @@ class Site(Base):
     site_id = Column(INTEGER, primary_key=True, autoincrement=True)
     site_name = Column(XTVARCHAR(32),unique=True)
     domainname=Column(XTVARCHAR(64),unique=True,index=True)
-
+    lang=Column(XTVARCHAR(8),server_default='en',default='en')
     warehouse_id=Column(BIGINT,index=True)
     warehouse_name=Column(XTVARCHAR(32))
     warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) == Site.warehouse_id',backref=backref('sites'))

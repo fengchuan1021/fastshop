@@ -9,9 +9,10 @@ class XTJsonResponse(JSONResponse):
         striplang:str='',
         **kwargs: typing.Any
     ) -> None:
-        print('striplang:',striplang)
-        self.striplang = striplang
+        if striplang:
+            self.striplang =striplang if  striplang[0]=='_' else '_'+striplang
+        else:
+            self.striplang=''
         super().__init__(content, **kwargs)
     def render(self, content: typing.Any) -> bytes:
-        print('content;',content)
         return toBytesJson(content,self.striplang)
