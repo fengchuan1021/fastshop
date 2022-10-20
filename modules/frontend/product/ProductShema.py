@@ -26,6 +26,6 @@ class FrontendProductbyvariantidVariantidGetResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
     data: Optional[Any]
-    #class Config:
-        #orm_mode = True
+    class Config:
+        orm_mode = True
         #getter_dict = MyVariantGetter
