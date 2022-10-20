@@ -63,11 +63,7 @@ class ProductService(CRUDBase[Models.Product]):
 
         productidstatment= select(Variant.product_id).filter(Variant.variant_id == variantid).subquery()
         statment=select(Product).options(joinedload(Product.Variants).undefer_group('en').joinedload(Variant.Images)).filter(Product.product_id==productidstatment)
-        print(statment)
         result=(await db.execute(statment)).unique().scalar_one_or_none()
-        tmp=result.Variants[0]
-        from fastapi.encoders import DictIntStrAny, SetIntStr, jsonable_encoder
-        print(tmp.dict(striplang='_en'))
         return result
 
 

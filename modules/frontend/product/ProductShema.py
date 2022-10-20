@@ -21,11 +21,13 @@ from pydantic.utils import GetterDict
 #
 #         else:
 #             return getattr(self._obj,key)
+# class Product(BaseModel):
+#     product_id:str
 
 class FrontendProductbyvariantidVariantidGetResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
     data: Optional[Any]
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
         #getter_dict = MyVariantGetter
