@@ -29,9 +29,9 @@ else:
         def copy(self, **kwargs:Any)->'XTVARCHAR':#type: ignore
             return XTVARCHAR(self.impl.length)#type: ignore
 
-def obj2dict(obj:Any)->Any:#type: ignore
+def obj2dict(obj:Any,striplang:str='')->Any:#type: ignore
     if isinstance(obj,Base):
-        return obj.dict()
+        return obj.dict(striplang=striplang)
     elif isinstance(obj,Decimal):
         return str(obj)
     raise Exception("object are not jsonable")
@@ -51,7 +51,7 @@ class MyBase(object):
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
 
-    def dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
+    def dict(self,resolved:List['MyBase']=[],striplang:str='')->Dict[str,Any]:
         dic={}
         if self not in resolved:
             resolved.append(self)
@@ -62,9 +62,12 @@ class MyBase(object):
                 if value not in resolved:
                     dic[key]=value.dict()
             else:
-                dic[key]=value
+                if striplang:
+                    dic[key.replace(striplang,'')]=value
+                else:
+                    dic[key] = value
         return dic
-    def json(self)->str:
-        return orjson.dumps(self.dict(),default=obj2dict).decode()
+    def json(self,striplang:str='')->str:
+        return orjson.dumps(self.dict(striplang=striplang),default=lambda obj :obj2dict(obj,striplang)).decode()
 
 Base = declarative_base(cls=MyBase)

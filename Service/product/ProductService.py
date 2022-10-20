@@ -65,7 +65,9 @@ class ProductService(CRUDBase[Models.Product]):
         statment=select(Product).options(joinedload(Product.Variants).undefer_group('en').joinedload(Variant.Images)).filter(Product.product_id==productidstatment)
         print(statment)
         result=(await db.execute(statment)).unique().scalar_one_or_none()
-
+        tmp=result.Variants[0]
+        from fastapi.encoders import DictIntStrAny, SetIntStr, jsonable_encoder
+        print(tmp.dict(striplang='_en'))
         return result
 
 
@@ -110,7 +112,7 @@ class ProductService(CRUDBase[Models.Product]):
 
 if __name__ == "__main__":
     pass
-    from common.globalFunctions import async2sync
+    from common.globalFunctions import async2sync, toJson
     from common.dbsession import getdbsession
     async def productdetailbyvariantid():
         async with getdbsession() as db:
