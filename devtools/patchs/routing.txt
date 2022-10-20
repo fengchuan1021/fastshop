@@ -176,7 +176,7 @@ def get_request_handler(
     response_model_exclude_defaults: bool = False,
     response_model_exclude_none: bool = False,
     dependency_overrides_provider: Optional[Any] = None,
-    striplang=True,
+    striplang: bool = True,
 ) -> Callable[[Request], Coroutine[Any, Any, Response]]:
     assert dependant.call is not None, "dependant.call must be a function"
     is_coroutine = asyncio.iscoroutinefunction(dependant.call)
@@ -185,7 +185,6 @@ def get_request_handler(
         actual_response_class: Type[Response] = response_class.value
     else:
         actual_response_class = response_class
-
     async def app(request: Request) -> Response:
         try:
             body: Any = None
@@ -231,11 +230,9 @@ def get_request_handler(
             )
 
             if isinstance(raw_response, Response):
-                print('wH???')
                 if raw_response.background is None:
                     raw_response.background = background_tasks
                 return raw_response
-            print('rawresponse:',raw_response)
             response_args: Dict[str, Any] = {"background": background_tasks}
             # If status_code was set, use it, otherwise use the default from the
             # response class, in the case of redirect it's 307
@@ -349,7 +346,7 @@ class APIRoute(routing.Route):
         generate_unique_id_function: Union[
             Callable[["APIRoute"], str], DefaultPlaceholder
         ] = Default(generate_unique_id),
-        striplang=True,
+        striplang:bool=True,
     ) -> None:
         self.path = path
         self.endpoint = endpoint
@@ -545,10 +542,11 @@ class APIRouter(routing.Router):
         route_class_override: Optional[Type[APIRoute]] = None,
         callbacks: Optional[List[BaseRoute]] = None,
         openapi_extra: Optional[Dict[str, Any]] = None,
+        striplang: bool = True,
         generate_unique_id_function: Union[
             Callable[[APIRoute], str], DefaultPlaceholder
         ] = Default(generate_unique_id),
-        striplang=True,
+
     ) -> None:
         route_class = route_class_override or self.route_class
         responses = responses or {}
@@ -588,14 +586,16 @@ class APIRouter(routing.Router):
             response_model_exclude_unset=response_model_exclude_unset,
             response_model_exclude_defaults=response_model_exclude_defaults,
             response_model_exclude_none=response_model_exclude_none,
+            striplang=striplang,
             include_in_schema=include_in_schema and self.include_in_schema,
             response_class=current_response_class,
             name=name,
             dependency_overrides_provider=self.dependency_overrides_provider,
             callbacks=current_callbacks,
             openapi_extra=openapi_extra,
+
             generate_unique_id_function=current_generate_unique_id,
-            striplang=striplang
+
         )
         self.routes.append(route)
 
@@ -625,10 +625,11 @@ class APIRouter(routing.Router):
         name: Optional[str] = None,
         callbacks: Optional[List[BaseRoute]] = None,
         openapi_extra: Optional[Dict[str, Any]] = None,
+        striplang: bool = True,
         generate_unique_id_function: Callable[[APIRoute], str] = Default(
             generate_unique_id
         ),
-        striplang=True,
+
     ) -> Callable[[DecoratedCallable], DecoratedCallable]:
         def decorator(func: DecoratedCallable) -> DecoratedCallable:
             self.add_api_route(
@@ -656,8 +657,9 @@ class APIRouter(routing.Router):
                 name=name,
                 callbacks=callbacks,
                 openapi_extra=openapi_extra,
-                generate_unique_id_function=generate_unique_id_function,
                 striplang=striplang,
+                generate_unique_id_function=generate_unique_id_function,
+
             )
             return func
 
@@ -764,6 +766,7 @@ class APIRouter(routing.Router):
                     response_model_exclude_unset=route.response_model_exclude_unset,
                     response_model_exclude_defaults=route.response_model_exclude_defaults,
                     response_model_exclude_none=route.response_model_exclude_none,
+                    striplang=route.striplang,
                     include_in_schema=route.include_in_schema
                     and self.include_in_schema
                     and include_in_schema,
@@ -824,7 +827,7 @@ class APIRouter(routing.Router):
         generate_unique_id_function: Callable[[APIRoute], str] = Default(
             generate_unique_id
         ),
-        striplang=True,
+        striplang:bool=True,
     ) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.api_route(
             path=path,
