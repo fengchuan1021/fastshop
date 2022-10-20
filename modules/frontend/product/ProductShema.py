@@ -9,11 +9,23 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
+from pydantic.utils import GetterDict
 
 
-
+# class MyVariantGetter(GetterDict):
+#     def get(self, key: str, default: Any) -> Any:
+#
+#         if key=='data':
+#             tmp=self._obj.Images
+#             return tmp[0].image_url if tmp else ''
+#
+#         else:
+#             return getattr(self._obj,key)
 
 class FrontendProductbyvariantidVariantidGetResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
-    data: Any
+    data: Optional[Any]
+    #class Config:
+        #orm_mode = True
+        #getter_dict = MyVariantGetter

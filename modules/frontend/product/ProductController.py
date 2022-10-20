@@ -26,6 +26,7 @@ router = APIRouter(dependencies=dependencies)
     '/frontend/productbyvariantid/{variantid}',
     response_class=XTJsonResponse,
     response_model=FrontendProductbyvariantidVariantidGetResponse,
+
 )
 async def productbyvariantid(
     variantid: str,
@@ -36,6 +37,8 @@ async def productbyvariantid(
     productbyvariantid
     """
     data=await Service.productService.productdetailbyvariantid(db,variantid)
+    if not data:
+        return FrontendProductbyvariantidVariantidGetResponse(status='failed', msg="cant find the product")
     # install pydantic plugin,press alt+enter auto complete the args.
 
     return FrontendProductbyvariantidVariantidGetResponse(status='success',data=data)

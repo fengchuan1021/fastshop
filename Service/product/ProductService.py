@@ -60,17 +60,12 @@ class ProductService(CRUDBase[Models.Product]):
     #for frontend show product detail. frontend shall use ssr generate static html.
     #only when cache missed,the function will be called.
     async def productdetailbyvariantid(self,db:AsyncSession,variantid:str):
-        # statment=select(Product).select_from(Variant).join(Product,Product.product_id==Variant.product_id).filter(Variant.variant_id==variantid)
-        # product=(await db.execute(statment)).scalar_one_or_none()
-        # print(product)
-        # variantsstatment=select(Variant).filter(Variant.product_id==product.product_id)
-        # variants = (await db.execute(variantsstatment)).scalars().all()
-        # print(variants)
-        productidstatment= select(Variant.product_id).filter(Variant.variant_id == variantid).subquery()
-        statment=select(Product).options(joinedload(Product.Variants)).filter(Product.product_id==productidstatment)
 
+        productidstatment= select(Variant.product_id).filter(Variant.variant_id == variantid).subquery()
+        statment=select(Product).options(joinedload(Product.Variants).undefer_group('en').joinedload(Variant.Images)).filter(Product.product_id==productidstatment)
+        print(statment)
         result=(await db.execute(statment)).unique().scalar_one_or_none()
-        print(result.json())
+
         return result
 
 

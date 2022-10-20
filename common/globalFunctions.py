@@ -41,18 +41,20 @@ async def get_token(request:Request)->settings.UserTokenData:
     return request.state.token
 
 
-def obj2dict(obj:Any)->Any:#type: ignore
-    if isinstance(obj,(BaseModel,Base)):
+def obj2dict(obj:Any,striplang:str='')->Any:#type: ignore
+    if isinstance(obj,BaseModel):
         return obj.dict()
+    elif isinstance(obj,Base):
+        return obj.dict(striplang=striplang)
     elif isinstance(obj,Decimal):
         return str(obj)
     raise Exception("object are not jsonable")
 
-def toBytesJson(obj:Any)->bytes:
-    return orjson.dumps(obj,default=obj2dict)
+def toBytesJson(obj:Any,striplang:str='')->bytes:
+    return orjson.dumps(obj,default=lambda obj: obj2dict(obj,striplang))
 
-def toJson(obj:Any)->str:
-    return orjson.dumps(obj,default=obj2dict).decode()
+def toJson(obj:Any,striplang:str='')->str:
+    return orjson.dumps(obj,default=lambda obj: obj2dict(obj,striplang)).decode()
 
 
 

@@ -51,7 +51,7 @@ class MyBase(object):
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
 
-    def dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
+    def dict(self,resolved:List['MyBase']=[],striplang:str='')->Dict[str,Any]:
         dic={}
         if self not in resolved:
             resolved.append(self)
@@ -60,9 +60,12 @@ class MyBase(object):
                 continue
             if isinstance(value,Base):
                 if value not in resolved:
-                    dic[key]=value.dict()
+                    dic[key]=value.dict(striplang=striplang)
             else:
-                dic[key]=value
+                if striplang:
+                    dic[key.replace(striplang, '')] = value
+                else:
+                    dic[key] = value
         return dic
     def json(self)->str:
         return orjson.dumps(self.dict(),default=obj2dict).decode()
