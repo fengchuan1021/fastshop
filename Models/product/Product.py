@@ -49,7 +49,8 @@ class Variant(Base):
     status = Column(ENUM("ONLINE", "OFFLINE", "EDITING"), server_default="OFFLINE", default='EDITING')
     specification_en=Column(XTVARCHAR(12),server_default='')
     specification_cn = Column(XTVARCHAR(12), server_default='')
-    image=Column(XTVARCHAR(512),nullable=True,comment="variant image.")
+    image=Column(XTVARCHAR(512),nullable=True,comment="")
+
     brand_id=Column(INTEGER,default=0,server_default="0")
     name_en= deferred(Column(XTVARCHAR(255),nullable=True), group='en')
 

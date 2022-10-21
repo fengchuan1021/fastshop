@@ -198,7 +198,7 @@ async def updateproducttranslate(
     supportlang=[i.value for i in settings.SupportLang]
     #for translate permission only allow them update language columns,not price,sku,category and others.
     newdic={key:value for key,value in body.items() if key.rsplit('_',1)[-1] in supportlang}
-    model=await Service.productService.findByPk(product_id)
+    model=await Service.productService.findByPk(db,product_id)
     if not model:
         return {'status':'failed','msg':'product not found'}
     for key in newdic:

@@ -37,7 +37,7 @@ class ProductSpecification(Base):
     __tablename__ = 'product_specification'
     product_specification_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     preattrspecific_id=Column(BIGINT(20),default=0,index=True,server_default='0')
-    product_id=Column(INTEGER,index=True)
+    product_id=Column(BIGINT,index=True)
     specificationname_en=Column(XTVARCHAR(32))
     specificationname_cn = Column(XTVARCHAR(32))
     specificationvalue_en=Column(XTVARCHAR(32))

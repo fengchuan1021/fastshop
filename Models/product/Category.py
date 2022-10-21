@@ -22,5 +22,5 @@ class Category(Base):
 class ProductCategory(Base):
     __tablename__ = 'product_category'
     product_category_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
-    category_id = Column(INTEGER,)
-    product_id=Column(INTEGER,)
+    category_id = Column(BIGINT,index=True)
+    product_id=Column(BIGINT,index=True)

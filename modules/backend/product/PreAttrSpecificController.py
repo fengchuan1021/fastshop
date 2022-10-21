@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import undefer
 
+import Models
 import Service
 import settings
+from common.CommonResponse import CommonResponse
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from component.cache import cache
@@ -116,6 +120,62 @@ async def addpreattrspecific(
 
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendProductAddpreattrspecificPostResponse(status='success', data=model.dict())
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="getpreattrspecific get: /backend/product/getpreattrspecific/{id}">
+@router.get(
+    '/backend/product/getpreattrspecific/{id}',
+    response_class=XTJsonResponse,
+    response_model=CommonResponse,
+    striplang=False,
+)
+async def getpreattrspecific(
+    id: str,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    getpreattrspecific
+    """
+
+    statment=select(Models.PreAttrSpecification).options(undefer("*")).filter(Models.PreAttrSpecification.preattrspecific_id==id)
+    data=(await db.execute(statment)).scalar_one_or_none()
+    return CommonResponse(status='success',data=data)
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="updateproducttranslate get: /backend/product/updateproducttranslate/{product_id}">
+@router.post(
+    '/backend/product/updatepreattrspecifictranslate/{id}',
+    response_class=XTJsonResponse,
+    response_model=CommonResponse,
+    striplang=False,
+)
+async def updateproducttranslate(
+    id: str,
+    body: dict = Body(...),
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    updatepreattrspecifictranslate
+    """
+    supportlang=[i.value for i in settings.SupportLang]
+    #for translate permission only allow them update language columns,not price,sku,category and others.
+    newdic={key:value for key,value in body.items() if key.rsplit('_',1)[-1] in supportlang}
+    model=await Service.preAttrSpecificationService.findByPk(db,id)
+    if not model:
+        return {'status':'failed','msg':'product not found'}
+    for key in newdic:
+        setattr(model,key,newdic[key])
+    await db.commit()
+
+    return CommonResponse(status='success',msg='translate success')
 
 
 # </editor-fold>

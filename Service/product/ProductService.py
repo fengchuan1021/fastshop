@@ -71,25 +71,42 @@ class ProductService(CRUDBase[Models.Product]):
 
     async def addproduct(self,db:AsyncSession,inSchema:'BackendProductAddproductPostRequest')->Dict:
         #add to product table.
-        dic = inSchema.dict(exclude={'attributes', 'specifications', 'subproducts'})
+        dic = inSchema.dict(exclude={'attributes', 'specifications', 'subproduct','category'})
 
         dic['image'] = dic['image'][0]['image_url']
         productmodel = Models.Product(**dic)
         db.add(productmodel)
 
+        for specification in inSchema.specifications:
+            specifmodel=Models.ProductSpecification(product_id=productmodel.product_id,
+                                                    preattrspecific_id=11,
+                                                    specificationname_en=specification.name,
+                                                    specificationvalue_en=','.join(specification.value)
+                                                    )
+            db.add(specifmodel)
 
+        for attribute in inSchema.attributes:
+            model=Models.ProductAttribute(
+                product_id=productmodel.product_id,
+                attributename_en=attribute.name,
+                attributevalue_en=attribute.value
+            )
+            db.add(model)
 
+        for cat in inSchema.category:
+            mode=Models.ProductCategory(category_id=cat,product_id=productmodel.product_id)
+            db.add(mode)
         #add variant
         #if inparams has no subproduct(variant),add proudct as itself's variant
         #every product must have a variant,search engine require this.
 
         variantarr = []
-        if not inSchema.subproducts:
+        if not inSchema.subproduct:
             tmpvariant=VariantSchema.parse_obj(inSchema)
             variantarr.append(tmpvariant)
         else:
             print('else::::')
-            for subproduct in inSchema.subproducts:
+            for subproduct in inSchema.subproduct:
                 subproduct.brand_en=inSchema.brand_en
                 subproduct.brand_id=inSchema.brand_id
                 subproduct.status=inSchema.status
@@ -97,7 +114,7 @@ class ProductService(CRUDBase[Models.Product]):
                 variantarr.append(subproduct)
         for variantShema in variantarr:
             print('????')
-            variantmodel=Models.Variant(image=VariantSchema.image[0],**variantShema.dict(exclude={'image'}))
+            variantmodel=Models.Variant(image=variantShema.image[0].image_url,**variantShema.dict(exclude={'image'}))
 
             for img in variantShema.image:
                 imgmodel=Models.VariantImage(image_url=img.image_url,image_alt=img.image_alt)

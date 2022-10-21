@@ -38,7 +38,7 @@ class Variant(BaseModel):
     brand_en: Optional[str]
     brand_id:Optional[str]
     status:Optional[Literal["ONLINE","OFFLINE","EDITING"]]
-    price: float
+
     sku: str
     product_id: Optional[str]
     image:List[Image]
@@ -53,11 +53,11 @@ class BackendProductAddproductPostRequest(BaseModel):
     status:Literal["ONLINE","OFFLINE","EDITING"]
     price: float
     sku: str
-
+    category:List[str]
     attributes: Optional[List[Attribute]] = None
     product_id: Optional[str]
     specifications: Optional[List[Specification]]
-    subproducts: Optional[List['Variant']]
+    subproduct: Optional[List['Variant']]
     image:List[Image]
     video:Optional[str]
 
