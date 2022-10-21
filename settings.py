@@ -74,6 +74,10 @@ AZCONTAINER_CONFIG={
 
 }
 }
+import enum
+class SupportLang(enum.Enum):
+    en='en'
+    cn='cn'
 class UserTokenData(BaseModel):
     id:int
     phone:str=''

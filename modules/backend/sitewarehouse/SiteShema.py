@@ -9,7 +9,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
-
+import settings
 
 
 class BackendSiteAddsitePostRequest(BaseModel):
@@ -17,6 +17,7 @@ class BackendSiteAddsitePostRequest(BaseModel):
     warehouse_id: str
     warehouse_name: str
     domainname:str
+    lang:settings.SupportLang
 
 
 class BackendSiteAddsitePostResponse(BaseModel):
@@ -37,6 +38,7 @@ class Datum(BaseModel):
     warehouse_id: str
     warehouse_name: str
     domainname:str
+    lang:str
     class Config:
         orm_mode = True
 
@@ -67,3 +69,4 @@ class BackendSiteEditsitePostRequest(BaseModel):
 class BackendSiteEditsitePostResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
+    data:Optional[Any]

@@ -6,11 +6,13 @@ from __future__ import annotations
 
 from typing import Any, Dict, Literal
 
-from fastapi import APIRouter, Depends, UploadFile,Request
+from fastapi import APIRouter, Depends, UploadFile, Request, Body
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import undefer_group
+from sqlalchemy.orm import undefer_group, joinedload
 
+from sqlalchemy.orm import undefer
 import Models
 import Service
 import settings
@@ -145,6 +147,65 @@ async def previewproductbyvariantid(
     data['specification']=[{"name":"colour","value":["blue",'red','black']},{"name":"size","value":["x","xxl","M"]}]
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendProductPreviewproductbyvariantidVariantidGetResponse(status='success',data=data)
+
+
+# </editor-fold>
+
+
+
+# <editor-fold desc="getproductlangall get: /backend/product/getproductlangall/{product_id}">
+@router.get(
+    '/backend/product/getproductlangall/{product_id}',
+    response_class=XTJsonResponse,
+    response_model=BackendProductPreviewproductbyvariantidVariantidGetResponse,
+    striplang=False,
+)
+async def getproductlangall(
+    product_id: str,
+    request:Request,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    getproductlangall
+    """
+
+    statment=select(Models.Product).options(undefer("*").joinedload(Models.Product.Variants).options(undefer("*"))).filter(Models.Product.product_id==product_id)
+    data=(await db.execute(statment)).unique().scalar_one_or_none()
+    return BackendProductPreviewproductbyvariantidVariantidGetResponse(status='success',data=data)
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="updateproducttranslate get: /backend/product/updateproducttranslate/{product_id}">
+@router.post(
+    '/backend/product/updateproducttranslate/{product_id}',
+    response_class=XTJsonResponse,
+    response_model=BackendProductPreviewproductbyvariantidVariantidGetResponse,
+    striplang=False,
+)
+async def updateproducttranslate(
+    product_id: str,
+    request:Request,
+    body: dict = Body(...),
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    updateproducttranslate
+    """
+    supportlang=[i.value for i in settings.SupportLang]
+    #for translate permission only allow them update language columns,not price,sku,category and others.
+    newdic={key:value for key,value in body.items() if key.rsplit('_',1)[-1] in supportlang}
+    model=await Service.productService.findByPk(product_id)
+    if not model:
+        return {'status':'failed','msg':'product not found'}
+    for key in newdic:
+        setattr(model,key,newdic[key])
+    await db.commit()
+
+    return BackendProductPreviewproductbyvariantidVariantidGetResponse(status='success',msg='translate success')
 
 
 # </editor-fold>

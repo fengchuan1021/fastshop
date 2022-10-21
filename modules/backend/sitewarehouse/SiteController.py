@@ -63,7 +63,7 @@ async def sitelist(
     """
     sitelist
     """
-    results=await Service.siteService.getList(db)
+    results=await Service.siteService.getList(db,**body.dict())
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendSiteSitelistPostResponse(status='success', msg='', data=results)
 
@@ -114,3 +114,23 @@ async def editsite(
 
 
 # </editor-fold>
+
+
+
+# <editor-fold desc="getsupportlang post: /backend/site/getsupportlang">
+@router.get(
+    '/backend/site/getsupportlang',
+    response_class=XTJsonResponse,
+    response_model=BackendSiteEditsitePostResponse,
+)
+async def getsupportlang(
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+
+
+    return BackendSiteEditsitePostResponse(status='success',data=[i.value for i in settings.SupportLang])
+
+
+# </editor-fold>
+

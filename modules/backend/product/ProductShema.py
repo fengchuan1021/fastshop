@@ -99,4 +99,4 @@ class BackendProductProductlistGetResponse(BaseModel):
 class BackendProductPreviewproductbyvariantidVariantidGetResponse(BaseModel):
     status: Literal['success','failed']
     msg: Optional[str] = None
-    data: Any
+    data: Optional[Any]
