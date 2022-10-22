@@ -16,8 +16,8 @@ from component.cache import cache
 from component.xtjsonresponse import XTJsonResponse
 
 from .__init__ import dependencies
-from .ProductShema import FrontendProductbyvariantidVariantidGetResponse
 
+from common.CommonResponse import CommonResponse
 router = APIRouter(dependencies=dependencies)
 
 
@@ -25,7 +25,7 @@ router = APIRouter(dependencies=dependencies)
 @router.get(
     '/frontend/productbyvariantid/{variantid}',
     response_class=XTJsonResponse,
-    response_model=FrontendProductbyvariantidVariantidGetResponse,
+    response_model=CommonResponse,
     striplang=True,
 
 )
@@ -40,11 +40,11 @@ async def productbyvariantid(
     """
     data=await Service.productService.productdetailbyvariantid(db,variantid,request.state.siteinfo['lang'])
     if not data:
-        return FrontendProductbyvariantidVariantidGetResponse(status='failed', msg="cant find the product")
+        return CommonResponse(status='failed', msg="cant find the product")
     # install pydantic plugin,press alt+enter auto complete the args.
     data=data.dict()
     data['specification']=[{"name":"colour","value":["blue",'red','black']},{"name":"size","value":["x","xxl","M"]}]
-    return FrontendProductbyvariantidVariantidGetResponse(status='success',data=data)
+    return CommonResponse(status='success',data=data)
 
 
 # </editor-fold>

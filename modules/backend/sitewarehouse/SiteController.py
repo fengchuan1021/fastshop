@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import Service
 import settings
+from common.CommonResponse import CommonResponse
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from component.cache import cache
@@ -21,7 +22,7 @@ from .SiteShema import (
     BackendSiteAddsitePostResponse,
     BackendSiteSitelistPostRequest,
     BackendSiteSitelistPostResponse, BackendSiteDelsiteDeleteRequest, BackendSiteDelsiteDeleteResponse,
-    BackendSiteEditsitePostResponse, BackendSiteEditsitePostRequest,
+    BackendSiteEditsitePostRequest,
 )
 
 router = APIRouter(dependencies=dependencies)
@@ -98,7 +99,7 @@ async def delsite(
 @router.post(
     '/backend/site/editsite',
     response_class=XTJsonResponse,
-    response_model=BackendSiteEditsitePostResponse,
+    response_model=CommonResponse,
 )
 async def editsite(
     body: BackendSiteEditsitePostRequest,
@@ -110,7 +111,7 @@ async def editsite(
     """
     await Service.siteService.updateByPk(db, body.site_id, body)
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendSiteEditsitePostResponse(status='success')
+    return CommonResponse(status='success')
 
 
 # </editor-fold>
@@ -121,7 +122,7 @@ async def editsite(
 @router.get(
     '/backend/site/getsupportlang',
     response_class=XTJsonResponse,
-    response_model=BackendSiteEditsitePostResponse,
+    response_model=CommonResponse,
 )
 async def getsupportlang(
     db: AsyncSession = Depends(get_webdbsession),
@@ -129,7 +130,7 @@ async def getsupportlang(
 ) -> Any:
 
 
-    return BackendSiteEditsitePostResponse(status='success',data=[i.value for i in settings.SupportLang])
+    return CommonResponse(status='success',data=[i.value for i in settings.SupportLang])
 
 
 # </editor-fold>

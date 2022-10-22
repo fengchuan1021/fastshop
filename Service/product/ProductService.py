@@ -1,11 +1,4 @@
-#type: ignore
-import typing
-
-from pydantic import BaseModel
-
 import Service
-import asyncio
-
 from Models import Variant, Product
 from Service.base import CRUDBase
 import Models
@@ -15,13 +8,12 @@ import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import and_, or_
 from common.filterbuilder import filterbuilder
-
 from sqlalchemy.orm import undefer_group, joinedload
-
 from sqlalchemy import select,text
 from component.cache import cache
 from component.snowFlakeId import snowFlack
-
+from modules.backend.product.ProductShema import BackendProductAddproductPostRequest
+from modules.backend.product.ProductShema import Variant as VariantSchema
 
 class VariantService(CRUDBase[Models.Variant]):
 
@@ -33,7 +25,7 @@ class VariantService(CRUDBase[Models.Variant]):
             statment = select(Models.Variant).where(self.model.id==id)
         print(statment)
         results = await dbSession.execute(statment)
-        return results.scalar_one_or_none()
+        return results.scalar_one_or_none()#type: ignore
 
     async def findByAttribute(self,dbsession:AsyncSession,filters:Dict={},sep:str=' and ',lang:str='en')->List[Models.Variant]:
         filter=filterbuilder(filters,sep)
@@ -45,26 +37,26 @@ class VariantService(CRUDBase[Models.Variant]):
 
 
 
-from modules.backend.product.ProductShema import BackendProductAddproductPostRequest
-from modules.backend.product.ProductShema import Variant as VariantSchema
+
 class ProductService(CRUDBase[Models.Product]):
+
     @cache(key_builder='getpkcachename', expire=3600 * 48)
-    async def findByPk(self,db:AsyncSession,id:int,lang:str=''):
+    async def findByPk(self,db:AsyncSession,id:int,lang:str='*')->Product:
         if lang:
             statment=select(Models.Product).options(undefer_group(lang)).where(self.model.id==id)
         else:
             statment = select(Models.Product).where(self.model.id==id)
         results = await db.execute(statment)
-        return results.scalar_one_or_none()
+        return results.scalar_one_or_none()#type:ignore
 
-    #for frontend show product detail. frontend shall use ssr generate static html.
-    #only when cache missed,the function will be called.
-    async def productdetailbyvariantid(self,db:AsyncSession,variantid:str,lang='en'):
 
+    async def productdetailbyvariantid(self,db:AsyncSession,variantid:str,lang:str='en')->Product:
+        # for frontend show product detail. frontend shall use ssr generate static html.
+        # only when cache missed,the function will be called.
         productidstatment= select(Variant.product_id).filter(Variant.variant_id == variantid).subquery()
         statment=select(Product).options(undefer_group(lang).joinedload(Product.Variants).undefer_group(lang).joinedload(Variant.Images)).filter(Product.product_id==productidstatment)
         result=(await db.execute(statment)).unique().scalar_one_or_none()
-        return result
+        return result #type: ignore
 
 
 
@@ -77,7 +69,7 @@ class ProductService(CRUDBase[Models.Product]):
         productmodel = Models.Product(**dic)
         db.add(productmodel)
 
-        for specification in inSchema.specifications:
+        for specification in inSchema.specifications:#type: ignore
             specifmodel=Models.ProductSpecification(product_id=productmodel.product_id,
                                                     preattrspecific_id=11,
                                                     specificationname_en=specification.name,
@@ -85,7 +77,7 @@ class ProductService(CRUDBase[Models.Product]):
                                                     )
             db.add(specifmodel)
 
-        for attribute in inSchema.attributes:
+        for attribute in inSchema.attributes:#type: ignore
             model=Models.ProductAttribute(
                 product_id=productmodel.product_id,
                 attributename_en=attribute.name,
@@ -94,7 +86,7 @@ class ProductService(CRUDBase[Models.Product]):
             db.add(model)
 
         for cat in inSchema.category:
-            mode=Models.ProductCategory(category_id=cat,product_id=productmodel.product_id)
+            mode=Models.ProductCategory(category_id=cat,product_id=productmodel.product_id)#type: ignore
             db.add(mode)
         #add variant
         #if inparams has no subproduct(variant),add proudct as itself's variant
@@ -110,7 +102,7 @@ class ProductService(CRUDBase[Models.Product]):
                 subproduct.brand_en=inSchema.brand_en
                 subproduct.brand_id=inSchema.brand_id
                 subproduct.status=inSchema.status
-                subproduct.product_id=productmodel.product_id
+                subproduct.product_id=productmodel.product_id#type: ignore
                 variantarr.append(subproduct)
         for variantShema in variantarr:
             print('????')
@@ -121,13 +113,13 @@ class ProductService(CRUDBase[Models.Product]):
                 variantmodel.Images.append(imgmodel)
 
             db.add(variantmodel)
-
+        return {'status':'success'}
 
 if __name__ == "__main__":
     pass
     from common.globalFunctions import async2sync, toJson
     from common.dbsession import getdbsession
-    async def productdetailbyvariantid():
+    async def productdetailbyvariantid()->None:
         async with getdbsession() as db:
             tmp=await Service.productService.productdetailbyvariantid(db,87318319723451458,'cn')
             print(tmp)

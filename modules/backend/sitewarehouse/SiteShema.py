@@ -66,7 +66,4 @@ class BackendSiteEditsitePostRequest(BaseModel):
 
 
 
-class BackendSiteEditsitePostResponse(BaseModel):
-    status: Literal['success','failed']
-    msg: Optional[str] = None
-    data:Optional[Any]
+

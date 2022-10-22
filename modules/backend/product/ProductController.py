@@ -24,9 +24,8 @@ from component.xtjsonresponse import XTJsonResponse
 from modules.backend import dependencies
 from .ProductShema import BackendProductPrefetchproductidGetResponse, \
     BackendProductAddproductimgPostResponse, BackendProductAddproductPostResponse, BackendProductAddproductPostRequest, \
-    BackendProductProductlistGetResponse, BackendProductProductlistGetRequest, \
-    BackendProductPreviewproductbyvariantidVariantidGetResponse
-
+    BackendProductProductlistGetResponse, BackendProductProductlistGetRequest
+from common.CommonResponse import CommonResponse
 router = APIRouter(dependencies=dependencies)#type: ignore
 from component.snowFlakeId import snowFlack
 
@@ -126,7 +125,7 @@ async def productlist(
 @router.get(
     '/backend/product/previewproductbyvariantid/{siteid}/{variantid}',
     response_class=XTJsonResponse,
-    response_model=BackendProductPreviewproductbyvariantidVariantidGetResponse,
+    response_model=CommonResponse,
     striplang=True,
 )
 async def previewproductbyvariantid(
@@ -146,7 +145,7 @@ async def previewproductbyvariantid(
 
     data['specification']=[{"name":"colour","value":["blue",'red','black']},{"name":"size","value":["x","xxl","M"]}]
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendProductPreviewproductbyvariantidVariantidGetResponse(status='success',data=data)
+    return CommonResponse(status='success',data=data)
 
 
 # </editor-fold>
@@ -157,7 +156,7 @@ async def previewproductbyvariantid(
 @router.get(
     '/backend/product/getproductlangall/{product_id}',
     response_class=XTJsonResponse,
-    response_model=BackendProductPreviewproductbyvariantidVariantidGetResponse,
+    response_model=CommonResponse,
     striplang=False,
 )
 async def getproductlangall(
@@ -172,7 +171,7 @@ async def getproductlangall(
 
     statment=select(Models.Product).options(undefer("*").joinedload(Models.Product.Variants).options(undefer("*"))).filter(Models.Product.product_id==product_id)
     data=(await db.execute(statment)).unique().scalar_one_or_none()
-    return BackendProductPreviewproductbyvariantidVariantidGetResponse(status='success',data=data)
+    return CommonResponse(status='success',data=data)
 
 
 # </editor-fold>
@@ -182,7 +181,7 @@ async def getproductlangall(
 @router.post(
     '/backend/product/updateproducttranslate/{product_id}',
     response_class=XTJsonResponse,
-    response_model=BackendProductPreviewproductbyvariantidVariantidGetResponse,
+    response_model=CommonResponse,
     striplang=False,
 )
 async def updateproducttranslate(
@@ -205,7 +204,7 @@ async def updateproducttranslate(
         setattr(model,key,newdic[key])
     await db.commit()
 
-    return BackendProductPreviewproductbyvariantidVariantidGetResponse(status='success',msg='translate success')
+    return CommonResponse(status='success',msg='translate success')
 
 
 # </editor-fold>

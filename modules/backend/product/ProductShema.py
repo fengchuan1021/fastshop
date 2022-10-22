@@ -54,9 +54,9 @@ class BackendProductAddproductPostRequest(BaseModel):
     price: float
     sku: str
     category:List[str]
-    attributes: Optional[List[Attribute]] = None
+    attributes: Optional[List[Attribute]] =[]
     product_id: Optional[str]
-    specifications: Optional[List[Specification]]
+    specifications: Optional[List[Specification]]=[]
     subproduct: Optional[List['Variant']]
     image:List[Image]
     video:Optional[str]
@@ -96,7 +96,3 @@ class BackendProductProductlistGetResponse(BaseModel):
     msg: Optional[str] = None
     data: Optional[List[Datum]] = None
 
-class BackendProductPreviewproductbyvariantidVariantidGetResponse(BaseModel):
-    status: Literal['success','failed']
-    msg: Optional[str] = None
-    data: Optional[Any]
