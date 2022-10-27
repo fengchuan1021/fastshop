@@ -73,7 +73,7 @@ class BackendProductUpdatepreattrspecificPostResponse(BaseModel):
 
 class BackendProductAddpreattrspecificPostRequest(BaseModel):
     name_en: str
-    value_en: str
+    value_en: Optional[str]=''
     type: Optional[Literal['specification','attribute']] = 'specification'
     singlefield: Optional[int] = 0
 
