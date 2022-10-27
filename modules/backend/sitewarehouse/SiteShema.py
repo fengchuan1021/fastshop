@@ -17,7 +17,7 @@ class BackendSiteAddsitePostRequest(BaseModel):
     warehouse_id: str
     warehouse_name: str
     domainname:str
-    lang:settings.SupportLang
+    lang:Literal[tuple([i.value for i in settings.SupportLang])]#type: ignore
 
 
 class BackendSiteAddsitePostResponse(BaseModel):
