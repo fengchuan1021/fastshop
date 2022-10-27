@@ -14,6 +14,10 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 from .UploadService import UploadService
 from .WishService import WishService
 from .backend.PermissionService import PermissionService
+from .payment.PaymentService import PaymentService
+from .payment.paymethods.AdyenService import AdyenService
+from .payment.paymethods.OnerwayService import OnerwayService
+from .payment.paymethods.PaypalService import PaypalService
 from .product.CategoryService import CategoryService
 from .product.ProductService import VariantService,ProductService
 from .search.ProductSearchService import ProductSearchService
@@ -59,4 +63,8 @@ siteService : SiteService
 warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService
 wishService : WishService
+paymentService : PaymentService
+adyenService : AdyenService
+onerwayService : OnerwayService
+paypalService : PaypalService
 productSearchService : ProductSearchService
