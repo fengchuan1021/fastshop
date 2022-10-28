@@ -6,11 +6,13 @@ import Service
 
 async def adddefaultadmin()->None:
     async with getdbsession() as db:
+        try:
+            root = Models.User(username='root', password=Service.userService.get_password_hash('root'), userrole=1)
+            await Service.userService.create(db,root)#type: ignore
 
-        root = Models.User(username='root', password=Service.userService.get_password_hash('root'), userrole=1)
-        await Service.userService.create(db,root)#type: ignore
-
-        await db.commit()
+            await db.commit()
+        except Exception as e:
+            await db.rollback()
 
 def addroot()->None:
     import asyncio
