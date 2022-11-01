@@ -10,13 +10,13 @@ from pydantic import BaseModel, constr, validator, Field
 
 
 class FrontendUserRegisterPostInShema(BaseModel):
-    username: Optional[constr(min_length=4, max_length=32)] = None
+    username: Optional[constr(min_length=4, max_length=32)] = None #type: ignore
     password: str
     repassword: str=Field(...,exclude=True)
     phone: Optional[str] = None
-    email: constr(min_length=4, max_length=32)
+    email: constr(min_length=4, max_length=32)#type: ignore
     @validator('repassword')
-    def passwords_match(cls, v, values, **kwargs):
+    def passwords_match(cls, v, values, **kwargs):#type: ignore
         if 'password' in values and v != values['password']:
             raise ValueError('passwords do not match')
         return v
