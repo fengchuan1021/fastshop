@@ -885,6 +885,7 @@ class APIRouter(routing.Router):
         generate_unique_id_function: Callable[[APIRoute], str] = Default(
             generate_unique_id
         ),
+        striplang:bool=True,
     ) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.api_route(
             path=path,
@@ -911,6 +912,7 @@ class APIRouter(routing.Router):
             callbacks=callbacks,
             openapi_extra=openapi_extra,
             generate_unique_id_function=generate_unique_id_function,
+            striplang=striplang
         )
 
     def post(
@@ -999,6 +1001,7 @@ class APIRouter(routing.Router):
         generate_unique_id_function: Callable[[APIRoute], str] = Default(
             generate_unique_id
         ),
+        striplang:bool=True
     ) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.api_route(
             path=path,
@@ -1025,6 +1028,7 @@ class APIRouter(routing.Router):
             callbacks=callbacks,
             openapi_extra=openapi_extra,
             generate_unique_id_function=generate_unique_id_function,
+            striplang=striplang
         )
 
     def options(
@@ -1055,6 +1059,7 @@ class APIRouter(routing.Router):
         generate_unique_id_function: Callable[[APIRoute], str] = Default(
             generate_unique_id
         ),
+        striplang:bool=True
     ) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.api_route(
             path=path,
@@ -1081,6 +1086,7 @@ class APIRouter(routing.Router):
             callbacks=callbacks,
             openapi_extra=openapi_extra,
             generate_unique_id_function=generate_unique_id_function,
+            striplang=striplang
         )
 
     def head(
@@ -1111,6 +1117,7 @@ class APIRouter(routing.Router):
         generate_unique_id_function: Callable[[APIRoute], str] = Default(
             generate_unique_id
         ),
+        striplang:bool=True
     ) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.api_route(
             path=path,
@@ -1137,6 +1144,7 @@ class APIRouter(routing.Router):
             callbacks=callbacks,
             openapi_extra=openapi_extra,
             generate_unique_id_function=generate_unique_id_function,
+            striplang=striplang
         )
 
     def patch(
@@ -1167,6 +1175,7 @@ class APIRouter(routing.Router):
         generate_unique_id_function: Callable[[APIRoute], str] = Default(
             generate_unique_id
         ),
+            striplang:bool=True
     ) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.api_route(
             path=path,
@@ -1193,6 +1202,7 @@ class APIRouter(routing.Router):
             callbacks=callbacks,
             openapi_extra=openapi_extra,
             generate_unique_id_function=generate_unique_id_function,
+            striplang=striplang
         )
 
     def trace(

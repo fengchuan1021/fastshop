@@ -1,7 +1,7 @@
 import Service
 from Service.base import CRUDBase
 import Models
-from typing import Union
+from typing import Union, Dict
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import settings
@@ -62,13 +62,16 @@ class UserService(CRUDBase[Models.User]):
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
         return encoded_jwt
 
-    async def create_access_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None)->str:
+    async def create_access_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None,extra_data:Dict={})->str:
         to_encode = settings.UserTokenData.from_orm(data).dict()
+
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
             expire = datetime.utcnow() + timedelta(seconds=settings.ACCESS_TOKEN_EXPIRE_SECONDS)
         to_encode.update({"exp": expire,'type':'access'})
+        if extra_data:
+            to_encode.update(extra_data)
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
         return encoded_jwt
 

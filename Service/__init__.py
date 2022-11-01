@@ -12,7 +12,6 @@ from .base import CRUDBase
 ModelType = TypeVar("ModelType", bound=Models.Base)
 
 from .UploadService import UploadService
-from .WishService import WishService
 from .backend.PermissionService import PermissionService
 from .payment.PaymentService import PaymentService
 from .payment.paymethods.AdyenService import AdyenService
@@ -23,6 +22,7 @@ from .product.ProductService import VariantService,ProductService
 from .search.ProductSearchService import ProductSearchService
 from .site.SiteService import SiteService
 from .site.VariantSiteService import VariantSiteService
+from .thirdpartmarket.ThirdMarketService import ThirdMarketService
 from .user.UserService import UserService
 
 def getModelname(name:str)->str:
@@ -47,6 +47,7 @@ def __getattr__(name: str) -> Any:
 permissionService : PermissionService
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
+appService : CRUDBase[Models.App]
 preAttrSpecificationService : CRUDBase[Models.PreAttrSpecification]
 productAttributeService : CRUDBase[Models.ProductAttribute]
 productSpecificationService : CRUDBase[Models.ProductSpecification]
@@ -59,12 +60,13 @@ variantService : VariantService
 variantImageService : CRUDBase[Models.VariantImage]
 productImgLogService : CRUDBase[Models.ProductImgLog]
 variantSiteService : VariantSiteService
+enterpriseService : CRUDBase[Models.Enterprise]
 siteService : SiteService
 warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService
-wishService : WishService
 paymentService : PaymentService
 adyenService : AdyenService
 onerwayService : OnerwayService
 paypalService : PaypalService
 productSearchService : ProductSearchService
+thirdMarketService : ThirdMarketService

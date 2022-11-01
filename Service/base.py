@@ -32,6 +32,12 @@ class CRUDBase(Generic[ModelType]):
     async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
         results=await dbSession.execute(select(self.model).where(self.model.id==id))
         return results.scalar_one_or_none()
+    async def findOne(self,dbSession: AsyncSession,filter:BaseModel | Dict={})->Optional[ModelType]:
+        where, params = filterbuilder(filter)
+        txtwhere=text(where)
+        statment=select(self.model).where(txtwhere)
+        results = await dbSession.execute(statment,params)
+        return results.scalar_one_or_none()
 
     async def create(self,dbSession: AsyncSession,shema_in:BaseModel|Dict) -> ModelType:
         if isinstance(shema_in,dict):

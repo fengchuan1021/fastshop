@@ -79,10 +79,12 @@ async def login(
     user=await Service.userService.authenticate(db,body.username,body.password)
     if not user:
         return {'status':'failed','msg':"username or password not valid"}
-    token=await Service.userService.create_access_token(user)
-    refreshtoken=await Service.userService.create_refresh_token(user)
+    enterprisemodel = await Service.enterpriseService.findOne(db, {'user_id':user.user_id})#type: ignore
+    dic={'enterprise_id':enterprisemodel.enterprise_id} if enterprisemodel else {}
+    newtoken=await Service.userService.create_access_token(user,extra_data=dic)#type: ignore
+    refreshtoken=await Service.userService.create_refresh_token(user)#type: ignore
     # install pydantic plugin,press alt+enter auto complete the args.
-    return FrontendUserLoginPostOutShema(status='success',token=token,refreshtoken=refreshtoken)
+    return FrontendUserLoginPostOutShema(status='success',token=newtoken,refreshtoken=refreshtoken)
 
 
 # </editor-fold>

@@ -61,6 +61,8 @@ ENABLE_CACHE=True
 CACHE_PREFIX='xtcache'
 DEFAULT_CACHE_EXPIRE=3600*12
 
+TIKTOK_APIURL=os.getenv('TIKTOK_APIURL','https://open-api.tiktokglobalshop.com')
+
 not_cache_models=['User']
 SECRET_KEY = "11a60e557ae59d6a4674bb5aeddcbc963bed0a4d44694f62c3be578d4155471d"
 ACCESS_TOKEN_EXPIRE_SECONDS = 3600*3 if MODE!='dev' else 3600*24*90
@@ -85,6 +87,7 @@ class UserTokenData(BaseModel):
     username=''
     nickname:Optional[str]=''
     is_guest=False
+    enterprise_id=0
     exp:int=0
     @property
     def is_admin(self)->int:
