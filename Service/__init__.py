@@ -23,6 +23,8 @@ from .search.ProductSearchService import ProductSearchService
 from .site.SiteService import SiteService
 from .site.VariantSiteService import VariantSiteService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
+from .thirdpartmarket.market.TikTokService import TikTokService
+from .thirdpartmarket.market.WishService import WishService
 from .user.UserService import UserService
 
 def getModelname(name:str)->str:
@@ -70,3 +72,5 @@ onerwayService : OnerwayService
 paypalService : PaypalService
 productSearchService : ProductSearchService
 thirdMarketService : ThirdMarketService
+tikTokService : TikTokService
+wishService : WishService

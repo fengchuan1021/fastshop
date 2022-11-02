@@ -103,6 +103,7 @@ class _Cache:
                 classinstance=func_args.arguments.get('self',False)
                 usecache=True
                 _key=key
+                db=None
                 if classinstance:
                     db=args[1]
                     usecache=getattr(classinstance,'usecache')
@@ -115,6 +116,7 @@ class _Cache:
                             func,func_args,func_annotations
                         )
                         _key=key or calutedkey
+
                     ret = await self.get(_key)
                     if ret and (returndic:=json.loads(ret)):
                         if isinstance(tmpClass:=func_annotations.get('return',int),typing._GenericAlias):
@@ -130,7 +132,8 @@ class _Cache:
                                 tmpmodel=returnclass(**returndic)
                                 tmpmodel._sa_instance_state.committed_state = {}
                                 tmpmodel._sa_instance_state.key = (returnclass, (tmpmodel.id,), None)
-                                db.add(tmpmodel)
+                                if not tmpmodel._sa_instance_state.key in db.identity_map._dict:
+                                    db.add(tmpmodel)
                                 return tmpmodel
                             if listtype:
                                 arr=[]
@@ -138,7 +141,8 @@ class _Cache:
                                     tmpmodel=returnclass(**item)
                                     tmpmodel._sa_instance_state.committed_state = {}
                                     tmpmodel._sa_instance_state.key = (returnclass, (tmpmodel.id,), None)
-                                    db.add(tmpmodel)
+                                    if not tmpmodel._sa_instance_state.key in db.identity_map._dict:
+                                        db.add(tmpmodel)
                                     arr.append(tmpmodel)
                                 return arr
 
@@ -146,14 +150,16 @@ class _Cache:
                             tmpmodel=classinstance.model(**returndic)
                             tmpmodel._sa_instance_state.committed_state = {}
                             tmpmodel._sa_instance_state.key = (classinstance.model, (tmpmodel.id,), None)
-                            db.add(tmpmodel)
+                            if not tmpmodel._sa_instance_state.key in db.identity_map._dict:
+                                db.add(tmpmodel)
                             return tmpmodel
 
                         elif isclass(tmpClass) and issubclass(tmpClass,Models.Base):
                             tmpmodel = tmpClass(**returndic)
                             tmpmodel._sa_instance_state.committed_state = {}
                             tmpmodel._sa_instance_state.key = (tmpClass, (tmpmodel.id,), None)
-                            db.add(tmpmodel)
+                            if not tmpmodel._sa_instance_state.key in db.identity_map._dict:
+                                db.add(tmpmodel)
                             return tmpmodel
                         return returndic
 
