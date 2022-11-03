@@ -7,19 +7,19 @@ from dateutil import parser
 import settings
 import aiohttp
 from component.cache import cache
-class WishService():
-    async def init(self)->'WishService':
-        self.baseurl = settings.WISH_BASEURL
-        self.access_token = (await cache.get("wishtoken")).decode()
-        if not self.access_token:
-            self.session = aiohttp.ClientSession(base_url=self.baseurl)
-            await self.getAccessToken()
-        self.session = aiohttp.ClientSession(base_url=self.baseurl,headers={'authorization': f'Bearer {self.access_token}'})
-        return self
-    def __await__(self):#type: ignore
-        return self.init().__await__()#type: ignore
+from Service.thirdpartmarket import Market
+class WishService(Market):
     def __init__(self)->None:
-        self.session=None#type: ignore
+        self.session = aiohttp.ClientSession(base_url=settings.WISH_BASEURL)
+
+    # async def init(self)->'WishService':
+    #     self.baseurl = settings.WISH_BASEURL
+    #     self.access_token = (await cache.get("wishtoken")).decode()
+    #     if not self.access_token:
+    #         self.session = aiohttp.ClientSession(base_url=self.baseurl)
+    #         await self.getAccessToken()
+    #     self.session = aiohttp.ClientSession(base_url=self.baseurl,headers={'authorization': f'Bearer {self.access_token}'})
+    #     return self
 
     async def getAccessToken(self)->None:
         url ="/api/v3/oauth/access_token"
@@ -66,7 +66,8 @@ class WishService():
 if __name__ == '__main__':
     import asyncio
     async def test():#type: ignore
-        wishService=await WishService()
+        wishService=WishService()
+        await wishService.getAccessToken()
         #await wishService.getCurrencyList()
         #await wishService.getBrandList()
         #await wishService.getOrders()

@@ -3,7 +3,7 @@ import asyncio
 import base64
 import datetime
 import time
-from typing import Generator, Dict, List,TYPE_CHECKING,cast
+from typing import Generator, Dict, List, TYPE_CHECKING, cast, Any
 import orjson
 from dateutil import parser
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +17,8 @@ import settings
 import aiohttp
 from component.cache import cache
 from urllib.parse import urlencode
-class TikTokService():
+from Service.thirdpartmarket import Market
+class TikTokService(Market):
     def __init__(self)->None:
         self.session = aiohttp.ClientSession(base_url=settings.TIKTOK_APIURL)
 
@@ -45,8 +46,45 @@ class TikTokService():
         params['sign']=sign
         return f'{url}?{urlencode(params)}'
 
+    async def getAuthorizedShop(self,db:AsyncSession,enterprise_id:str)->Any:
+        url = "/api/shop/get_authorized_shop"
+        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        url = self.buildurl(url, {}, enterprisemodel)
+        async with self.session.get(url) as resp:#type: ignore
+            ret=await resp.json()
+            print(ret)
+            return ret
+    async def getActiveShopList(self,db:AsyncSession,enterprise_id:str)->Any:
+        url = "/api/seller/global/active_shops"
+        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        url = self.buildurl(url, {}, enterprisemodel)
+        async with self.session.get(url) as resp:#type: ignore
+            ret=await resp.json()
+            print(ret)
+            return ret
+    async def createProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->Any:
+        url='/api/products'
+        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        url = self.buildurl(url, {}, enterprisemodel)
 
-    async def getProductList(self,db:AsyncSession,enterprise_id:str)->None:
+        #data productdata
+        data:Dict={}
+
+        async with self.session.post(url,json=data) as resp:
+            ret=await resp.json()
+
+    async def deleteProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->Any:
+        url='/api/products'
+        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+
+        url = self.buildurl(url, {"product_ids":[123,456]}, enterprisemodel)
+
+
+        async with self.session.delete(url) as resp:
+            ret=await resp.json()
+
+
+    async def getProductList(self,db:AsyncSession,enterprise_id:str)->List:
         url = "/api/products/search"
         enterprisemodel=await self.getEnterprise(db,enterprise_id)
         url=self.buildurl(url,{},enterprisemodel)
@@ -65,12 +103,16 @@ class TikTokService():
             return ret
 if __name__=='__main__':
     import asyncio
+    import sys
+
     from common.dbsession import getdbsession
     async def t()->None:
         async with getdbsession() as db:
             tiktok=TikTokService()
+
             await tiktok.getProductList(db,99071137052361794)#type: ignore
             await tiktok.getOrderList(db,99071137052361794)#type: ignore
+            await tiktok.getAuthorizedShop(db,99071137052361794)#type: ignore
     asyncio.run(t())
 
 
