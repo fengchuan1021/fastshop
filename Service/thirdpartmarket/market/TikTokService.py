@@ -101,6 +101,9 @@ class TikTokService(Market):
             ret=await resp.json()
             print(ret)
             return ret
+
+    async def getOrderDetail(self, db: AsyncSession, enterprise_id: str, order_id: str) -> Any:
+        pass
 if __name__=='__main__':
     import asyncio
     import sys

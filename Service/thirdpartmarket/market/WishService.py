@@ -1,9 +1,11 @@
 
 import asyncio
 import datetime
-from typing import Generator
+from typing import Generator, Any
 import orjson
 from dateutil import parser
+from sqlalchemy.ext.asyncio import AsyncSession
+
 import settings
 import aiohttp
 from component.cache import cache
@@ -11,7 +13,8 @@ from Service.thirdpartmarket import Market
 class WishService(Market):
     def __init__(self)->None:
         self.session = aiohttp.ClientSession(base_url=settings.WISH_BASEURL)
-
+    def getPermissionUrl(self)->str:
+        return settings.WISH_BASEURL+f"/v3/oauth/authorize?client_id={settings.WISH_CLIENTID}"
     # async def init(self)->'WishService':
     #     self.baseurl = settings.WISH_BASEURL
     #     self.access_token = (await cache.get("wishtoken")).decode()
@@ -21,10 +24,10 @@ class WishService(Market):
     #     self.session = aiohttp.ClientSession(base_url=self.baseurl,headers={'authorization': f'Bearer {self.access_token}'})
     #     return self
 
-    async def getAccessToken(self)->None:
+    async def getAccessToken(self,code:str)->None:
         url ="/api/v3/oauth/access_token"
 
-        payload = {"client_id":settings.WISH_CLIENDID,"client_secret":settings.WISH_SECRET,"code":settings.WISH_CODE,"grant_type":"authorization_code","redirect_uri":settings.WISH_REDIRECT_URL}
+        payload = {"client_id":settings.WISH_CLIENTID,"client_secret":settings.WISH_SECRET,"code":code,"grant_type":"authorization_code","redirect_uri":settings.WISH_REDIRECT_URL}
         headers = {
             'content-type': "application/json",
             'authorization': "Bearer REPLACE_BEARER_TOKEN"
@@ -32,6 +35,7 @@ class WishService(Market):
         print('payload',payload)
         async with self.session.post(url,json=payload,headers=headers) as resp:
             ret=await resp.json()
+            return ret
             print("tokenfromwish:",ret)
             self.access_token=ret['data']['access_token']
             self.refresh_token=ret['data']['refresh_token']
@@ -63,6 +67,12 @@ class WishService(Market):
         url='/api/v3/products'
         async with self.session.post(url) as resp:
             ret=await resp.json()
+
+    async def getOrderDetail(self,db:AsyncSession,enterprise_id:str,order_id:str)->Any:
+        url=f'/api/v3/orders/{order_id}'
+        async with self.session.get(url) as resp:
+            ret=await resp.json()
+            return ret
 if __name__ == '__main__':
     import asyncio
     async def test():#type: ignore
