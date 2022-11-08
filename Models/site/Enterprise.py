@@ -20,3 +20,6 @@ class Enterprise(Base):
     tiktok_shopid=Column(XTVARCHAR(128),default='')
     tiktok_token=Column(XTVARCHAR(512),default='')
 
+    onbuy_key=Column(XTVARCHAR(64),default='')
+    onbuy_secret=Column(XTVARCHAR(64),default='')
+

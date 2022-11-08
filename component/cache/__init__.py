@@ -212,8 +212,11 @@ class _Cache:
             return await (pipe.ttl(key).get(key).execute()) #type: ignore
 
 
-    async def get(self, key:str) -> _StrType | None:
-        return await self.read_redis.get(key)
+    async def get(self, key:str,decodestr:bool=False) -> _StrType | None:
+        tmp=await self.read_redis.get(key)
+        if decodestr:
+            return tmp.decode() if tmp else ''
+        return tmp
     async def close(self):
         await self.read_redis.close(True)
         await self.write_redis.close(True)
