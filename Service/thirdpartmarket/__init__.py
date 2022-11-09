@@ -8,6 +8,9 @@ class Market:
     @abc.abstractmethod
     async def getProductList(self,db:AsyncSession,enterprise_id:str)->List:
         raise NotImplementedError
+    @abc.abstractmethod
+    async def deleteProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->List:
+        raise NotImplementedError
 
     @abc.abstractmethod
     async def getOrderList(self,db:AsyncSession,enterprise_id:str)->List:

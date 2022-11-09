@@ -79,36 +79,38 @@ class OnBuyService(Market):
         #     ret=await resp.json()
 
     async def deleteProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->Any:
-        url='/api/products'
-        pass
-        # enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        url='/2/listings/by-sku'
+
+        enterprisemodel = await self.getEnterprise(db, enterprise_id)
         #
-        # url = self.buildurl(url, {"product_ids":[123,456]}, enterprisemodel)
-        #
-        #
-        # async with self.session.delete(url) as resp:
-        #     ret=await resp.json()
+        skus=[1,2,3]
+        url = await self.buildurl(url, {}, enterprisemodel)
+        async with self.session.delete(url,json={"site_id":2000,"skus":skus}) as resp:
+            result=await resp.json()
+            print(result)
+
 
 
     async def getProductList(self,db:AsyncSession,enterprise_id:str)->List:#type: ignore
-        url = "/api/products/search"
-        pass
-        # enterprisemodel=await self.getEnterprise(db,enterprise_id)
-        # url=self.buildurl(url,{},enterprisemodel)
-        # payload={'page_number':1,'page_size':100}
-        # async with self.session.post(url,json=payload) as resp:#type: ignore
-        #     ret=await resp.json()
-        #     print(ret)
-        #     return ret
+        url = "/v2/listings"
+        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        params={"site_id":2000}
+        url=await self.buildurl(url,params,enterprisemodel)
+        async with self.session.get(url) as resp:
+            json=await resp.json()
+            print('josn:',json)
+
+
     async def getOrderList(self,db:AsyncSession,enterprise_id:str)->List:#type: ignore
-        url = "/api/orders/search"
-        pass
-        # enterprisemodel=await Service.enterpriseService.findByPk(db,enterprise_id)
-        # url=self.buildurl(url,{},enterprisemodel)
-        # async with self.session.post(url,json={'page_size':20}) as resp:
-        #     ret=await resp.json()
-        #     print(ret)
-        #     return ret
+        url = "/v2/orders"
+        params={'site_id':2000,'filter[status]':'open','limit':20,'offset':0,'sort[created]':'desc'}
+        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        url=await self.buildurl(url,params,enterprisemodel)
+        async with self.session.get(url) as resp:
+            data=await resp.json()
+            print(data)
+            return data
+
 
     async def getOrderDetail(self, db: AsyncSession, enterprise_id: str, order_id: str) -> Any:
         pass
@@ -120,8 +122,8 @@ if __name__=='__main__':
     async def t()->None:
         async with getdbsession() as db:
             onbuy=OnBuyService()
-            await onbuy.getBrands(db,99071137052361794)#type: ignore
-            #await onbuy.getProductList(db,99071137052361794)#type: ignore
+            #await onbuy.getBrands(db,99071137052361794)#type: ignore
+            await onbuy.getProductList(db,99071137052361794)#type: ignore
             #await onbuy.getOrderList(db,99071137052361794)#type: ignore
             #await onbuy.getAuthorizedShop(db,99071137052361794)#type: ignore
     asyncio.run(t())

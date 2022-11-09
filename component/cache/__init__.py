@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from common.globalFunctions import toJson
 import asyncio
 from functools import wraps
-from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast
+from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast,List
 from inspect import signature,isclass
 from Models import Base
 ModelType = TypeVar("ModelType", bound=Base)
@@ -217,6 +217,14 @@ class _Cache:
         if decodestr:
             return tmp.decode() if tmp else ''
         return tmp
+
+    async def keys(self,name,decodestr=False)->List:
+        if not decodestr:
+            return await self.read_redis.keys(name)
+        else:
+            tmp=await self.read_redis.keys(name)
+            return [t.decode() for t in tmp]
+
     async def close(self):
         await self.read_redis.close(True)
         await self.write_redis.close(True)
