@@ -25,7 +25,7 @@ from modules.backend import dependencies
 from .ProductShema import BackendProductPrefetchproductidGetResponse, \
     BackendProductAddproductimgPostResponse, BackendProductAddproductPostResponse, BackendProductAddproductPostRequest, \
     BackendProductProductlistGetResponse, BackendProductProductlistGetRequest
-from common.CommonResponse import CommonResponse
+from XTTOOLS import CommonResponse
 router = APIRouter(dependencies=dependencies)#type: ignore
 from XTTOOLS import snowFlack
 

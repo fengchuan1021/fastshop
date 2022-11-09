@@ -4,9 +4,9 @@ import Broadcast
 import Models
 from sqlalchemy.ext.asyncio import AsyncSession
 import settings
-from common.globalFunctions import toJson
+
 from elasticsearchclient import es
-from XTTOOLS import cache
+from XTTOOLS import cache,toJson
 import Service
 
 @Broadcast.AfterModelDeleted('*',background=True)

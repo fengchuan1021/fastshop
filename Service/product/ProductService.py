@@ -117,7 +117,7 @@ class ProductService(CRUDBase[Models.Product]):
 
 if __name__ == "__main__":
     pass
-    from common.globalFunctions import async2sync, toJson
+    from common.globalFunctions import async2sync
     from common.dbsession import getdbsession
     async def productdetailbyvariantid()->None:
         async with getdbsession() as db:

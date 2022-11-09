@@ -13,7 +13,7 @@ from sqlalchemy.orm import undefer
 import Models
 import Service
 import settings
-from common.CommonResponse import CommonResponse
+from XTTOOLS import CommonResponse
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from XTTOOLS import cache

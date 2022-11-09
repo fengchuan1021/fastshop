@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 import Models
 import settings
-from common.CommonError import PermissionException
+from XTTOOLS import PermissionException
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from .. import dependencies as praentdependencies
