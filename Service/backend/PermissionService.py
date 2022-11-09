@@ -17,9 +17,9 @@ import Service
 from Service import CRUDBase
 from UserRole import UserRole
 
-from common.filterbuilder import filterbuilder
+from XTTOOLS import filterbuilder
 
-from component.cache import cache
+from XTTOOLS import cache
 
 
 class PermissionService(CRUDBase[Models.Permission]):

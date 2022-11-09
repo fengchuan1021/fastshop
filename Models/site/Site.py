@@ -1,7 +1,7 @@
 
 
 import settings
-from component.snowFlakeId import snowFlack
+from XTTOOLS import snowFlack
 from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
 from sqlalchemy.orm import relationship, backref

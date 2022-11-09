@@ -4,7 +4,7 @@ from Models.ModelBase import Base,XTVARCHAR
 from sqlalchemy import Column, text, Index
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
 
-from component.snowFlakeId import snowFlack
+from XTTOOLS import snowFlack
 from .Product import Variant
 class VariantSite(Base):
     __tablename__ = 'variant_site'

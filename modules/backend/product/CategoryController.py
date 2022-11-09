@@ -14,7 +14,7 @@ import settings
 from Models.product.Category import Category
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from component.cache import cache
+from XTTOOLS import cache
 from XTTOOLS import XTJsonResponse
 
 from .__init__ import dependencies

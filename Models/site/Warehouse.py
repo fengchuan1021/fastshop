@@ -1,5 +1,5 @@
 
-from component.snowFlakeId import snowFlack
+from XTTOOLS import snowFlack
 from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
 from ..ModelBase import Base,XTVARCHAR

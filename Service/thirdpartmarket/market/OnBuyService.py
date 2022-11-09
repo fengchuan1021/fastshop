@@ -15,7 +15,7 @@ import Models
 import Service
 import settings
 import aiohttp
-from component.cache import cache
+from XTTOOLS import cache
 from urllib.parse import urlencode
 from Service.thirdpartmarket import Market
 class OnBuyService(Market):

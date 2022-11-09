@@ -18,7 +18,7 @@ import Service
 import settings
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from component.cache import cache
+from XTTOOLS import cache
 from XTTOOLS import XTJsonResponse
 
 from modules.backend import dependencies
@@ -27,7 +27,7 @@ from .ProductShema import BackendProductPrefetchproductidGetResponse, \
     BackendProductProductlistGetResponse, BackendProductProductlistGetRequest
 from common.CommonResponse import CommonResponse
 router = APIRouter(dependencies=dependencies)#type: ignore
-from component.snowFlakeId import snowFlack
+from XTTOOLS import snowFlack
 
 # <editor-fold desc="addproduct post: /backend/product/addproduct">
 @router.post(

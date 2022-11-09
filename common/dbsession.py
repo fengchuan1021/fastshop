@@ -10,7 +10,8 @@ from common.globalFunctions import get_token
 import Broadcast
 from sqlalchemy.util.concurrency import await_only
 from elasticsearchclient import es
-from common.routingDBsession import AsyncSessionMaker,engines
+from XTTOOLS import AsyncSessionMaker
+
 
 
 
@@ -61,7 +62,7 @@ class getdbsession:
         await self.session.close()
         if not self.request:
             await es.close()
-            [await engine.dispose() for engine in engines.values()]
+            #[await engine.dispose() for engine in engines.values()]
 
 
 

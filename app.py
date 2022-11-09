@@ -1,5 +1,4 @@
 import settings
-
 from common.getSiteInfo import getSiteInfo
 import Models
 if settings.MODE=='dev':
@@ -7,24 +6,18 @@ if settings.MODE=='dev':
     import sys
     subprocess.Popen([sys.executable, "devtools/debugtools.py"],stdout=subprocess.DEVNULL,stdin=subprocess.DEVNULL,stderr=subprocess.DEVNULL,close_fds=True)
 
-import datetime
 import fastapi.exceptions
 import asyncio
 import os
-from XTTOOLS import XTJsonResponse
-
 from sqlalchemy.exc import IntegrityError,OperationalError
 import importlib
 from typing import Any
 from fastapi import FastAPI, Request, Depends
 from redis.exceptions import ConnectionError
-from fastapi.encoders import DictIntStrAny, SetIntStr, jsonable_encoder
-from component.cache import cache
+from XTTOOLS import cache,snowFlack,setDBURL,Common500Response, TokenException, PermissionException,XTJsonResponse
 from pathlib import Path
 from common.globalFunctions import writelog
-from common.CommonError import Common500OutShema, Common500Status, TokenException, PermissionException
 from common.globalFunctions import getorgeneratetoken, get_token
-
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 if os.name!='nt':
@@ -52,7 +45,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
             backgroundtasks = BackgroundTask(db_client.__aexit__,skipcommit=True)
             response.background =backgroundtasks
     except OperationalError as e:
-        jsonout = Common500OutShema(status=Common500Status.dberror,msg=str(e))
+        jsonout = Common500Response(status='dberror',msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
         # try:
         #     await request.state.db_client.close()
@@ -60,7 +53,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         #     pass
     except IntegrityError as e:
         await db_client.session.rollback()
-        jsonout = Common500OutShema(status=Common500Status.dberror, msg=str(e))
+        jsonout = Common500Response(status='dberror', msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
         # try:
         #     await request.state.db_client.close()
@@ -68,16 +61,16 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         #     pass
     except TokenException as e:
 
-        jsonout = Common500OutShema(status=Common500Status.tokenerror, msg=str(e))
+        jsonout = Common500Response(status='tokenerror', msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
     except PermissionException as e:
-        jsonout = Common500OutShema(status=Common500Status.permissiondenied, msg=str(e))
+        jsonout = Common500Response(status='permissiondenied', msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
     except fastapi.exceptions.ValidationError as e:
-        jsonout = Common500OutShema(status=Common500Status.validateerror,msg='',data=e.errors())
+        jsonout = Common500Response(status='validateerror',msg='',data=e.errors())
         response=XTJsonResponse(jsonout,status_code=500)
     except  ConnectionError as e:
-        jsonout = Common500OutShema(status=Common500Status.cacheerror,msg='cache server error',data=str(e))
+        jsonout = Common500Response(status='cacheerror',msg='cache server error',data=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
     except Exception as e:
         #es
@@ -87,7 +80,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         if settings.DEBUG:
             raise
 
-        jsonout = Common500OutShema(status=Common500Status.unknownerr, msg=str(e))
+        jsonout = Common500Response(status='unknownerr', msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
 
     #if request.state.token.is_guest:
@@ -96,8 +89,13 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
 
 @app.on_event("startup")
 async def startup()->None:
-    cache.init(prefix=settings.CACHE_PREFIX,expire=settings.DEFAULT_CACHE_EXPIRE,enable=settings.ENABLE_CACHE)
-
+    cache.init(prefix=settings.CACHE_PREFIX,expire=settings.DEFAULT_CACHE_EXPIRE,enable=settings.ENABLE_CACHE,
+               writeurl=settings.REDISURL,
+               readurl=settings.SLAVEREDISURL,
+               ignore_arg_types=[settings.UserTokenData],
+               )
+    snowFlack.init(settings.NODEID)
+    setDBURL(settings.DBURL,settings.SLAVEDBURL,settings.DEBUG)
 
 for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
     if f.name.endswith('Controller.py'):
@@ -114,8 +112,7 @@ if not settings.AZ_BLOB_CONNSTR:
 
 @app.post('/')
 async def forazureping(request:Request, site: "Models.Site" =Depends(getSiteInfo))->dict:
-    #print(request.headers.get('host'))
-    #print('shop:',site.site_name)
+
     print(request.headers)
     print(await request.json())
     return {"status": 'success','hello':'world'}

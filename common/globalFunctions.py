@@ -9,7 +9,7 @@ import orjson
 from fastapi import Request
 from jose import  jwt
 
-from component.snowFlakeId import snowFlack
+from XTTOOLS import snowFlack
 from Models import Base
 import asyncio
 import datetime

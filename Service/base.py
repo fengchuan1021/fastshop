@@ -5,11 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from Models import Base
 from sqlalchemy.future import select
 from sqlalchemy import text, func
-from common.filterbuilder import filterbuilder
+from XTTOOLS import filterbuilder
 ModelType = TypeVar("ModelType", bound=Base)
 from sqlalchemy.orm import defer
 import Models
-from component.cache import cache
+from XTTOOLS import cache
 
 class CRUDBase(Generic[ModelType]):
     usecache=True

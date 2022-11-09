@@ -24,7 +24,7 @@ def default_key_builder(
     funcargs: BoundArguments,
     func_annotations:Any
 )->str:
-    from component.cache import cache
+    from XTTOOLS import cache
 
     prefix = f"{cache.get_prefix()}:"
     func_args = funcargs.arguments
