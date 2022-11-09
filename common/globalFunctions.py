@@ -40,21 +40,7 @@ async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
 async def get_token(request:Request)->settings.UserTokenData:
     return request.state.token
 
-
-def obj2dict(obj:Any,striplang='')->Any:#type: ignore
-    if isinstance(obj,Base):
-        return obj.dict(striplang=striplang)
-    elif isinstance(obj,BaseModel):
-        return obj.dict()
-    elif isinstance(obj,Decimal):
-        return str(obj)
-    raise Exception("object are not jsonable")
-
-def toBytesJson(obj:Any,striplang:str='')->bytes:
-    return orjson.dumps(obj,default=lambda obj :obj2dict(obj,striplang=striplang))
-
-def toJson(obj:Any,striplang:str='')->str:
-    return orjson.dumps(obj,default=lambda obj :obj2dict(obj,striplang=striplang)).decode()
+from XTTOOLS import toBytesJson,toJson
 
 
 

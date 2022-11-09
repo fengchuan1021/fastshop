@@ -17,7 +17,7 @@ from common.CommonResponse import CommonResponse
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from component.cache import cache
-from component.xtjsonresponse import XTJsonResponse
+from XTTOOLS import XTJsonResponse
 
 from .__init__ import dependencies
 from .PreAttrSpecificShema import (
@@ -115,7 +115,7 @@ async def addpreattrspecific(
     """
     addpreattrspecific
     """
-    body.value_en=body.value_en.strip(',')
+    body.value_en=body.value_en.strip(',')#type: ignore
     model=await Service.preAttrSpecificationService.create(db,body)
 
     # install pydantic plugin,press alt+enter auto complete the args.

@@ -13,7 +13,7 @@ from common.CommonResponse import CommonResponse
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from component.cache import cache
-from component.xtjsonresponse import XTJsonResponse
+from XTTOOLS import XTJsonResponse
 
 from .__init__ import dependencies
 

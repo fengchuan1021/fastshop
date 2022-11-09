@@ -17,10 +17,10 @@ import settings
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from component.cache import cache
-from component.xtjsonresponse import XTJsonResponse
+from XTTOOLS import XTJsonResponse
 from hashlib import sha256
 from .__init__ import dependencies
-from component.xtjsonresponse import XTJsonResponse
+from XTTOOLS import XTJsonResponse
 from dateutil import parser
 router = APIRouter(dependencies=dependencies)
 @router.get('/api/wish/appcallback')
