@@ -14,7 +14,7 @@ import importlib
 from typing import Any
 from fastapi import FastAPI, Request, Depends
 from redis.exceptions import ConnectionError
-from XTTOOLS import cache,snowFlack,setDBURL,Common500Response, TokenException, PermissionException,XTJsonResponse
+from XTTOOLS import cache,snowFlack,Common500Response, TokenException, PermissionException,XTJsonResponse
 from pathlib import Path
 from common.globalFunctions import writelog
 from common.globalFunctions import getorgeneratetoken, get_token
@@ -95,7 +95,7 @@ async def startup()->None:
                ignore_arg_types=[settings.UserTokenData],
                )
     snowFlack.init(settings.NODEID)
-    setDBURL(settings.DBURL,settings.SLAVEDBURL,settings.DEBUG)
+
 
 for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
     if f.name.endswith('Controller.py'):

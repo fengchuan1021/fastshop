@@ -10,7 +10,35 @@ from common.globalFunctions import get_token
 import Broadcast
 from sqlalchemy.util.concurrency import await_only
 from elasticsearchclient import es
-from XTTOOLS import AsyncSessionMaker
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.sql import Update, Delete
+import random
+engines = {
+    'master': create_async_engine(settings.DBURL,echo=settings.DEBUG),
+    'slaver': create_async_engine(settings.SLAVEDBURL,echo=settings.DEBUG),
+}
+
+class RoutingSession(Session):
+    def get_bind(self, mapper=None, clause=None, **kw):#type: ignore
+
+        if self._flushing or isinstance(clause, (Update, Delete)):
+            return engines['master'].sync_engine
+        else:
+            return engines[
+                random.choice(['master', 'slaver'])
+            ].sync_engine
+
+
+# apply to AsyncSession using sync_session_class
+AsyncSessionMaker = sessionmaker(
+    class_=AsyncSession,
+    sync_session_class=RoutingSession,
+    expire_on_commit=False
+)
+
+
 
 
 
