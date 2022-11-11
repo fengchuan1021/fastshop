@@ -4,24 +4,19 @@
 
 trigger:
 - main
-- stage
+- dev
 resources:
 - repo: self
 
 variables:
-  BRANCH_NAME: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
+  BRANCH_NAME: $[upper(replace(variables['Build.SourceBranch'], 'refs/heads/', ''))]
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'd1855d60-1904-4f63-9ccf-bbcb323dea58'
-  imageRepository: 'tmapi'
-  containerRegistry: 'fengchuandevcontainer.azurecr.io'
+  dockerRegistryServiceConnection: '73ac7c0f-4293-419e-9601-f7031cc1d69a'
+  imageRepository: 'xtpython'
+  containerRegistry: 'xtmagento.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'fengchuandevcontainer2e75-auth'
-
-  ${{ if eq(variables.BRANCH_NAME, 'stage') }}:
-    k8sname: akstage
-  ${{ elseif eq(variables.BRANCH_NAME, 'main') }}:
-    k8sname: myAKSCluster
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -70,10 +65,7 @@ stages:
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/stage') }}:
-      environment: 'tmapi.askstage'
-    ${{ else }}:
-      environment: 'tmapi.mydevaks'
+
 
     strategy:
       runOnce:
