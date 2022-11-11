@@ -6,6 +6,9 @@ import subprocess
 import sys
 from pathlib import Path
 import importlib
+
+import settings
+
 branch=os.getenv('MODE','DEV')
 try:
     import typer
@@ -128,7 +131,10 @@ def resetdb()->None:
     click.secho('Success: db reset successfuly', fg='green')
 @app.command()
 def initall()->None:
+
     os.environ['migratedb'] = '1'
+    print('settings:',settings.MODE)
+    print('settings',settings.DBURL)
     from devtools import patchlibrary,addadmin
     print('begin patch library:')
     patchlibrary.patch()
