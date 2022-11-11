@@ -1,8 +1,6 @@
 FROM python:3.10-slim
 #FROM python:3.10
-ARG BRANCH_NAME='DEV'
-RUN if test "$BRANCH_NAME" = "DEV" ; then MODE="STAGE"  else MODE="MAIN" fi
-RUN echo $MODE
+ARG MODE='DEV'
 ARG USE_TUNA
 WORKDIR /app
 ENV DEBIAN_FRONTEND noninteractive
