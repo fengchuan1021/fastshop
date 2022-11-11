@@ -21,20 +21,17 @@ if MODE=='DEV':
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.env'))
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.LOCAL.env'))
 elif MODE=='STAGE':
-    if os.getenv('KUBERNETES_SERVICE_HOST',None):#run in k8s,load k8s config
-        load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.K8S.env'))
+    load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
+    if os.getenv('KUBERNETES_SERVICE_HOST',None):#run in k8s
         # calc node id from hostname
         nodeid=sum([ord(i) for i in os.getenv('HOSTNAME')])#type: ignore
         os.environ['NODEID']=str(nodeid)
-    else:
-        load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
 else:
+    load_dotenv(os.path.join(BASE_DIR, 'environment/PROD.env'))
     if os.getenv('KUBERNETES_SERVICE_HOST', None):  # run in k8s,load k8s config
-        load_dotenv(os.path.join(BASE_DIR, 'environment/PROD.K8S.env'))
         nodeid = sum([ord(i) for i in os.getenv('HOSTNAME').split('-')[-1]])#type: ignore
         os.environ['NODEID'] = str(nodeid)
-    else:
-        load_dotenv(os.path.join(BASE_DIR, 'environment/PROD.env'))
+
 from UserRole import UserRole
 NODEID=int(os.getenv("NODEID", 0))
 REDISURL:str=os.getenv('REDISURL','')
