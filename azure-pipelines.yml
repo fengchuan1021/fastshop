@@ -3,13 +3,13 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
+- main
 - dev
-
 resources:
 - repo: self
 
 variables:
-
+  BRANCH_NAME: $[upper(replace(variables['Build.SourceBranch'], 'refs/heads/', ''))]
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'eb779d0e-ca11-41b8-bff4-63517a93f17c'
   imageRepository: 'xtpython'
@@ -32,17 +32,29 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
-      displayName: Build and push an image to container registry
+      displayName: Build
       inputs:
         command: buildAndPush
-        repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
         tags: |
           $(tag)
+        arguments: --build-arg BRANCH_NAME=$(BRANCH_NAME)
+    - task: Docker@2
+      displayName: Push image
+      inputs:
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
+        command: push
+        tags: |
+          $(tag)
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/s/k8s'
+        artifact: 'manifests'
+        publishLocation: 'pipeline'
 
-    - upload: manifests
-      artifact: manifests
 
 - stage: Deploy
   displayName: Deploy stage
@@ -69,8 +81,10 @@ stages:
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
+              #kubernetesServiceConnection: $(k8sname)
               manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/app-$(BRANCH_NAME)-deployment.yml
+                $(Pipeline.Workspace)/manifests/celery-$(BRANCH_NAME)-deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)
