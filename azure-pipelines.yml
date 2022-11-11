@@ -41,7 +41,7 @@ stages:
         repository: $(imageRepository)
         tags: |
           $(tag)
-        ${{ if eq(variables.BRANCH_NAME, 'DEV') }}:
+        ${{ if eq(upper(replace(variables['Build.SourceBranch'], 'refs/heads/', '')), 'DEV') }}:
           arguments: --build-arg MODE="STAGE"
         ${{ else }}:
           arguments: --build-arg MODE="MAIN"
