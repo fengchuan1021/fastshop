@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 #FROM python:3.10
 ARG BRANCH_NAME='DEV'
-RUN if [[ "${BRANCH_NAME}" = "DEV" ]] ; then BRANCH_NAME="STAGE" ; else BRANCH_NAME="MAIN" ; fi
+RUN if test "$BRANCH_NAME" = "DEV" ; then BRANCH_NAME="STAGE" ; else BRANCH_NAME="MAIN" ; fi
 RUN echo $BRANCH_NAME
 ARG USE_TUNA
 WORKDIR /app
