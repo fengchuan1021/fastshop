@@ -140,8 +140,11 @@ def initall()->None:
         print('end setup git hook')
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':
         inidb()
-    if os.getenv('MODE','main')!='main':
-        addadmin.addroot()
+    if os.getenv('MODE','MAIN')!='MAIN':
+        try:
+            addadmin.addroot()
+        except Exception as e:
+            pass
         click.secho('Success: backend username:root,password:root', fg='red')
     click.secho('Success: project has init successfully', fg='green')
 
