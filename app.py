@@ -1,7 +1,7 @@
 import settings
 from common.getSiteInfo import getSiteInfo
 import Models
-if settings.MODE=='dev':
+if settings.MODE=='DEV':
     import subprocess
     import sys
     subprocess.Popen([sys.executable, "devtools/debugtools.py"],stdout=subprocess.DEVNULL,stdin=subprocess.DEVNULL,stderr=subprocess.DEVNULL,close_fds=True)

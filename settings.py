@@ -14,13 +14,13 @@ pydantic.config.BaseConfig.json_dumps=orjson_dumps
 
 BASE_DIR = Path(__file__).parent.__str__()
 DEBUG=False
-MODE=os.getenv("MODE","dev")
+MODE=os.getenv("MODE","DEV")
 
-if MODE=='dev':
+if MODE=='DEV':
     DEBUG = True
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.env'))
     load_dotenv(os.path.join(BASE_DIR, 'environment/DEV.LOCAL.env'))
-elif MODE=='stage':
+elif MODE=='STAGE':
     if os.getenv('KUBERNETES_SERVICE_HOST',None):#run in k8s,load k8s config
         load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.K8S.env'))
         # calc node id from hostname
@@ -67,7 +67,7 @@ TIKTOK_APIURL=os.getenv('TIKTOK_APIURL','https://open-api.tiktokglobalshop.com')
 ONBUY_APIURL=os.getenv('ONBUY_APIURL','https://api.onbuy.com/v2')
 not_cache_models=['User']
 SECRET_KEY = "11a60e557ae59d6a4674bb5aeddcbc963bed0a4d44694f62c3be578d4155471d"
-ACCESS_TOKEN_EXPIRE_SECONDS = 3600*3 if MODE!='dev' else 3600*24*90
+ACCESS_TOKEN_EXPIRE_SECONDS = 3600*3 if MODE!='DEV' else 3600*24*90
 REFRESH_TOKEN_EXPIRE_SECONDS= 3600*24*15
 
 ALGORITHM = "HS256"

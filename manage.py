@@ -6,11 +6,11 @@ import subprocess
 import sys
 from pathlib import Path
 import importlib
-branch=os.getenv('BRANCH_NAME','dev')
+branch=os.getenv('BRANCH_NAME','DEV')
 try:
     import typer
 except Exception as e:
-    if branch=='dev':
+    if branch=='DEV':
         yn = input('speed pip install use china tsinghua university pip source y/n? [y]:')
         yn=yn.strip()
         if not yn or yn=='y' or yn=="Y":
@@ -135,7 +135,7 @@ def initall()->None:
     print('end patch library')
 
     if os.path.exists('.git'):
-        if branch=='dev':
+        if branch=='DEV':
             subprocess.check_call(['git', "config", "--local", "core.hooksPath", ".githooks/"])
         print('end setup git hook')
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':

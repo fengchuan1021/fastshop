@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ -z "$MODE" ] ; then
-  MODE="main"
+  MODE="MAIN"
 fi
 
 if [ -z "$CMD" ] ; then
@@ -8,9 +8,9 @@ if [ -z "$CMD" ] ; then
 fi
 CPUNUMBER=`grep -c ^processor /proc/cpuinfo`
 if [ "$CMD" = "APP" ] ; then
-  if [ "$MODE" = "dev" ] ; then
+  if [ "$MODE" = "DEV" ] ; then
     uvicorn app:app --reload --port 8000 --host=0.0.0.0
-  elif [ "$MODE" = "main" ] ; then
+  elif [ "$MODE" = "MAIN" ] ; then
     mkdir -p /app/alembic/versions
     mkdir -p /app/img
     #gunicorn app:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
