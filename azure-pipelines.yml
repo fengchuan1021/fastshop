@@ -38,7 +38,7 @@ stages:
     - task: Docker@2
       displayName: Build
       inputs:
-        command: buildAndPush
+        command: build
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(imageRepository)

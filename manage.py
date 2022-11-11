@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 import importlib
-branch=os.getenv('BRANCH_NAME','DEV')
+branch=os.getenv('MODE','DEV')
 try:
     import typer
 except Exception as e:

@@ -6,7 +6,7 @@ helm upgrade my-ingress bitnami/nginx-ingress-controller --set tcp.3306="default
 --set tcp.9200="default/my-release-elasticsearch-data-hl:9200" `
 --set tcp.9300="default/my-release-elasticsearch-data-hl:9300"
 
-docker build --build-arg BRANCH_NAME=stage -t fengchuanhn/myimage:v3 .
+docker build --build-arg MODE=STAGE -t fengchuanhn/myimage:v3 .
 docker push fengchuanhn/myimage:v3
 
 kubectl create secret docker-registry dockerhub --docker-server=docker.io --docker-username=fengchuanhn --docker-password=Xiaochuan1021 --docker-email=1299693999@qq.com
