@@ -24,7 +24,7 @@ elif MODE=='STAGE':
     if os.getenv('KUBERNETES_SERVICE_HOST',None):#run in k8s,load k8s config
         load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.K8S.env'))
         # calc node id from hostname
-        nodeid=sum([ord[i] for i in os.getenv('HOSTNAME').split('-')[-1]])#type: ignore
+        nodeid=sum([ord(i) for i in os.getenv('HOSTNAME')])#type: ignore
         os.environ['NODEID']=str(nodeid)
     else:
         load_dotenv(os.path.join(BASE_DIR, 'environment/STAGE.env'))
