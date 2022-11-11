@@ -3,7 +3,6 @@ FROM python:3.10-slim
 ARG MODE='DEV'
 ARG USE_TUNA
 WORKDIR /app
-RUN echo $MODE
 ENV DEBIAN_FRONTEND noninteractive
 ENV MODE ${MODE}
 COPY requirements/requirements_${MODE}.txt /etc/requirements_${MODE}.txt

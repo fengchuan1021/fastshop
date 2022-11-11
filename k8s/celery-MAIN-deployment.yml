@@ -18,6 +18,6 @@ spec:
 
           env:
             - name: MODE
-              value: main
+              value: MAIN
             - name: CMD
               value: CELERY

@@ -19,6 +19,6 @@ spec:
           - containerPort: 8000
           env:
             - name: MODE
-              value: main
+              value: MAIN
             - name: CMD
               value: APP

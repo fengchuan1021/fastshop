@@ -18,6 +18,6 @@ spec:
 
           env:
             - name: MODE
-              value: stage
+              value: STAGE
             - name: CMD
               value: CELERY
