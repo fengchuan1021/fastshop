@@ -16,3 +16,4 @@ dmypy.json
 /alembic/
 environment/DEV.LOCAL.env
 .idea/
+img/
