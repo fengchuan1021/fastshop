@@ -66,6 +66,8 @@ stages:
     pool:
       vmImage: $(vmImageName)
 
+      environment: 'tmapi.default'
+
 
     strategy:
       runOnce:
