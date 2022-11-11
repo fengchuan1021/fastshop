@@ -18,10 +18,7 @@ variables:
   tag: '$(Build.BuildId)'
   imagePullSecret: 'xtmagento80ab-auth'
 
-  ${{ if eq(variables.BRANCH_NAME, 'DEV') }}:
-    MODE: 'STAGE'
-  ${{ else }}:
-    MODE: 'MAIN'
+
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -44,7 +41,11 @@ stages:
         repository: $(imageRepository)
         tags: |
           $(tag)
-        arguments: --build-arg MODE=$(MODE)
+        ${{ if eq(variables.BRANCH_NAME, 'DEV') }}:
+          arguments: --build-arg MODE="STAGE"
+        ${{ else }}:
+          arguments: --build-arg MODE="MAIN"
+
     - task: Docker@2
       displayName: Push image
       inputs:

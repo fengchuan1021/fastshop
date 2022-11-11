@@ -13,8 +13,8 @@ spec:
         app: celery
     spec:
       containers:
-        - name: tmapi 
-          image: fengchuandevcontainer.azurecr.io/tmapi
+        - name: xtpython
+          image: xtmagento.azurecr.io/xtpython
 
           env:
             - name: MODE

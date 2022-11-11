@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import Update, Delete
 import random
-print("DB:",settings.DBURL)
+
 engines = {
     'master': create_async_engine(settings.DBURL,echo=settings.DEBUG),
     'slaver': create_async_engine(settings.SLAVEDBURL,echo=settings.DEBUG),

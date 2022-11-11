@@ -13,8 +13,8 @@ spec:
         app: tmapi 
     spec:
       containers:
-        - name: tmapi 
-          image: fengchuandevcontainer.azurecr.io/tmapi
+        - name: xtpython
+          image: xtmagento.azurecr.io/xtpython
           ports:
           - containerPort: 8000
           env:
