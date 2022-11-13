@@ -29,6 +29,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
+      name: Default
       vmImage: $(vmImageName)
     steps:
     - task: Bash@3
