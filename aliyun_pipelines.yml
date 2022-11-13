@@ -6,7 +6,7 @@ trigger:
 - main
 - dev
 resources:
-  repo: self
+- repo: self
   pipelines:
   - pipeline: default
 
