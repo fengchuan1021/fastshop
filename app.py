@@ -35,7 +35,7 @@ app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_credentials=True,all
 async def validate_tokenandperformevent(request: Request, call_next:Any)->Response:
     #todo: need verify the token expire date.and add refresh token.
     request.state.token=await getorgeneratetoken(request)
-    request.state.siteinfo={"lang":"en","domainname":"english.com"}
+    #request.state.siteinfo={"lang":"en","domainname":"english.com"}
 
 
     try:
@@ -111,7 +111,7 @@ if not settings.AZ_BLOB_CONNSTR:
 
 
 @app.post('/')
-async def forazureping(request:Request, site: "Models.Site" =Depends(getSiteInfo))->dict:
+async def forazureping(request:Request)->dict:#, site: "Models.Site" =Depends(getSiteInfo)
 
     print(request.headers)
     print(await request.json())
