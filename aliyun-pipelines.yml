@@ -1,0 +1,67 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- main
+- dev
+resources:
+- repo: self
+
+variables:
+  BRANCH_NAME: $[upper(replace(variables['Build.SourceBranch'], 'refs/heads/', ''))]
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'eb779d0e-ca11-41b8-bff4-63517a93f17c'
+  imageRepository: 'xtpython'
+  containerRegistry: 'xtmagento.azurecr.io'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: 'xtmagento80ab-auth'
+
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      name: default
+      demands:
+      - agent.name -equals mage-xero-001
+      vmImage: $(vmImageName)
+    steps:
+    - script: |
+        docker build . -t $(imageRepository) \
+        ${{ if eq(upper(replace(variables['Build.SourceBranch'], 'refs/heads/', '')), 'DEV') }}:
+          --build-arg MODE="STAGE"
+        ${{ else }}:
+          --build-arg MODE="MAIN"
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      name: default
+      demands:
+      - agent.name -equals mage-xero-001
+      vmImage: $(vmImageName)
+    environment: 'XTpython.default'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: |
+                echo "helllowrold"
+                echo "123"
+
+
+
