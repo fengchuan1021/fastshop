@@ -9,6 +9,12 @@ resources:
   pipelines:
   - pipeline: default
     source: default
+    project: XT_python
+    trigger:
+      branches:
+        include:
+          - main
+          - dev
   repositories:
   - repository: self
 
