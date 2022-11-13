@@ -6,9 +6,9 @@ trigger:
 - main
 - dev
 resources:
-- repo: self
-  pipelines:
-  - pipeline: default
+  pipelines: default
+  repositories: self
+
 
 variables:
   BRANCH_NAME: $[upper(replace(variables['Build.SourceBranch'], 'refs/heads/', ''))]
