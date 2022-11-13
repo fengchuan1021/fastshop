@@ -34,7 +34,7 @@ stages:
     steps:
     - task: Bash@3
       inputs:
-        filePath: '/root/builddocker'
+        filePath: 'devtools/vm_deploy/deploypython.sh'
         
 
 
