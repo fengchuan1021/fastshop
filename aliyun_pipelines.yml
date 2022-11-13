@@ -35,6 +35,11 @@ stages:
     - task: Bash@3
       inputs:
         filePath: 'devtools/vm_deploy/deploypython.sh'
+        ${{ if eq(upper(replace(variables['Build.SourceBranch'], 'refs/heads/', '')), 'DEV') }}:
+          arguments: --build-arg MODE="STAGE"
+        ${{ else }}:
+          arguments: --build-arg MODE="MAIN"
+
         
 
 
