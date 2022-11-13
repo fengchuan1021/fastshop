@@ -1,6 +1,4 @@
-# Deploy to Azure Kubernetes Service
-# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# Deploy to aliyun
 
 trigger:
 - main
@@ -31,35 +29,14 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: default
+      name: Default
       demands:
       - agent.name -equals mage-xero-001
       vmImage: $(vmImageName)
     steps:
-    - script: |
-        docker build . -t $(imageRepository) --build-arg MODE="STAGE"
-
-
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
-
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    pool:
-      name: default
-      demands:
-      - agent.name -equals mage-xero-001
-      vmImage: $(vmImageName)
-    environment: 'XTpython.default'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-            - script: |
-                echo "helllowrold"
-                echo "123"
-
+    - task: Bash@3
+      inputs:
+        filePath: '/root/builddocker'
+        
 
 
