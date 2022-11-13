@@ -6,8 +6,10 @@ trigger:
 - main
 - dev
 resources:
-  pipelines: default
-  repositories: self
+  pipelines:
+  - pipeline: default
+  repositories:
+  - repository: self
 
 
 variables:
