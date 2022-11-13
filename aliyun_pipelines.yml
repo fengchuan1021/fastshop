@@ -7,7 +7,7 @@ trigger:
 - dev
 resources:
   pipelines:
-  - pipeline: default
+  - pipeline:
     source: default
     project: XT_python
     trigger:
