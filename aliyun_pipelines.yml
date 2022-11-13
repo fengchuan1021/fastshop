@@ -13,7 +13,8 @@ resources:
     trigger:
       branches:
         include:
-          - main
+        - main
+        - dev
   repositories:
   - repository: self
 
