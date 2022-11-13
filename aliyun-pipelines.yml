@@ -39,8 +39,7 @@ stages:
         docker build . -t $(imageRepository) \
         ${{ if eq(upper(replace(variables['Build.SourceBranch'], 'refs/heads/', '')), 'DEV') }}:
           --build-arg MODE="STAGE"
-        ${{ else }}:
-          --build-arg MODE="MAIN"
+
 
 - stage: Deploy
   displayName: Deploy stage
