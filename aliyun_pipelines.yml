@@ -29,9 +29,6 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: Default
-      demands:
-      - agent.name -equals mage-xero-001
       vmImage: $(vmImageName)
     steps:
     - task: Bash@3
