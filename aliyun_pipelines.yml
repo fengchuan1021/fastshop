@@ -6,20 +6,7 @@ trigger:
 - main
 - dev
 resources:
-  pipelines:
-  - pipeline: default
-    source: default
-    project: XT_python
-    trigger:
-      branches:
-        include:
-        - main
-        - dev
-      stages:
-      - Build
-      - Deploy
-  repositories:
-  - repository: self
+- repo: self
 
 
 variables:
