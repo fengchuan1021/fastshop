@@ -72,7 +72,7 @@ stages:
     pool:
       name: Default
       vmImage: $(vmImageName)
-    environment: 'XTpython.default'
+
     strategy:
       runOnce:
         deploy:
