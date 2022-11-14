@@ -70,6 +70,7 @@ stages:
   - deployment: Deploy
     displayName: Deploy
     pool:
+      name: Default
       vmImage: $(vmImageName)
     environment: 'XTpython.default'
     strategy:
