@@ -72,7 +72,6 @@ stages:
     pool:
       name: Default
       vmImage: $(vmImageName)
-
     strategy:
       runOnce:
         deploy:
