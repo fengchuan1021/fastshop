@@ -103,7 +103,14 @@ class TikTokService(Market):
             return ret
 
     async def getOrderDetail(self, db: AsyncSession, enterprise_id: str, order_id: str) -> Any:
-        pass
+        url='/api/orders/detail/query'
+        enterprisemodel = await Service.enterpriseService.findByPk(db, enterprise_id)
+        url = self.buildurl(url, {}, enterprisemodel)
+        async with self.session.post(url,json={'order_id_list':[order_id]}) as resp:
+            ret=await resp.json()
+            return ret
+
+
 if __name__=='__main__':
     import asyncio
     import sys
