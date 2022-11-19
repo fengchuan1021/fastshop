@@ -36,7 +36,7 @@ async def update(modelname:str,id:str,body:Dict=Body(...),
         return Common500Response(status='validateerror',msg='model no exists')
 
 @router.get('/graphql/{modelname:str}/{id:str}')
-async def retrive(modelname:str,id:str,
+async def retrive(modelname:str,id:str,field:str='*',
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
             )->CommonResponse:
