@@ -1,20 +1,14 @@
-
 from __future__ import annotations
-
 from typing import Any, Dict, Optional
-
 from fastapi import APIRouter, Depends,Body
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-
 import Service
 import settings
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-
 from XTTOOLS import cache,snowFlack,Common500Response, TokenException, PermissionException,XTJsonResponse,CommonQueryShema,CommonResponse
-router = APIRouter()
 
+router = APIRouter()
 
 @router.post('/graphql/{modelname:str}')
 async def create(modelname:str,body:Dict=Body(...),
