@@ -244,8 +244,8 @@ def get_request_handler(
                 response_args["status_code"] = current_status_code
             if sub_response.status_code:
                 response_args["status_code"] = sub_response.status_code
-            if striplang:
-                response_args['striplang']=request.state.siteinfo["lang"]
+            #if striplang:
+            #    response_args['striplang']=request.state.siteinfo["lang"]
             # content = await serialize_response(
             #     field=response_field,
             #     response_content=raw_response,

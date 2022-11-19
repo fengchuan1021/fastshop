@@ -15,7 +15,7 @@ from Models.product.Category import Category
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from XTTOOLS import cache
-from XTTOOLS import XTJsonResponse
+from XTTOOLS import XTJsonResponse,CommonQueryShema
 
 from .__init__ import dependencies
 from .CategoryShema import (
@@ -23,7 +23,7 @@ from .CategoryShema import (
     BackendProductAddcategoryPostResponse,
     BackendProductDelcategoryPostRequest,
     BackendProductDelcategoryPostResponse,
-    BackendProductGetcategorylistGetRequest,
+
     BackendProductGetcategorylistGetResponse,
     BackendProductGetcategorytreeGetResponse,
 )
@@ -38,7 +38,7 @@ router = APIRouter(dependencies=dependencies)
     response_model=BackendProductGetcategorylistGetResponse,
 )
 async def getcategorylist(
-    body: BackendProductGetcategorylistGetRequest,
+    body: CommonQueryShema,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 
@@ -64,7 +64,7 @@ async def getcategorylist(
 @cache(key='xt:admin:categorytree')
 async def getcategorytree(
     db: AsyncSession = Depends(get_webdbsession),
-    token: settings.UserTokenData = Depends(get_token),
+    #token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
     getcategorytree

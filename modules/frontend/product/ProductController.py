@@ -38,7 +38,7 @@ async def productbyvariantid(
     """
     productbyvariantid
     """
-    data=await Service.productService.productdetailbyvariantid(db,variantid,request.state.siteinfo['lang'])
+    data=await Service.productService.productdetailbyvariantid(db,variantid,'en')
     if not data:
         return CommonResponse(status='failed', msg="cant find the product")
     # install pydantic plugin,press alt+enter auto complete the args.
