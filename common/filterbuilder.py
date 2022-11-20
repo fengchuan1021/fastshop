@@ -2,7 +2,7 @@
 from typing import List, Dict, Literal, NewType, TypeAlias, Optional, Tuple
 
 from pydantic import BaseModel
-def filterbuilder(filters:Dict | BaseModel,sep:str=' and ')->Tuple[str,Dict]:
+def filterbuilder(filters:Optional[Dict | BaseModel],sep:str=' and ')->Tuple[str,Dict]:
     if not filters:
         return '',{}
     if type(filters)==dict:
