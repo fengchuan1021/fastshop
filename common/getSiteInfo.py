@@ -2,7 +2,7 @@ from fastapi import Request, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import Models
-from common.dbsession import get_webdbsession
+from component.dbsession import get_webdbsession
 import Service
 
 async def getSiteInfo(request:Request,db: AsyncSession = Depends(get_webdbsession))->Models.Site:#type: ignore

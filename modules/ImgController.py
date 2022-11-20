@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import Service
-from fastapi import FastAPI, File, UploadFile
+from fastapi import UploadFile
 
 import settings
-from common.dbsession import get_webdbsession
+from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 
 router = APIRouter()

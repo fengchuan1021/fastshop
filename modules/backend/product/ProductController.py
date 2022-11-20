@@ -4,21 +4,19 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Literal
+from typing import Any
 
 from fastapi import APIRouter, Depends, UploadFile, Request, Body
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import undefer_group, joinedload
+from sqlalchemy.orm import undefer_group
 
 from sqlalchemy.orm import undefer
 import Models
 import Service
 import settings
-from common.dbsession import get_webdbsession
+from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from common import cache
 from common import XTJsonResponse
 
 from modules.backend import dependencies
@@ -27,7 +25,7 @@ from .ProductShema import BackendProductPrefetchproductidGetResponse, \
     BackendProductProductlistGetResponse, BackendProductProductlistGetRequest
 from common import CommonResponse
 router = APIRouter(dependencies=dependencies)#type: ignore
-from common import snowFlack
+from component.snowFlakeId import snowFlack
 
 # <editor-fold desc="addproduct post: /backend/product/addproduct">
 @router.post(

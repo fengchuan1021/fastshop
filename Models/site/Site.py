@@ -1,13 +1,13 @@
 
 
 import settings
-from common import snowFlack
-from sqlalchemy import Column, text
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER
 from sqlalchemy.orm import relationship, backref
 from .Warehouse import Warehouse
 from ..ModelBase import Base,XTVARCHAR
-from ..product.VariantSite import VariantSite
+
+
 class Site(Base):
     __tablename__ = 'site'
 

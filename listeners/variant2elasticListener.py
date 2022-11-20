@@ -4,7 +4,7 @@ import Models
 from sqlalchemy.ext.asyncio import AsyncSession
 import settings
 from elasticsearchclient import es
-from common import cache
+from component.cache import cache
 import Service
 
 @Broadcast.AfterModelCreated(Models.Variant,background=True)

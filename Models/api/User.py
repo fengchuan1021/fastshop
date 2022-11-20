@@ -1,9 +1,6 @@
-from common import snowFlack
-from sqlalchemy import Column, text
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import BIGINT, INTEGER
 
-from typing import Any, Dict, Generic, List
 from Models.ModelBase import Base,XTVARCHAR
 class App(Base):
     __tablename__ = 'app'

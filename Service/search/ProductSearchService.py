@@ -11,7 +11,7 @@ from common import filterbuilder
 from sqlalchemy.orm import undefer_group
 
 from sqlalchemy import select,text
-from common import cache
+from component.cache import cache
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk

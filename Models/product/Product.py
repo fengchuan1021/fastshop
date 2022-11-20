@@ -1,11 +1,11 @@
 from sqlalchemy.orm import deferred, relationship, backref
 
 from Models.ModelBase import Base,XTVARCHAR
-from sqlalchemy import Column, text
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR, TEXT, DECIMAL
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, TEXT, DECIMAL
 
 
-from common import snowFlack
+from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
     from Models.product.VariantImage import VariantImage

@@ -1,22 +1,18 @@
-
-import settings
 from celery_app import celery_app
-import asyncio
 import datetime
-from common.dbsession import get_webdbsession
 
 from common.globalFunctions import async2sync
-from sqlalchemy import select,update
+from sqlalchemy import update
 import Models
-from common.dbsession import getdbsession
+from component.dbsession import getdbsession
 @celery_app.task
 @async2sync
 async def active_banneduser()->None:# type: ignore
     async with getdbsession() as dbsession:
-
-        statment=update(Models.User).where(Models.User.is_banned=='banned',Models.User.ban_enddate<datetime.datetime.now()).values({Models.User.is_banned:'normal'})
-        await dbsession.execute(statment)
-        await dbsession.close()
+        pass
+        #statment=update(Models.User).where(Models.User.is_banned=='banned',Models.User.ban_enddate<datetime.datetime.now()).values({Models.User.is_banned:'normal'})
+        #await dbsession.execute(statment)
+        #await dbsession.close()
 
 @celery_app.task
 def hello()->None:

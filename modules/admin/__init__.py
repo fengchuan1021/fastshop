@@ -1,15 +1,4 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-
-import Models
-import settings
-from common import PermissionException
-from common.dbsession import get_webdbsession
-from common.globalFunctions import get_token
 from .. import dependencies as praentdependencies
-from fastapi import Depends
-from fastapi import Request
-from common import cache
 # async def checkpermission(db: AsyncSession,request: Request,token: settings.UserTokenData)->None:
 #     api_name=f"{request.scope['endpoint'].__module__.replace('modules.','')}.{request.scope['endpoint'].__name__}"
 #     flag=await cache.hget(f"xtadmin:rolepermission{token.userrole}",api_name)

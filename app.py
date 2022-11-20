@@ -14,7 +14,9 @@ import importlib
 from typing import Any
 from fastapi import FastAPI, Request, Depends
 from redis.exceptions import ConnectionError
-from common import cache,snowFlack,Common500Response, TokenException, PermissionException,XTJsonResponse
+from common import Common500Response, TokenException, PermissionException,XTJsonResponse
+from component.snowFlakeId import snowFlack
+from component.cache import cache
 from pathlib import Path
 from common.globalFunctions import writelog
 from common.globalFunctions import getorgeneratetoken, get_token

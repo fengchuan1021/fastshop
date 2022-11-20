@@ -1,10 +1,10 @@
 
-from sqlalchemy.orm import deferred, relationship, backref
+from sqlalchemy.orm import relationship
 from Models.ModelBase import Base,XTVARCHAR
-from sqlalchemy import Column, text, Index
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
+from sqlalchemy import Column, Index
+from sqlalchemy.dialects.mysql import BIGINT, INTEGER
 
-from common import snowFlack
+from component.snowFlakeId import snowFlack
 from .Product import Variant
 class VariantImage(Base):
     __tablename__ = 'variant_image'

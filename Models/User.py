@@ -1,9 +1,9 @@
-from common import snowFlack
+from component.snowFlakeId import snowFlack
 from sqlalchemy import Column, text
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, DECIMAL
 from sqlalchemy.orm import relationship, backref
 
-from typing import Any, Dict, Generic, List
+from typing import List
 from .ModelBase import Base,XTVARCHAR
 from UserRole import UserRole
 class User(Base):

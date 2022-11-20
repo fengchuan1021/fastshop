@@ -1,7 +1,7 @@
 
-from common import snowFlack
-from sqlalchemy import Column, text
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
+from component.snowFlakeId import snowFlack
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import BIGINT
 from ..ModelBase import Base,XTVARCHAR
 
 

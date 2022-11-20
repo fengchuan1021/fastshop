@@ -1,19 +1,12 @@
-from pydantic import BaseModel
-from sqlalchemy import select, text
-from sqlalchemy.engine import MappingResult
-from sqlalchemy.orm import joinedload, undefer_group, selectinload, Load
+from sqlalchemy import select
+from sqlalchemy.orm import Load
 
 from Service.base import CRUDBase
 import Models
-from typing import Union, Optional, Dict
-import settings
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import and_, or_
+from sqlalchemy.sql import and_
 
-
-from common import cache
 from Models import Site,VariantSite,Variant
-from pymysql.cursors import DictCursor
 
 from modules.backend.sitewarehouse.InventoryShema import BackendSiteSetvariantsitestatusPostRequest
 
@@ -72,7 +65,7 @@ class VariantSiteService(CRUDBase[Models.VariantSite]):
 if __name__ == "__main__":
     print('11')
     from common.globalFunctions import async2sync
-    from common.dbsession import getdbsession
+    from component.dbsession import getdbsession
     import Service
     async def test():#type: ignore
         async with getdbsession() as db:#type: ignore

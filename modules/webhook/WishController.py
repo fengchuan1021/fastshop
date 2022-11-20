@@ -5,22 +5,13 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
-from typing import Any, Dict
+from typing import Any
 
-import orjson
-from fastapi import APIRouter, Depends,Header,Request,Body
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Header, Body
 
 import Service
 import settings
-from common.dbsession import get_webdbsession
-from common.globalFunctions import get_token
-from common import cache
-from common import XTJsonResponse
-from hashlib import sha256
 from .__init__ import dependencies
-from common import XTJsonResponse
 from dateutil import parser
 router = APIRouter(dependencies=dependencies)
 @router.get('/api/wish/appcallback')

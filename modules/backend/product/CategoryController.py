@@ -2,19 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import Service
 import settings
 from Models.product.Category import Category
-from common.dbsession import get_webdbsession
+from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from common import cache
+from component.cache import cache
 from common import XTJsonResponse,CommonQueryShema
 
 from .__init__ import dependencies

@@ -1,13 +1,13 @@
 import typing
 
-from sqlalchemy.orm import deferred, relationship, backref
+from sqlalchemy.orm import relationship, backref
 from Models.ModelBase import Base,XTVARCHAR
-from sqlalchemy import Column, text, Index
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
-import enum
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, TEXT
+
 if typing.TYPE_CHECKING:
     from .Product import Product
-from common import snowFlack
+from component.snowFlakeId import snowFlack
 
 
 class PreAttrSpecification(Base):

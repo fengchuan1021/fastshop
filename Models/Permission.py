@@ -1,8 +1,5 @@
-from common import snowFlack
-from sqlalchemy import Column, text, Index, UniqueConstraint
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,DECIMAL
-from sqlalchemy.orm import relationship, backref
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union,Tuple
+from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy.dialects.mysql import INTEGER
 from .ModelBase import Base,XTVARCHAR
 
 # class Role(Base):

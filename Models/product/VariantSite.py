@@ -1,11 +1,10 @@
-
-from sqlalchemy.orm import deferred, relationship, backref
 from Models.ModelBase import Base,XTVARCHAR
-from sqlalchemy import Column, text, Index
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, DECIMAL
 
-from common import snowFlack
-from .Product import Variant
+from component.snowFlakeId import snowFlack
+
+
 class VariantSite(Base):
     __tablename__ = 'variant_site'
     variant_site_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId)

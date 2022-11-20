@@ -1,9 +1,8 @@
-from sqlalchemy.orm import deferred, relationship, backref
+from sqlalchemy.orm import relationship, backref
 from Models.ModelBase import Base,XTVARCHAR
-from sqlalchemy import Column,text
-from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
-from typing import List
-from common import snowFlack
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import BIGINT, INTEGER
+from component.snowFlakeId import snowFlack
 
 class Category(Base):
     __tablename__ = 'category'

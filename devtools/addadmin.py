@@ -1,7 +1,7 @@
 
 import asyncio
 import Models
-from common.dbsession import getdbsession
+from component.dbsession import getdbsession
 import Service
 
 async def adddefaultadmin()->None:

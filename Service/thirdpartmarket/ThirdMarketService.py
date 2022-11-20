@@ -20,8 +20,7 @@ class ThirdMarketService():
 
 
 if __name__=='__main__':
-    import asyncio
-    from common.dbsession import getdbsession
+    from component.dbsession import getdbsession
     async def test()->None:
         async with getdbsession() as db:
             t = ThirdMarketService()

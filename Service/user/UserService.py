@@ -3,14 +3,12 @@ from Service.base import CRUDBase
 import Models
 from typing import Union, Dict
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import jwt
 import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext
-from sqlalchemy.sql import and_, or_
+from sqlalchemy.sql import or_
 from typing import Optional
-from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
 import hashlib
 import random
 
@@ -79,7 +77,7 @@ class UserService(CRUDBase[Models.User]):
 
 if __name__ == '__main__':
     import  asyncio
-    from common.dbsession import getdbsession
+    from component.dbsession import getdbsession
     async def t()->None:
         async with getdbsession() as db:
             await Service.userService.create(db,{"userrole":5,"username":"5556677","password":"ffffff"})

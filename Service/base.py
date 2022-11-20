@@ -9,7 +9,7 @@ from common import filterbuilder
 ModelType = TypeVar("ModelType", bound=Base)
 from sqlalchemy.orm import defer
 import Models
-from common import cache
+from component.cache import cache
 
 class CRUDBase(Generic[ModelType]):
     usecache=True

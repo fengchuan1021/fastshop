@@ -2,16 +2,12 @@ import Service
 from Models import Variant, Product
 from Service.base import CRUDBase
 import Models
-from typing import Union, Optional, List, Dict
-from datetime import datetime, timedelta
-import settings
+from typing import List, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import and_, or_
 from common import filterbuilder
-from sqlalchemy.orm import undefer_group, joinedload
+from sqlalchemy.orm import undefer_group
 from sqlalchemy import select,text
-from common import cache
-from common import snowFlack
+from component.cache import cache
 from modules.backend.product.ProductShema import BackendProductAddproductPostRequest
 from modules.backend.product.ProductShema import Variant as VariantSchema
 
@@ -118,7 +114,7 @@ class ProductService(CRUDBase[Models.Product]):
 if __name__ == "__main__":
     pass
     from common.globalFunctions import async2sync
-    from common.dbsession import getdbsession
+    from component.dbsession import getdbsession
     async def productdetailbyvariantid()->None:
         async with getdbsession() as db:
             tmp=await Service.productService.productdetailbyvariantid(db,87318319723451458,'cn')
