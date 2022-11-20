@@ -1,9 +1,9 @@
 #generate unique id.
 import time
 EPOCH = 1655477539962 #int(time.time() * 1000.0)
-INDEX_SIZE = 13
+INDEX_SIZE = 7
 TIMESTAMP_SIZE = 41
-NODE_SIZE = 10
+NODE_SIZE = 5
 
 TIMESTAMP_OFFSET = INDEX_SIZE + NODE_SIZE
 INDEX_MASK = (1 << INDEX_SIZE) -1
@@ -16,7 +16,7 @@ import os,random
 class SnowFlack():
     def timestamp(self)->int:
         return int(time.time()*1000)
-    def init(self,nodeid:int=0)->None:
+    def init(self,nodeid:int)->None:
         self.nodeid=nodeid
     def __init__(self,nodeid:int=0)->None:
         if not nodeid:
@@ -37,6 +37,3 @@ class SnowFlack():
 
 
 snowFlack=SnowFlack()
-if __name__ == "__main__":
-    for i in range(30):
-        print(bin(snowFlack.getId()))

@@ -53,6 +53,7 @@ async def get(queryparams:InShema,
     where, params = filterbuilder(queryparams.filter)
     statment=parseSQL(queryparams.query).where(text(where))
     results=await (await db.connection()).execute(statment,params)
+
     data=results.mappings().all()
     return CommonResponse(status='success',data=data)
 
