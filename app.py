@@ -14,12 +14,11 @@ import importlib
 from typing import Any
 from fastapi import FastAPI, Request, Depends
 from redis.exceptions import ConnectionError
-from common import Common500Response, TokenException, PermissionException,XTJsonResponse
+from common import Common500Response, TokenException, PermissionException,XTJsonResponse,writelog,getorgeneratetoken, get_token
 from component.snowFlakeId import snowFlack
 from component.cache import cache
 from pathlib import Path
-from common.globalFunctions import writelog
-from common.globalFunctions import getorgeneratetoken, get_token
+
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 if os.name!='nt':
