@@ -1,6 +1,6 @@
 
 from typing import List, Dict, Literal, NewType, TypeAlias, Optional, Tuple
-from pymysql.converters import escape_string #
+
 from pydantic import BaseModel
 def filterbuilder(filters:Dict | BaseModel,sep:str=' and ')->Tuple[str,Dict]:
     if not filters:
