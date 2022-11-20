@@ -6,7 +6,7 @@ class CommonQueryShema(BaseModel):
     pagesize: Optional[int] = 20
     pagenum: Optional[int] = 1
     filter: Optional[Dict] = None
-    field: str='*'
+
 
 class CommonResponse(BaseModel):
     status: Literal['success','failed']
