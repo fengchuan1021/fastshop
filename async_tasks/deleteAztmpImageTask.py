@@ -10,9 +10,9 @@ import asyncio
 from celery_app import celery_app
 from common.globalFunctions import async2sync
 import Models
-from XTTOOLS import snowFlack
+from common import snowFlack
 from common.dbsession import getdbsession
-from XTTOOLS import cache
+from common import cache
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, __version__, PublicAccess
 import time
 from collections import defaultdict
@@ -42,7 +42,7 @@ def setup_periodic_tasks(sender, **kwargs)->None:  # type: ignore
     sender.add_periodic_task(10, deleteAztmpfile.s(), name='deleteAztmpfile')
 
 # async def test():
-#     from XTTOOLS import cache
+#     from common import cache
 #     await cache.redis.zadd('xxx',{'1':1,'2':3})
 # loop=asyncio.new_event_loop()
 # asyncio.set_event_loop(loop)

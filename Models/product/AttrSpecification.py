@@ -7,7 +7,7 @@ from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,T
 import enum
 if typing.TYPE_CHECKING:
     from .Product import Product
-from XTTOOLS import snowFlack
+from common import snowFlack
 
 
 class PreAttrSpecification(Base):

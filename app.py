@@ -14,7 +14,7 @@ import importlib
 from typing import Any
 from fastapi import FastAPI, Request, Depends
 from redis.exceptions import ConnectionError
-from XTTOOLS import cache,snowFlack,Common500Response, TokenException, PermissionException,XTJsonResponse
+from common import cache,snowFlack,Common500Response, TokenException, PermissionException,XTJsonResponse
 from pathlib import Path
 from common.globalFunctions import writelog
 from common.globalFunctions import getorgeneratetoken, get_token

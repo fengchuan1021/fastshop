@@ -12,12 +12,12 @@ import Service
 import settings
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from XTTOOLS import toBytesJson,toJson,cache,XTJsonResponse
+from common import toBytesJson,toJson,cache,XTJsonResponse
 
 
 from .__init__ import dependencies
 
-from XTTOOLS import CommonResponse
+from common import CommonResponse
 router = APIRouter(dependencies=dependencies)
 
 

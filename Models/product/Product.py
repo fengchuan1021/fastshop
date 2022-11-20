@@ -5,7 +5,7 @@ from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR, TEXT, DECIMAL
 
 
-from XTTOOLS import snowFlack
+from common import snowFlack
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
     from Models.product.VariantImage import VariantImage

@@ -7,7 +7,7 @@ import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import and_, or_
 
-from XTTOOLS import cache
+from common import cache
 
 
 class SiteService(CRUDBase[Models.Site]):

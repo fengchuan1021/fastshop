@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import settings
 import aiohttp
-from XTTOOLS import cache
+from common import cache
 from Service.thirdpartmarket import Market
 class WishService(Market):
     def __init__(self)->None:

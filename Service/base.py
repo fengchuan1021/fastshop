@@ -5,11 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from Models import Base
 from sqlalchemy.future import select
 from sqlalchemy import text, func
-from XTTOOLS import filterbuilder
+from common import filterbuilder
 ModelType = TypeVar("ModelType", bound=Base)
 from sqlalchemy.orm import defer
 import Models
-from XTTOOLS import cache
+from common import cache
 
 class CRUDBase(Generic[ModelType]):
     usecache=True
@@ -28,7 +28,7 @@ class CRUDBase(Generic[ModelType]):
         # associated listener validredisListerer.py .dont change.
         return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"#type: ignore
 
-    @cache(key_builder='getpkcachename',expire=3600*48)
+    @cache(key_builder='getpkcachename',expire=3600*48)#type: ignore
     async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
         results=await dbSession.execute(select(self.model).where(self.model.id==id))
         return results.scalar_one_or_none()

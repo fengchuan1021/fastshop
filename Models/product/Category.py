@@ -3,7 +3,7 @@ from Models.ModelBase import Base,XTVARCHAR
 from sqlalchemy import Column,text
 from sqlalchemy.dialects.mysql import BIGINT, DATETIME, ENUM, INTEGER, VARCHAR,TEXT,DECIMAL
 from typing import List
-from XTTOOLS import snowFlack
+from common import snowFlack
 
 class Category(Base):
     __tablename__ = 'category'

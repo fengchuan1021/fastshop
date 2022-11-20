@@ -6,7 +6,7 @@ import Service
 import settings
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from XTTOOLS import cache,snowFlack,Common500Response, TokenException, PermissionException,XTJsonResponse,CommonQueryShema,CommonResponse
+from common import cache,snowFlack,Common500Response, TokenException, PermissionException,XTJsonResponse,CommonQueryShema,CommonResponse
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ router = APIRouter()
 async def create(modelname:str,body:Dict=Body(...),
            db: AsyncSession = Depends(get_webdbsession),
            token: settings.UserTokenData = Depends(get_token),
-           )->CommonResponse:
+           )->Any:
     if service:=getattr(Service,modelname+'Service',None):
         await service.create(db,body)
         await db.commit()
@@ -26,7 +26,7 @@ async def create(modelname:str,body:Dict=Body(...),
 async def update(modelname:str,id:str,body:Dict=Body(...),
            db: AsyncSession = Depends(get_webdbsession),
            token: settings.UserTokenData = Depends(get_token),
-           )->CommonResponse:
+           )->Any:
     if service:=getattr(Service,modelname+'Service',None):
 
         await service.updateByPk(db,id,body)
@@ -39,7 +39,8 @@ async def update(modelname:str,id:str,body:Dict=Body(...),
 async def retrive(modelname:str,id:str,field:str='*',
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
-            )->CommonResponse:
+            )->Any:
+
     if service:=getattr(Service,modelname+'Service',None):
         model=await service.findByPk(db,id)
         return {'status':'success','data':model}
@@ -51,7 +52,7 @@ async def retrive(modelname:str,id:str,field:str='*',
 async def lists(modelname:str,queryparams:CommonQueryShema=CommonQueryShema(),
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
-            )->CommonResponse:
+            )->Any:
 
     if service:=getattr(Service,modelname+'Service',None):
         result,total=await service.pagination(db,calcTotalNum=True,**queryparams.dict())
@@ -63,7 +64,7 @@ async def lists(modelname:str,queryparams:CommonQueryShema=CommonQueryShema(),
 async def delete(modelname:str,id:str,
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
-            )->CommonResponse:
+            )->Any:
     if service:=getattr(Service,modelname+'Service',None):
         model=await service.deleteByPk(db,id)
         return {'status':'success'}

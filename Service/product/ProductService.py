@@ -7,17 +7,17 @@ from datetime import datetime, timedelta
 import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import and_, or_
-from XTTOOLS import filterbuilder
+from common import filterbuilder
 from sqlalchemy.orm import undefer_group, joinedload
 from sqlalchemy import select,text
-from XTTOOLS import cache
-from XTTOOLS import snowFlack
+from common import cache
+from common import snowFlack
 from modules.backend.product.ProductShema import BackendProductAddproductPostRequest
 from modules.backend.product.ProductShema import Variant as VariantSchema
 
 class VariantService(CRUDBase[Models.Variant]):
 
-    @cache(key_builder='getpkcachename',expire=3600*48)
+    @cache(key_builder='getpkcachename',expire=3600*48)#type: ignore
     async def findByPk(self,dbSession: AsyncSession,id:int,lang:str='')->Models.Variant:
         if lang:
             statment=select(Models.Variant).options(undefer_group(lang)).where(self.model.id==id)
@@ -29,7 +29,7 @@ class VariantService(CRUDBase[Models.Variant]):
 
     async def findByAttribute(self,dbsession:AsyncSession,filters:Dict={},sep:str=' and ',lang:str='en')->List[Models.Variant]:
         filter=filterbuilder(filters,sep)
-        statment=select(self.model).where(text(filter))
+        statment=select(self.model).where(text(filter))#type: ignore
         results=await dbsession.execute(statment)
         tmp=results.scalars().all()
         print('tmp::',tmp)
@@ -40,7 +40,7 @@ class VariantService(CRUDBase[Models.Variant]):
 
 class ProductService(CRUDBase[Models.Product]):
 
-    @cache(key_builder='getpkcachename', expire=3600 * 48)
+    @cache(key_builder='getpkcachename', expire=3600 * 48)#type: ignore
     async def findByPk(self,db:AsyncSession,id:int,lang:str='*')->Product:
         if lang:
             statment=select(Models.Product).options(undefer_group(lang)).where(self.model.id==id)

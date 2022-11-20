@@ -9,11 +9,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import Service
 import settings
-from XTTOOLS import CommonResponse
+from common import CommonResponse
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from XTTOOLS import cache
-from XTTOOLS import XTJsonResponse
+from common import cache
+from common import XTJsonResponse
 
 from .__init__ import dependencies
 

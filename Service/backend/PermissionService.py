@@ -17,9 +17,9 @@ import Service
 from Service import CRUDBase
 from UserRole import UserRole
 
-from XTTOOLS import filterbuilder
+from common import filterbuilder
 
-from XTTOOLS import cache
+from common import cache
 
 
 class PermissionService(CRUDBase[Models.Permission]):
@@ -59,7 +59,7 @@ class PermissionService(CRUDBase[Models.Permission]):
 
     def getrolemenucachekey(self,func,func_args,func_annotations)->str:#type: ignore
         return f"{cache.get_prefix()}:rolemenu:{func_args.arguments.get('roleid')}"
-    @cache(key_builder='getrolemenucachekey')
+    @cache(key_builder='getrolemenucachekey')#type: ignore
     async def getroledisplayedmenu(self,db:AsyncSession,roleid:int)->List[Models.Roledisplayedmenu]:
         role_ids = []
         tmpid = roleid

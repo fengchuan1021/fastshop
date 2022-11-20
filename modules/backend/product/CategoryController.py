@@ -14,8 +14,8 @@ import settings
 from Models.product.Category import Category
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from XTTOOLS import cache
-from XTTOOLS import XTJsonResponse,CommonQueryShema
+from common import cache
+from common import XTJsonResponse,CommonQueryShema
 
 from .__init__ import dependencies
 from .CategoryShema import (

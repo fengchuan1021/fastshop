@@ -14,11 +14,11 @@ import Service
 import settings
 from common.dbsession import get_webdbsession
 from common.globalFunctions import get_token
-from XTTOOLS import cache
-from XTTOOLS import XTJsonResponse
+from common import cache
+from common import XTJsonResponse
 from hashlib import sha256
 from .__init__ import dependencies
-from XTTOOLS import XTJsonResponse
+from common import XTJsonResponse
 
 router = APIRouter(dependencies=dependencies)
 @router.post('/api/webhook/tiktok')

@@ -15,7 +15,7 @@ import Models
 import Service
 import settings
 import aiohttp
-from XTTOOLS import cache
+from common import cache
 from urllib.parse import urlencode
 from Service.thirdpartmarket import Market
 class TikTokService(Market):

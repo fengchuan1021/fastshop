@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import settings
 
 from elasticsearchclient import es
-from XTTOOLS import cache,toJson
+from common import cache,toJson
 import Service
 
 @Broadcast.AfterModelDeleted('*',background=True)
