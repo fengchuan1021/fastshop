@@ -39,23 +39,39 @@ async def update(modelname:str,id:str,body:Dict=Body(...),
 
 
 class InShema(BaseModel):
-    query:str
+    query:Optional[str]=''
     pagesize: Optional[int] =None
     pagenum: Optional[int] =None
-    filter: Optional[Dict] = None
+    filter: Optional[Dict] = {}
+    orderby:str=''
+    returntotal:bool=False
 
 
 @router.get('/graphql')
-async def get(queryparams:InShema,
+@router.get('/graphql/{modelname:str}')
+@router.get('/graphql/{modelname:str}/{id:int}')
+async def get(queryparams:InShema=InShema(),modelname:str='',id:int=0,
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
             )->Any:
     where, params = filterbuilder(queryparams.filter)
+    if modelname:
+        queryparams.query=modelname[0].upper()+modelname[1:]+'{}'
+    if id:
+        filter[f'{modelname.lower()}_id']=id#type: ignore
     statment=parseSQL(queryparams.query).where(text(where))
+    total=None
+    if queryparams.returntotal:
+        pass
+    if queryparams.pagesize and queryparams.pagenum:
+        statment=statment.offset((queryparams.pagenum-1)*queryparams.pagesize).limit(queryparams.pagesize)
+    if queryparams.orderby:
+        statment=statment.order_by(text(queryparams.orderby))
+
     results=await (await db.connection()).execute(statment,params)
 
     data=results.mappings().all()
-    return CommonResponse(status='success',data=data)
+    return CommonResponse(status='success',data=data,total=total)
 
 @router.delete('/graphql/{modelname:str}/{id:str}')
 async def delete(modelname:str,id:str,
