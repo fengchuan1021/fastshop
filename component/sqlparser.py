@@ -5,7 +5,7 @@ from sqlalchemy.sql.selectable import Select
 import Models
 def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
     p1 = query.find('{')
-    modelname = query[0:p1]
+    modelname = query[0].upper()+query[1:p1]
     body = query[p1 + 1:-1]
     columns = []
     joinmodel=[]

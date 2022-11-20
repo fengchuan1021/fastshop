@@ -46,17 +46,19 @@ class InShema(BaseModel):
     orderby:str=''
     returntotal:bool=False
 
-
-@router.get('/graphql')
-@router.get('/graphql/{modelname:str}')
 @router.get('/graphql/{modelname:str}/{id:int}')
+@router.get('/graphql/{modelname:str}')
 async def get(queryparams:InShema=InShema(),modelname:str='',id:int=0,
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
             )->Any:
     where, params = filterbuilder(queryparams.filter)
     if modelname:
-        queryparams.query=modelname[0].upper()+modelname[1:]+'{}'
+        if not queryparams.query:
+            queryparams.query=modelname+'{}'
+        else:
+            if queryparams.query[0]=='{':
+                queryparams.query=modelname+queryparams.query
     if id:
         filter[f'{modelname.lower()}_id']=id#type: ignore
     statment=parseSQL(queryparams.query).where(text(where))
