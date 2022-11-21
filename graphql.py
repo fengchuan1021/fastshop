@@ -10,6 +10,7 @@ import settings
 from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from common import Common500Response, CommonResponse, filterbuilder
+from component.fastQL import fastQL
 from component.sqlparser import parseSQL
 import orjson
 router = APIRouter()
@@ -57,26 +58,8 @@ async def get(query:str,id:int=0,pagenum:int=0,pagesize:int=0,orderby:str='',ret
             token: settings.UserTokenData = Depends(get_token),
             )->Any:
     _filter=orjson.loads(filter)
-
-    if query[-1]!='}':
-            query=query+'{}'
-    if id:
-        _filter[f'{modelname.lower()}_id']=id#type: ignore
-
-    where, params = filterbuilder(_filter)
-    statment=parseSQL(query).where(text(where))
-    total=None
-    if returntotal:
-        count_statment=statment.with_only_columns([func.count()],maintain_column_froms=True)
-        total=(await db.execute(count_statment,params)).scalar()
-    if pagesize and pagenum:
-        statment=statment.offset((pagenum-1)*pagesize).limit(pagesize)
-    if orderby:
-        statment=statment.order_by(text(orderby))
-
-    results=await db.execute(statment,params)
-    data=results.scalars().all()
-    return CommonResponse(status='success',data=data,total=total)
+    result=fastQL(db,query,id,pagenum,pagesize,orderby,returntotal,filter)
+    return CommonResponse(status='success',data=result.data,total=result.total)
 
 @router.delete('/graphql/{modelname:str}/{id:str}')
 async def delete(modelname:str,id:str,

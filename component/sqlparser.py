@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload, load_only
+from sqlalchemy.orm import joinedload, load_only, contains_eager
 from typing import Tuple, List, Any
 from sqlalchemy.sql.selectable import Select
 import Models
@@ -39,18 +39,26 @@ def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
                 columns.append(tmpstr)
         return modelname,columns,joinmodel
 
-def parseSQL(query:str,parentmodel:Any=None)->Any:
+def parseSQL(query:str,parentmodel:Any=None,statment:Any=None)->Any:
     modelname,columns,joinmodel=getmodelnamecloums(query)
     model = getattr(Models, modelname)
-    if parentmodel==None:
-
+    option=None
+    if None==statment:
         statment=select(model)
     else:
-        statment=joinedload(getattr(parentmodel,modelname))#type: ignore
-
+        relivatetoparent=getattr(parentmodel,modelname)
+        option=contains_eager(relivatetoparent)
+        statment=statment.join(relivatetoparent)#type: ignore
     if columns:
-        statment=statment.options(load_only(*columns))
+        option=option.load_only(*columns) if option else load_only(*columns)
+    childsoptions=[]
     for joint in joinmodel:
-        joinstatment=parseSQL(joint,model)
-        statment=statment.options(joinstatment)
-    return statment
+        statment,childsoption=parseSQL(joint,model,statment)
+        if childsoption:
+            childsoptions.append(childsoption)
+
+    if not parentmodel:
+        return statment.options(option)
+    else:
+        option = option.options(*childsoptions)#type: ignore
+    return statment,option
