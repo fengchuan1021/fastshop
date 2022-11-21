@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional
 from sqlalchemy import text, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import settings
 from common import filterbuilder
 from component.sqlparser import parseSQL
 
@@ -17,11 +18,13 @@ class DotMap:
 async def fastQL(db: AsyncSession,
            query:str,
            id:int=0,
+           filter:Dict={},
            pagenum:int=0,
            pagesize:int=0,
            orderby:str='',
            returntotal:bool=False,
-           filter:Dict={},
+           token:Optional[settings.UserTokenData]=None,
+           permissioncheck:bool=False,
             )->Any:
     if query[-1] != '}':
         query = query + '{}'
