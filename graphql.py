@@ -52,13 +52,13 @@ async def update(modelname:str,id:str,body:Dict=Body(...),
 
 @router.get('/graphql/{query:str}/{id:int}')
 @router.get('/graphql/{query:str}')
-async def get(query:str='',id:int=0,pagenum:int=0,pagesize:int=0,orderby:str='',returntotal:bool=False,filter:str='{}',
+async def get(query:str,id:int=0,pagenum:int=0,pagesize:int=0,orderby:str='',returntotal:bool=False,filter:str='{}',
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
             )->Any:
     _filter=orjson.loads(filter)
 
-    if query and query[-1]!='}':
+    if query[-1]!='}':
             query=query+'{}'
     if id:
         _filter[f'{modelname.lower()}_id']=id#type: ignore
@@ -67,16 +67,15 @@ async def get(query:str='',id:int=0,pagenum:int=0,pagesize:int=0,orderby:str='',
     statment=parseSQL(query).where(text(where))
     total=None
     if returntotal:
-        count_statment=statment.with_only_columns([func.count()]).order_by(None)
+        count_statment=statment.with_only_columns([func.count()],maintain_column_froms=True)
         total=(await db.execute(count_statment,params)).scalar()
     if pagesize and pagenum:
         statment=statment.offset((pagenum-1)*pagesize).limit(pagesize)
     if orderby:
         statment=statment.order_by(text(orderby))
 
-    results=await (await db.connection()).execute(statment,params)
-
-    data=results.mappings().all()
+    results=await db.execute(statment,params)
+    data=results.scalars().all()
     return CommonResponse(status='success',data=data,total=total)
 
 @router.delete('/graphql/{modelname:str}/{id:str}')

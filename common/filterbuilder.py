@@ -12,28 +12,31 @@ def filterbuilder(filters:Optional[Dict | BaseModel],sep:str=' and ')->Tuple[str
 
     arr:List[str]=[]
     params={}
+    n=0
     oprationtable={'eq':'=','gt':'>','lt':'<','gte':'>=','lte':'<=','ne':'!=','contains':'like','in':'in'}
     for keyoprator,value in filters.items():
+        n+=1
+        bindparamname=f'params{n}'
         if value==None:
             continue
         tmp=keyoprator.rsplit('__',1)
         if len(tmp)==2:
-            key,opration=tmp
+            column,opration=tmp
         else:
-            key=tmp[0]
+            column=tmp[0]
             opration='eq'
 
-        column=key.replace('__','.')
+        #column=key.replace('__','.')
 
         if opration in oprationtable:
             if opration=='in':
-                arr.append(f"{column} {oprationtable[opration]} (:{key})")
-                params[key]=','.join([str(v) for v in value])
+                arr.append(f"{column} {oprationtable[opration]} (:{bindparamname})")
+                params[bindparamname]=','.join([str(v) for v in value])
             elif opration=='contains':
-                arr.append(f"{column} {oprationtable[opration]} :{key}")
-                params[key] = f"%{value}%"
+                arr.append(f"{column} {oprationtable[opration]} :{bindparamname}")
+                params[bindparamname] = f"%{value}%"
             else:
-                arr.append(f"{column} {oprationtable[opration]} :{key}")
-                params[key]=value
+                arr.append(f"{column} {oprationtable[opration]} :{bindparamname}")
+                params[bindparamname]=value
 
     return sep.join(arr),params
