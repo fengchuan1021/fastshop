@@ -6,7 +6,7 @@ import typing
 from redis.asyncio import Redis
 import redis.asyncio as redis
 
-from common.xtjson import toJson
+from XTTOOLS import toJson
 import asyncio
 from functools import wraps
 from typing import Callable, Optional, Type,Dict,Tuple,Any,TypeVar,Callable,overload,cast,List,Mapping

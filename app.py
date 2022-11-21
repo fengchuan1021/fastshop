@@ -115,9 +115,6 @@ app.include_router(graphql.router,prefix='/api')
 
 @app.post('/')
 async def forazureping(request:Request)->dict:#, site: "Models.Site" =Depends(getSiteInfo)
-
-    print(request.headers)
-    print(await request.json())
     return {"status": 'success','hello':'world'}
 
 if __name__ == "__main__":
