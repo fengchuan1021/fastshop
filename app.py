@@ -109,9 +109,9 @@ if not settings.AZ_BLOB_CONNSTR:
     from fastapi.staticfiles import StaticFiles
     app.mount("/img", StaticFiles(directory="img"), name="img")
 
-if settings.ENABLE_GRAPHQL:
-    import graphql
-    app.include_router(graphql.router,prefix='/api')
+
+import graphql
+app.include_router(graphql.router,prefix='/api')
 
 @app.post('/')
 async def forazureping(request:Request)->dict:#, site: "Models.Site" =Depends(getSiteInfo)
