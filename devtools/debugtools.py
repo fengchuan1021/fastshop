@@ -5,7 +5,6 @@ import re
 from devtools import generateModel
 from pathlib import Path
 import importlib
-print('111111111111111111111')
 import time
 
 def before_appstart()->None:

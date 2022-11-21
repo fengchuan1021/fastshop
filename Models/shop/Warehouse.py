@@ -2,7 +2,7 @@
 from component.snowFlakeId import snowFlack
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT
-from ..ModelBase import Base,XTVARCHAR
+from Models.ModelBase import Base,XTVARCHAR
 
 
 class Warehouse(Base):

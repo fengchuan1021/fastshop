@@ -2,8 +2,8 @@ from component.snowFlakeId import snowFlack
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT
 from sqlalchemy.orm import relationship, backref
-from ..ModelBase import Base,XTVARCHAR
-from ..User import User
+from Models.ModelBase import Base,XTVARCHAR
+from Models.User import User
 
 class Enterprise(Base):
     __tablename__='enterprise'
