@@ -15,7 +15,7 @@ class Category(Base):
     description=Column(XTVARCHAR(512))
     category_image=Column(XTVARCHAR(512),server_default="",default='')
     #use virtual foreign key.
-    children:'Category'=relationship("Category",uselist=True,primaryjoin='foreign(Category.parent_id) == Category.category_id',backref=backref('parent', remote_side='Category.category_id'))
+    children:'Category'=relationship("Category",uselist=True,primaryjoin='foreign(Category.parent_id) == Category.category_id',backref=backref('Parent', remote_side='Category.category_id'))
 
 
 class ProductCategory(Base):

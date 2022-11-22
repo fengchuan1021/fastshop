@@ -15,50 +15,50 @@ class TikTokService(Market):
     def __init__(self)->None:
         self.session = aiohttp.ClientSession(base_url=settings.TIKTOK_APIURL)
 
-    async def getEnterprise(self,db:AsyncSession,enterprise_id:str)->Models.Enterprise:
-        enterprise = await Service.enterpriseService.findByPk(db, enterprise_id)
-        if not enterprise:
-            raise Exception("enterprise info not found")
-        return enterprise
+    async def getShop(self,db:AsyncSession,shop_id:str)->Models.Shop:
+        shop = await Service.shopService.findByPk(db, shop_id)
+        if not shop:
+            raise Exception("merchant info not found")
+        return shop
 
     def get_sign(self,data:str, key:str)->str:
         sign = hmac.new(key.encode('utf-8'), data.encode('utf-8'), digestmod=sha256).hexdigest()
         return sign
 
-    def buildurl(self,url:str,params:Dict={},enterprise:'Models.Enterprise'=None)->str:
+    def buildurl(self,url:str,params:Dict={},shop:'Models.Shop'=None)->str:
         if TYPE_CHECKING:
-            enterprise=cast(Models.Enterprise,enterprise)
-        params.update({'app_key':enterprise.tiktok_appid,'shop_id':enterprise.tiktok_shopid})
+            shop=cast(Models.Shop,shop)
+        params.update({'app_key':shop.appid,'shop_id':shop.appkey})
         params['timestamp']=str(int(time.time()))
-        signstring:str = enterprise.tiktok_secret + url#type: ignore
+        signstring:str = merchant.tiktok_secret + url#type: ignore
         for key in sorted(params):
             signstring = signstring + key + params[key]
-        signstring = signstring + enterprise.tiktok_secret#type: ignore
-        sign=self.get_sign(signstring,enterprise.tiktok_secret)#type: ignore
-        params['access_token']=enterprise.tiktok_token
+        signstring = signstring + merchant.tiktok_secret#type: ignore
+        sign=self.get_sign(signstring,merchant.tiktok_secret)#type: ignore
+        params['access_token']=shop.token
         params['sign']=sign
         return f'{url}?{urlencode(params)}'
 
-    async def getAuthorizedShop(self,db:AsyncSession,enterprise_id:str)->Any:
+    async def getAuthorizedShop(self,db:AsyncSession,shop_id:str)->Any:
         url = "/api/shop/get_authorized_shop"
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
-        url = self.buildurl(url, {}, enterprisemodel)
+        merchantmodel = await self.getShop(db, shop_id)
+        url = self.buildurl(url, {}, merchantmodel)
         async with self.session.get(url) as resp:#type: ignore
             ret=await resp.json()
             print(ret)
             return ret
-    async def getActiveShopList(self,db:AsyncSession,enterprise_id:str)->Any:
+    async def getActiveShopList(self,db:AsyncSession,shop_id:str)->Any:
         url = "/api/seller/global/active_shops"
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
-        url = self.buildurl(url, {}, enterprisemodel)
+        merchantmodel = await self.getShop(db, shop_id)
+        url = self.buildurl(url, {}, merchantmodel)
         async with self.session.get(url) as resp:#type: ignore
             ret=await resp.json()
             print(ret)
             return ret
-    async def createProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->Any:
+    async def createProduct(self,db:AsyncSession,shop_id:str,product_id:str)->Any:
         url='/api/products'
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
-        url = self.buildurl(url, {}, enterprisemodel)
+        merchantmodel = await self.getShop(db, shop_id)
+        url = self.buildurl(url, {}, merchantmodel)
 
         #data productdata
         data:Dict={}
@@ -66,39 +66,39 @@ class TikTokService(Market):
         async with self.session.post(url,json=data) as resp:
             ret=await resp.json()
 
-    async def deleteProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->Any:
+    async def deleteProduct(self,db:AsyncSession,shop_id:str,product_id:str)->Any:
         url='/api/products'
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        merchantmodel = await self.getShop(db, shop_id)
 
-        url = self.buildurl(url, {"product_ids":[123,456]}, enterprisemodel)
+        url = self.buildurl(url, {"product_ids":[123,456]}, merchantmodel)
 
 
         async with self.session.delete(url) as resp:
             ret=await resp.json()
 
 
-    async def getProductList(self,db:AsyncSession,enterprise_id:str)->List:
+    async def getProductList(self,db:AsyncSession,shop_id:str)->List:
         url = "/api/products/search"
-        enterprisemodel=await self.getEnterprise(db,enterprise_id)
-        url=self.buildurl(url,{},enterprisemodel)
+        merchantmodel=await self.getShop(db,shop_id)
+        url=self.buildurl(url,{},merchantmodel)
         payload={'page_number':1,'page_size':100}
         async with self.session.post(url,json=payload) as resp:#type: ignore
             ret=await resp.json()
             print(ret)
             return ret
-    async def getOrderList(self,db:AsyncSession,enterprise_id:str)->List:
+    async def getOrderList(self,db:AsyncSession,shop_id:str)->List:
         url = "/api/orders/search"
-        enterprisemodel=await Service.enterpriseService.findByPk(db,enterprise_id)
-        url=self.buildurl(url,{},enterprisemodel)
+        merchantmodel=await Service.shopService.findByPk(db,shop_id)
+        url=self.buildurl(url,{},merchantmodel)
         async with self.session.post(url,json={'page_size':20}) as resp:
             ret=await resp.json()
             print(ret)
             return ret
 
-    async def getOrderDetail(self, db: AsyncSession, enterprise_id: str, order_id: str) -> Any:
+    async def getOrderDetail(self, db: AsyncSession, shop_id: str, order_id: str) -> Any:
         url='/api/orders/detail/query'
-        enterprisemodel = await Service.enterpriseService.findByPk(db, enterprise_id)
-        url = self.buildurl(url, {}, enterprisemodel)
+        merchantmodel = await Service.shopService.findByPk(db, shop_id)
+        url = self.buildurl(url, {}, merchantmodel)
         async with self.session.post(url,json={'order_id_list':[order_id]}) as resp:
             ret=await resp.json()
             return ret

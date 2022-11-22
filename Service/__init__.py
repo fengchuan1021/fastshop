@@ -61,7 +61,8 @@ productService : ProductService
 variantService : VariantService
 variantImageService : CRUDBase[Models.VariantImage]
 variantShopService : CRUDBase[Models.VariantShop]
-enterpriseService : CRUDBase[Models.Enterprise]
+marketService : CRUDBase[Models.Market]
+merchantService : CRUDBase[Models.Merchant]
 shopService : ShopService
 warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService

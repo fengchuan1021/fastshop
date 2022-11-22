@@ -13,22 +13,22 @@ class OnBuyService(Market):
     def __init__(self)->None:
         self.session = aiohttp.ClientSession(base_url=settings.ONBUY_APIURL)
 
-    async def getEnterprise(self,db:AsyncSession,enterprise_id:str)->Models.Enterprise:
-        enterprise = await Service.enterpriseService.findByPk(db, enterprise_id)
-        if not enterprise:
-            raise Exception("enterprise info not found")
-        return enterprise
-    async def getToken(self,enterprise:Models.Enterprise=None)->str:
+    async def getShop(self,db:AsyncSession,shop_id:str)->Models.Shop:
+        shop = await Service.shopService.findByPk(db,shop_id)
+        if not shop:
+            raise Exception("shop info not found")
+        return shop
+    async def getToken(self,shop:Models.Shop=None)->str:
 
         if TYPE_CHECKING:
-            enterprise=cast(Models.Enterprise,enterprise)
-        tmp=await cache.get(f'onbuy_token:{enterprise.enterprise_id}',decodestr=True)
+            shop=cast(Models.Shop,shop)
+        tmp=await cache.get(f'onbuy_token:{shop.shop_id}',decodestr=True)
         print("token:",tmp)
         if tmp:
             return tmp
         form = aiohttp.FormData()
-        form.add_field('secret_key',enterprise.onbuy_secret )
-        form.add_field('consumer_key',enterprise.onbuy_key)
+        form.add_field('secret_key',shop.appsecret )
+        form.add_field('consumer_key',shop.appkey)
         print('key:',form.__dict__)
         async with self.session.post('/v2/auth/request-token',data=form) as resp:
             t=await resp.text()
@@ -36,20 +36,20 @@ class OnBuyService(Market):
             print('t:',t)
             data=await resp.json()
             token=data["access_token"]
-            await cache.set(f'onbuy_token:{enterprise.enterprise_id}',token,int(data['expires_at'])-int(time.time()))
+            await cache.set(f'onbuy_token:{shop.shop_id}',token,int(data['expires_at'])-int(time.time()))
             return token
-    async def buildurl(self,url:str,params:Dict={},enterprise:'Models.Enterprise'=None)->str:
+    async def buildurl(self,url:str,params:Dict={},shop:'Models.Shop'=None)->str:
         if TYPE_CHECKING:
-            enterprise=cast(Models.Enterprise,enterprise)
-        token=await self.getToken(enterprise)
+            shop=cast(Models.Shop,shop)
+        token=await self.getToken(shop)
         self.session.headers.update({'Authorization':token})
         return f'{url}?{urlencode(params)}'
 
-    async def getBrands(self,db:AsyncSession,enterprise_id:str)->Any:
+    async def getBrands(self,db:AsyncSession,shop_id:str)->Any:
         url='/v2/brands'
         params={'filter[name]':'life','sort[name]':'desc','limit':5,'offset':0}
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
-        url=await self.buildurl(url,params,enterprisemodel)
+        shop= await self.getShop(db,shop_id)
+        url=await self.buildurl(url,params,shop)
         async with self.session.get(url) as resp:
             data=await resp.json()
             print('brands:',data)
@@ -57,10 +57,10 @@ class OnBuyService(Market):
 
 
 
-    async def createProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->Any:
+    async def createProduct(self,db:AsyncSession,merchantid:str,product_id:str)->Any:
         url='/api/products'
         pass
-        # enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        # enterprisemodel = await self.getShop(db, merchantid)
         # url = self.buildurl(url, {}, enterprisemodel)
         #
         # #data productdata
@@ -69,41 +69,41 @@ class OnBuyService(Market):
         # async with self.session.post(url,json=data) as resp:
         #     ret=await resp.json()
 
-    async def deleteProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->Any:
+    async def deleteProduct(self,db:AsyncSession,shop_id:str,product_id:str)->Any:
         url='/2/listings/by-sku'
 
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        shop= await self.getShop(db, shop_id)
         #
         skus=[1,2,3]
-        url = await self.buildurl(url, {}, enterprisemodel)
+        url = await self.buildurl(url, {},shop)
         async with self.session.delete(url,json={"site_id":2000,"skus":skus}) as resp:
             result=await resp.json()
             print(result)
 
 
 
-    async def getProductList(self,db:AsyncSession,enterprise_id:str)->List:#type: ignore
+    async def getProductList(self,db:AsyncSession,shop_id:str)->List:#type: ignore
         url = "/v2/listings"
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
+        shop= await self.getShop(db,shop_id)
         params={"site_id":2000}
-        url=await self.buildurl(url,params,enterprisemodel)
+        url=await self.buildurl(url,params,shop)
         async with self.session.get(url) as resp:
             json=await resp.json()
             print('josn:',json)
 
 
-    async def getOrderList(self,db:AsyncSession,enterprise_id:str)->List:#type: ignore
+    async def getOrderList(self,db:AsyncSession,shop_id:str)->List:#type: ignore
         url = "/v2/orders"
         params={'site_id':2000,'filter[status]':'open','limit':20,'offset':0,'sort[created]':'desc'}
-        enterprisemodel = await self.getEnterprise(db, enterprise_id)
-        url=await self.buildurl(url,params,enterprisemodel)
+        shop = await self.getShop(db, shop_id)
+        url=await self.buildurl(url,params,shop)
         async with self.session.get(url) as resp:
             data=await resp.json()
             print(data)
             return data
 
 
-    async def getOrderDetail(self, db: AsyncSession, enterprise_id: str, order_id: str) -> Any:
+    async def getOrderDetail(self, db: AsyncSession, merchantid: str, order_id: str) -> Any:
         pass
 if __name__=='__main__':
     import asyncio

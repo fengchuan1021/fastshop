@@ -149,6 +149,6 @@ class Variant(Base):
 
 
     VariantShop:List['VariantShop']=relationship('VariantShop',uselist=True,
-                                           primaryjoin='foreign(Variant.variant_id) == VariantShop.variant_id',
+                                           primaryjoin='foreign(VariantShop.variant_id) == Variant.variant_id',
                                            back_populates='Variant'
                                            )

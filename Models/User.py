@@ -6,6 +6,11 @@ from sqlalchemy.orm import relationship, backref
 from typing import List
 from .ModelBase import Base,XTVARCHAR
 from UserRole import UserRole
+import typing
+if typing.TYPE_CHECKING:
+    from .shop.Shop import Shop
+    from .shop.Merchant import Merchant
+    from .shop.Warehouse import Warehouse
 class User(Base):
     __tablename__ = 'user'
 
@@ -23,10 +28,14 @@ class User(Base):
 
     mark=Column(XTVARCHAR(512))
 
-    parent_id = Column(BIGINT,index=True)
-    children:List["User"] = relationship('User',uselist=True, primaryjoin='foreign(User.parent_id) == User.user_id',backref=backref('parent', remote_side='User.user_id'))
+    #parent_id = Column(BIGINT,index=True)
+    #children:List["User"] = relationship('User',uselist=True, primaryjoin='foreign(User.parent_id) == User.user_id',backref=backref('parent', remote_side='User.user_id'))
 
-
+    Merchant:'Merchant'=relationship('Merchant',uselist=False,primaryjoin='foreign(User.user_id)==Merchant.user_id',back_populates='User')
+    Shop: 'Shop' = relationship('Shop', uselist=True,
+                                        primaryjoin='foreign(User.user_id)==Shop.user_id', back_populates='User')
+    Warehouse: 'Warehouse' = relationship('Warehouse', uselist=False,
+                                        primaryjoin='foreign(User.user_id)==Warehouse.user_id', back_populates='User')
 
     def is_admin(self)->int:
         if not self.userrole:
