@@ -26,23 +26,19 @@ class ProductAttribute(Base):
     product_attribute_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     preattrspecific_id=Column(BIGINT(20),default=0,index=True,server_default='0')
     product_id = Column(BIGINT,index=True)
-    attributename_en=Column(XTVARCHAR(32))
-    attributename_cn = Column(XTVARCHAR(32))
-    attributevalue_en=Column(XTVARCHAR(32))
-    attributevalue_cn = Column(XTVARCHAR(32))
+    attributename=Column(XTVARCHAR(32))
+    attributevalue= Column(XTVARCHAR(32))
     display_order = Column(INTEGER, default=0, server_default="0")
-    product:'Product'=relationship('Product',uselist=False,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',backref=backref('Attributes'))
+    product:'Product'=relationship('Product',uselist=False,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',back_populates='ProductAttribute')
 
 class ProductSpecification(Base):
     __tablename__ = 'product_specification'
     product_specification_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     preattrspecific_id=Column(BIGINT(20),default=0,index=True,server_default='0')
     product_id=Column(BIGINT,index=True)
-    specificationname_en=Column(XTVARCHAR(32))
-    specificationname_cn = Column(XTVARCHAR(32))
-    specificationvalue_en=Column(XTVARCHAR(32))
-    specificationvalue_cn = Column(XTVARCHAR(32))
+    specificationname=Column(XTVARCHAR(32))
+    specificationvalue= Column(XTVARCHAR(32))
     display_order=Column(INTEGER,default=0,server_default="0")
     product:'Product' = relationship('Product', uselist=False,
                            primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
-                           backref=backref('Specifications'))
+                           back_populates='ProductSpecification')
