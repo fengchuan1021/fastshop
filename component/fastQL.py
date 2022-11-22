@@ -17,7 +17,6 @@ class DotMap:
 
 async def fastQL(db: AsyncSession,
            query:str,
-           id:int=0,
            filter:Dict={},
            pagenum:int=0,
            pagesize:int=0,
@@ -25,11 +24,10 @@ async def fastQL(db: AsyncSession,
            returntotal:bool=False,
            token:Optional[settings.UserTokenData]=None,
            permissioncheck:bool=False,
+           returnarray:bool=True,
             )->Any:
     if query[-1] != '}':
         query = query + '{}'
-    if id:
-        _filter[f'{modelname.lower()}_id']=id#type: ignore
 
     where, params = filterbuilder(filter)
     statment=parseSQL(query).where(text(where))
@@ -44,6 +42,6 @@ async def fastQL(db: AsyncSession,
 
     results=await db.execute(statment,params)
     data=results.scalars().all()
-    if id:
+    if not returnarray:
         return DotMap(data[0] if data else None,None)
     return DotMap(data,total)
