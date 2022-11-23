@@ -132,7 +132,7 @@ def resetdb()->None:
 def initall()->None:
 
     os.environ['migratedb'] = '1'
-    from devtools import patchlibrary,addadmin
+    from devtools import patchlibrary
     patchlibrary.patch()
     if os.path.exists('.git'):
         if branch=='DEV':
@@ -140,6 +140,7 @@ def initall()->None:
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':
         inidb()
         try:
+            from devtools import addadmin
             addadmin.addroot()
         except Exception as e:
             pass
