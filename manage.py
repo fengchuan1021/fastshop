@@ -7,7 +7,6 @@ import sys
 from pathlib import Path
 import importlib
 
-import settings
 
 branch=os.getenv('MODE','DEV')
 try:
