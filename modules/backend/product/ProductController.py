@@ -9,7 +9,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, UploadFile, Request, Body
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import undefer_group
+from sqlalchemy.orm import undefer_group, joinedload
 
 from sqlalchemy.orm import undefer
 import Models
@@ -124,7 +124,7 @@ async def productlist(
     '/backend/product/previewproductbyvariantid/{siteid}/{variantid}',
     response_class=XTJsonResponse,
     response_model=CommonResponse,
-    striplang=True,
+    
 )
 async def previewproductbyvariantid(
     variantid: str,
@@ -155,7 +155,7 @@ async def previewproductbyvariantid(
     '/backend/product/getproductlangall/{product_id}',
     response_class=XTJsonResponse,
     response_model=CommonResponse,
-    striplang=False,
+
 )
 async def getproductlangall(
     product_id: str,
@@ -167,7 +167,7 @@ async def getproductlangall(
     getproductlangall
     """
 
-    statment=select(Models.Product).options(undefer("*").joinedload(Models.Product.Variants).options(undefer("*"))).filter(Models.Product.product_id==product_id)
+    statment=select(Models.Product).options(joinedload(Models.Product.Variant)).filter(Models.Product.product_id==product_id)
     data=(await db.execute(statment)).unique().scalar_one_or_none()
     return CommonResponse(status='success',data=data)
 
@@ -180,7 +180,7 @@ async def getproductlangall(
     '/backend/product/updateproducttranslate/{product_id}',
     response_class=XTJsonResponse,
     response_model=CommonResponse,
-    striplang=False,
+
 )
 async def updateproducttranslate(
     product_id: str,

@@ -128,7 +128,7 @@ async def addpreattrspecific(
     '/backend/product/getpreattrspecific/{id}',
     response_class=XTJsonResponse,
     response_model=CommonResponse,
-    striplang=False,
+
 )
 async def getpreattrspecific(
     id: str,
@@ -152,7 +152,7 @@ async def getpreattrspecific(
     '/backend/product/updatepreattrspecifictranslate/{id}',
     response_class=XTJsonResponse,
     response_model=CommonResponse,
-    striplang=False,
+
 )
 async def updateproducttranslate(
     id: str,

@@ -12,6 +12,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.types as types
 import os
 from decimal import Decimal
+from XTTOOLS import obj2dict
 if os.getenv('migratedb',''):
     from sqlalchemy.dialects.mysql import VARCHAR as XTVARCHAR#type: ignore
 else:
@@ -29,12 +30,7 @@ else:
         def copy(self, **kwargs:Any)->'XTVARCHAR':#type: ignore
             return XTVARCHAR(self.impl.length)#type: ignore
 
-def obj2dict(obj:Any,striplang:str='')->Any:#type: ignore
-    if isinstance(obj,Base):
-        return obj.dict(striplang=striplang)
-    elif isinstance(obj,Decimal):
-        return str(obj)
-    raise Exception("object are not jsonable")
+
 
 class MyBase(object):
 
@@ -51,7 +47,7 @@ class MyBase(object):
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
 
-    def dict(self,resolved:List['MyBase']=[],striplang:str='')->Dict[str,Any]:
+    def dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
         dic={}
         if self not in resolved:
             resolved.append(self)
@@ -62,12 +58,9 @@ class MyBase(object):
                 if value not in resolved:
                     dic[key]=value.dict()
             else:
-                if striplang:
-                    dic[key.replace(striplang,'')]=value
-                else:
-                    dic[key] = value
+                dic[key] = value
         return dic
-    def json(self,striplang:str='')->str:
-        return orjson.dumps(self.dict(striplang=striplang),default=lambda obj :obj2dict(obj,striplang)).decode()
+    def json(self)->str:
+        return orjson.dumps(self.dict(),default=obj2dict).decode()
 
 Base = declarative_base(cls=MyBase)

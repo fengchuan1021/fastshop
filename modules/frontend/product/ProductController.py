@@ -25,7 +25,7 @@ router = APIRouter(dependencies=dependencies)
     '/frontend/productbyvariantid/{variantid}',
     response_class=XTJsonResponse,
     response_model=CommonResponse,
-    striplang=True,
+    
 
 )
 async def productbyvariantid(
