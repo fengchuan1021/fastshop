@@ -44,7 +44,7 @@ async def fastQL(db: AsyncSession,
     data=results.scalars().all()
 
     if returnsingleobj:
-
-        print('debug??')
-        return DotMap(data[0] if data else None,None)
-    return DotMap(data,total)
+        return data[0] if data else None
+    if returntotal==False:
+        return data
+    return data,total

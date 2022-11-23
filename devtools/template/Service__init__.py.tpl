@@ -4,7 +4,7 @@ import os
 from typing import Any,TypeVar,TYPE_CHECKING
 import Models
 import sys
-
+from common import findModelByLowername
 import settings
 import typing
 thismodule = sys.modules[__name__]
@@ -13,18 +13,7 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 
 {imports}
 
-def findModelByName(lowername:str)->Any:
 
-    if tmp:=getattr(Models,lowername[0].upper()+lowername[1:],None):
-        return tmp
-    for name,value in Models.__dict__.items():
-
-        if not 65<=ord(name[0])<=90:
-            continue
-
-        if name.lower()==lowername:
-            return value
-    raise Exception(f'not found {name}')
 def __getattr__(name: str) -> Any:
 
     lowername=name.replace('Service','')
@@ -36,7 +25,7 @@ def __getattr__(name: str) -> Any:
         if annotationname==name:
 
             if isinstance(classtype,typing._GenericAlias) or issubclass(classtype,CRUDBase):#type: ignore
-                tmpinstance = classtype(model:=findModelByName(lowername),model.__name__ in settings.cache_models)#type: ignore
+                tmpinstance = classtype(model:=findModelByLowername(lowername),model.__name__ in settings.cache_models)#type: ignore
             else:
                 tmpinstance = classtype()
             setattr(thismodule, name, tmpinstance)

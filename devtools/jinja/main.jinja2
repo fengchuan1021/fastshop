@@ -2,15 +2,12 @@ from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 from component.dbsession import get_webdbsession
 import Service
-from XTTOOLS import XTJsonResponse
 from component.cache import cache
-from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import APIRouter,Depends
 from sqlalchemy.exc import IntegrityError
 import settings
 from typing import Dict,Any
-from common.globalFunctions import get_token
-
+from common import get_token,CommonResponse,XTJsonResponse
 from .__init__ import dependencies
 {{imports}}
 

@@ -45,8 +45,10 @@ class UserService(CRUDBase[Models.User]):
     async def authenticate(self,dbSession: AsyncSession, username: str, password: str)->bool | Models.User:
         user = await self.getUserByPhoneOrUsernameOrEmail(dbSession,username)
         if not user:
+
             return False
         else:
+
             if not self.verify_password(password, user.password):#type: ignore
                 return False
         return user

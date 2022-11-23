@@ -81,12 +81,12 @@ class SupportLang(enum.Enum):
     cn='cn'
 class UserTokenData(BaseModel):
     id:int
-    phone:str=''
-    userrole:int=0
+    phone:Optional[str]
+    userrole:Optional[List[int]]
     username=''
     nickname:Optional[str]=''
     is_guest=False
-    enterprise_id=0
+    merchant_id=0
     exp:int=0
     class Config:
         orm_mode = True

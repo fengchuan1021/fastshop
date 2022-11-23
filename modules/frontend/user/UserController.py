@@ -13,6 +13,7 @@ import settings
 from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from common import XTJsonResponse
+from component.fastQL import fastQL
 
 from .__init__ import dependencies
 from .UserShema import (
@@ -27,7 +28,7 @@ router = APIRouter(dependencies=dependencies)
 
 # <editor-fold desc="register post: /frontend/user/register">
 @router.post(
-    '/frontend/user/register',
+    '/user/register',
     response_class=XTJsonResponse,
     response_model=FrontendUserRegisterPostOutShema,
 )
@@ -62,7 +63,7 @@ async def register(
 
 # <editor-fold desc="login post: /frontend/user/login">
 @router.post(
-    '/frontend/user/login',
+    '/user/login',
     response_class=XTJsonResponse,
     response_model=FrontendUserLoginPostOutShema,
 )
@@ -78,8 +79,14 @@ async def login(
     user=await Service.userService.authenticate(db,body.username,body.password)
     if not user:
         return {'status':'failed','msg':"username or password not valid"}
-    enterprisemodel = await Service.enterpriseService.findOne(db, {'user_id':user.user_id})#type: ignore
-    dic={'enterprise_id':enterprisemodel.enterprise_id} if enterprisemodel else {}
+    merchant = await Service.merchantService.findOne(db, {'user_id':user.user_id})#type: ignore
+    #merchant=None
+    roles=await fastQL(db,"userrole{role{role_id,role_name}}",filter={"user_id":user.user_id})#type: ignore
+
+
+    dic={'merchant_id':merchant.merchant_id} if merchant else {}
+    dic['userrole']=[role.role_id for role in roles]#type: ignore
+
     newtoken=await Service.userService.create_access_token(user,extra_data=dic)#type: ignore
     refreshtoken=await Service.userService.create_refresh_token(user)#type: ignore
     # install pydantic plugin,press alt+enter auto complete the args.

@@ -77,7 +77,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
     except Exception as e:
         #es
         print(e)
-        await writelog(str(e),request=str(request))
+        #await writelog(str(e),request=str(request))
 
         if settings.DEBUG:
             raise

@@ -62,7 +62,12 @@ async def get(query:str,id:int=0,pagenum:int=0,pagesize:int=0,orderby:str='',ret
         modelname=query if (pos:=query.find('{'))==-1 else query[0:pos]
         _filter[f'{modelname.lower()}_id']=id#type: ignore
     result=await fastQL(db,query,_filter,pagenum,pagesize,orderby,returntotal,token,False,id)
-    return CommonResponse(status='success',data=result.data,total=result.total)
+    if id:
+        return CommonResponse(status='success',data=result)
+    if returntotal:
+        return CommonResponse(status='success',data=result[0],total=result[1])
+    else:
+        return CommonResponse(status='success',data=result)
 
 @router.delete('/graphql/{modelname:str}/{id:str}')
 async def delete(modelname:str,id:str,

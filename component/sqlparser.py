@@ -3,9 +3,12 @@ from sqlalchemy.orm import joinedload, load_only, contains_eager
 from typing import Tuple, List, Any
 from sqlalchemy.sql.selectable import Select
 import Models
+from common import findModelByLowername
+
+
 def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
     p1 = query.find('{')
-    modelname = query[0].upper()+query[1:p1]
+    modelname = query[0:p1].lower()
     body = query[p1 + 1:-1]
     columns = []
     joinmodel=[]
@@ -41,12 +44,13 @@ def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
 
 def parseSQL(query:str,parentmodel:Any=None,statment:Any=None)->Any:
     modelname,columns,joinmodel=getmodelnamecloums(query)
-    model = getattr(Models, modelname)
+
+    model = findModelByLowername(modelname)#type: ignore
     option=None
     if None==statment:
         statment=select(model)
     else:
-        relivatetoparent=getattr(parentmodel,modelname)
+        relivatetoparent=getattr(parentmodel,model.__name__)
         option=contains_eager(relivatetoparent)
         statment=statment.join(relivatetoparent)#type: ignore
     if columns:
