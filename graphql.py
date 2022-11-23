@@ -57,11 +57,11 @@ async def get(query:str,id:int=0,pagenum:int=0,pagesize:int=0,orderby:str='',ret
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
             )->Any:
-    _filter=orjson.loads(filter)
+    _filter=orjson.loads(filter if filter else '{}')
     if id:
         modelname=query if (pos:=query.find('{'))==-1 else query[0:pos]
         _filter[f'{modelname.lower()}_id']=id#type: ignore
-    result=fastQL(db,query,filter,pagenum,pagesize,orderby,returntotal,token,False,id)
+    result=await fastQL(db,query,_filter,pagenum,pagesize,orderby,returntotal,token,False,id)
     return CommonResponse(status='success',data=result.data,total=result.total)
 
 @router.delete('/graphql/{modelname:str}/{id:str}')

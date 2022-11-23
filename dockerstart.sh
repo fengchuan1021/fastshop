@@ -13,11 +13,13 @@ if [ "$CMD" = "APP" ] ; then
   elif [ "$MODE" = "MAIN" ] ; then
     mkdir -p /app/alembic/versions
     mkdir -p /app/img
+    python manage.py upgrade
     #gunicorn app:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
     gunicorn app:app --workers $CPUNUMBER --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
   else
     mkdir -p /app/alembic/versions
     mkdir -p /app/img
+    python manage.py upgrade
     migratedb=1 python manage.py resetdb
     uvicorn app:app --reload --port 8000 --host=0.0.0.0
   fi

@@ -32,7 +32,6 @@ else:
         nodeid = sum([ord(i) for i in os.getenv('HOSTNAME').split('-')[-1]])#type: ignore
         os.environ['NODEID'] = str(nodeid)
 
-from UserRole import UserRole
 NODEID=int(os.getenv("NODEID", 0))
 REDISURL:str=os.getenv('REDISURL','')
 SLAVEREDISURL:str=os.getenv('SLAVEREDISURL','')
@@ -40,8 +39,8 @@ CELERY_BROKER_URL=os.getenv('AMQPURL',REDISURL)
 CELERY_RESULT_BACKEND=os.getenv('REDISURL','')
 CELERY_RESULT_EXPIRED=3600
 WISH_BASEURL=os.getenv("WISH_BASEURL","")
-WISH_CLIENTID=os.getenv("WISH_CLIENTID",'')
-WISH_SECRET=os.getenv("WISH_SECRET","")
+WISH_CLIENTID='6332502add6fe54ae65bd071'
+WISH_SECRET='4ed97218494746a58e2d94afd2749df2'
 WISH_REDIRECT_URL=os.getenv("WISH_REDIRECT_URL","")
 WISH_CODE=os.getenv("WISH_CODE","")
 TIKTOK_APPKEY=os.getenv('TIKTOK_APPKEY','')
@@ -89,10 +88,5 @@ class UserTokenData(BaseModel):
     is_guest=False
     enterprise_id=0
     exp:int=0
-    @property
-    def is_admin(self)->int:
-        if not self.userrole:
-            self.userrole=0
-        return self.userrole & UserRole.admin.value
     class Config:
         orm_mode = True

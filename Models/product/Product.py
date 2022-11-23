@@ -106,9 +106,9 @@ class Product(Base):
 
     ProductAttribute:List['ProductAttribute']=relationship('ProductAttribute',uselist=True,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',back_populates='Product')
 
-    # ProductSpecification:List['ProductSpecification'] = relationship('ProductSpecification', uselist=True,
-    #                        primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
-    #                        back_populates='Product')
+    ProductSpecification:List['ProductSpecification'] = relationship('ProductSpecification', uselist=True,
+                           primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
+                           back_populates='Product')
 # class VariantStatis(Base):
 #     '''for statistics'''
 #     __tablename__ = 'variant_Statis'

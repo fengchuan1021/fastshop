@@ -5,7 +5,7 @@ from typing import Generator, Any
 import orjson
 from dateutil import parser
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from fastapi import Request
 import settings
 import aiohttp
 from component.cache import cache
@@ -13,8 +13,19 @@ from Service.thirdpartmarket import Market
 class WishService(Market):
     def __init__(self)->None:
         self.session = aiohttp.ClientSession(base_url=settings.WISH_BASEURL)
-    def getPermissionUrl(self)->str:
-        return settings.WISH_BASEURL+f"/v3/oauth/authorize?client_id={settings.WISH_CLIENTID}"
+    def getAuthorizationUrl(self,shop_id:int)->str:
+        return settings.WISH_BASEURL+f"/v3/oauth/authorize?client_id={settings.WISH_CLIENTID}&state={shop_id}"
+
+    def onAuthriaztionCallBack(self,request:Request)->None:
+        if shop_id:=request.query_params.get('state',''):
+            pass
+        else:
+            pass
+        #https://example.redirect.uri.com?code={authorization_code}
+        pass
+
+
+
     # async def init(self)->'WishService':
     #     self.baseurl = settings.WISH_BASEURL
     #     self.access_token = (await cache.get("wishtoken")).decode()

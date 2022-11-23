@@ -7,7 +7,7 @@ from Models.ModelBase import Base,XTVARCHAR
 import typing
 if typing.TYPE_CHECKING:
     from Models.User import User
-
+    from .Shop import Shop
 class Warehouse(Base):
     __tablename__ = 'warehouse'
 
@@ -35,4 +35,7 @@ class Warehouse(Base):
                              back_populates='Warehouse'
                              )#type: ignore
 
-
+    Shop:typing.List['Shop']=relationship('Shop',uselist=True,
+                             primaryjoin='foreign(Warehouse.warehouse_id) ==Shop.warehouse_id',
+                             back_populates='Warehouse'
+                             )#type: ignore

@@ -13,23 +13,34 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 
 {imports}
 
-def getModelname(name:str)->str:
-    return name[0].upper()+name[1:].replace('Service', '')
+def findModelByName(lowername:str)->Any:
 
+    if tmp:=getattr(Models,lowername[0].upper()+lowername[1:],None):
+        return tmp
+    for name,value in Models.__dict__.items():
+
+        if not 65<=ord(name[0])<=90:
+            continue
+
+        if name.lower()==lowername:
+            return value
+    raise Exception(f'not found {name}')
 def __getattr__(name: str) -> Any:
+    lowername=name.replace('Service','')
+    for i in lowername:
+        if not 97<=ord(i)<=122:
+            raise Exception("service name should be all lowercase")
     for annotationname,classtype in thismodule.__annotations__.items():
+
         if annotationname==name:
+
             if isinstance(classtype,typing._GenericAlias) or issubclass(classtype,CRUDBase):#type: ignore
-                tmpinstance = classtype(model:=getattr(Models, getModelname(name)),model.__name__ not in settings.not_cache_models)
+                tmpinstance = classtype(model:=findModelByName(lowername),model.__name__ not in settings.not_cache_models)#type: ignore
             else:
                 tmpinstance = classtype()
             setattr(thismodule, name, tmpinstance)
             return tmpinstance
-    if hasattr(Models, getModelname(name)):
-        model = getattr(Models, getModelname(name))
-        tmpinstance = CRUDBase(model,model.__name__ not in settings.not_cache_models)
-        setattr(thismodule, name, tmpinstance)
-        return tmpinstance
+
     raise Exception(f'not found {name}')
 
 {annotations}

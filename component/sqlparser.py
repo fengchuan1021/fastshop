@@ -56,7 +56,8 @@ def parseSQL(query:str,parentmodel:Any=None,statment:Any=None)->Any:
         statment,childsoption=parseSQL(joint,model,statment)
         if childsoption:
             childsoptions.append(childsoption)
-    option=option.options(*childsoptions)#type: ignore
+    if childsoptions and option:
+        option=option.options(*childsoptions)#type: ignore
     if not parentmodel:
-        return statment.options(option)
+        return statment if not option else statment.options(option)
     return statment,option

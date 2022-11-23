@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 import Service
 import settings
-import UserRole
+
 from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from common import XTJsonResponse
@@ -104,7 +104,8 @@ async def setrolepermission(
     """
     setrolepermission
     """
-    if body.role_id not in [i.value for i in UserRole.UserRole]:
+    allroles=await Service.roleService.getList(db)
+    if body.role_id not in [role.role_id for role in allroles]:
         return {'status':'falied','msg':"user role not exists"}
     await Service.permissionService.setUserRolePermission(db,body.role_id,body.apis)
     # install pydantic plugin,press alt+enter auto complete the args.
@@ -128,20 +129,9 @@ async def deleterole(
     """
     deleterole
     """
-    todel=''
-    for r in UserRole.UserRole:
-        if r.value==id:
-            todel='    '+r.name
-            break
-    if todel:
-        with open(os.path.join(settings.BASE_DIR,'UserRole.py'),'r',encoding='utf8') as f:
-            content=[l for l in f.readlines() if not l.startswith(todel)]
-        with open(os.path.join(settings.BASE_DIR, 'UserRole.py'), 'w', encoding='utf8') as f:
-            f.write(''.join(content))
-            reload(UserRole)
-            return {'status':'success'}
-    else:
-        return {'status': 'success','msg':'role not found'}
+    await Service.roleService.deleteByPk(db,id)
+
+    return {'status':'success'}
 
 
 
@@ -163,18 +153,11 @@ async def createrole(
     """
     createrole
     """
-    for i in UserRole.UserRole:
-        maxvalue=i.value
-        if i.name==body.role_name:
-            return {'status':'failed','msg':"role has exists"}
-    newmaxvalue=maxvalue*2
-
-    with open(os.path.join(settings.BASE_DIR,'UserRole.py'),'a',encoding='utf8') as f:
-        f.write(f"    {body.role_name}={newmaxvalue}\n")
-    reload(UserRole)
+    model=await Service.roleService.create(db,body)
+    await db.commit()
 
     # install pydantic plugin,press alt+enter auto complete the args.
-    return BackendPermissionRolePostResponse(status='success',role={'id':newmaxvalue,'role_name':body.role_name})
+    return BackendPermissionRolePostResponse(status='success',role={'id':model.role_id,'role_name':body.role_name})
 
 
 # </editor-fold>
@@ -193,7 +176,8 @@ async def getrolelist(
     """
     getrolelist
     """
-    roles=[Role(role_name=r.name,id=r.value) for r in UserRole.UserRole]
+    #roles=[Role(role_name=r.name,id=r.value) for r in UserRole.UserRole]
+    roles=await Service.roleService.getList(db)
     return BackendPermissionRoleGetResponse(status='success',roles=roles)
 
 

@@ -64,6 +64,7 @@ class BackendPermissionRoleIdDeleteResponse(BaseModel):
 
 class BackendPermissionRolePostRequest(BaseModel):
     role_name: str
+    note:Optional[str]=''
 
     @validator('role_name')
     def checkrole_name(cls,v:str)->str:

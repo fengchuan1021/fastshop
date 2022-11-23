@@ -29,7 +29,7 @@ class VariantShop(Base):
     Variant:'Variant'=relationship("Variant",uselist=False,primaryjoin='foreign(VariantShop.variant_id) == Variant.variant_id',back_populates='VariantShop')
     Shop:'Shop'=relationship('Shop',uselist=False,primaryjoin='foreign(VariantShop.shop_id) == Shop.shop_id',back_populates='VariantShop')
 
-    Warehouse:'Warehouse'=relationship('Warehouse',uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) ==VariantShop.warehouse_id',back_populates='VariantShop')
+    Warehouse:'Warehouse'=relationship('Warehouse',uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) ==VariantShop.warehouse_id')
 
     # Product: 'Product' = relationship('Product', uselist=False,
     #                                       primaryjoin='foreign(Product.product_id) ==Product.product_id',

@@ -1,20 +1,25 @@
 from sqlalchemy import Column, UniqueConstraint
-from sqlalchemy.dialects.mysql import INTEGER
-from .ModelBase import Base,XTVARCHAR
+from sqlalchemy.dialects.mysql import INTEGER, BIGINT
+from sqlalchemy.orm import relationship, foreign
 
-# class Role(Base):
-#     __tablename__ = 'role'
-#     id=Column(INTEGER,autoincrement=True,primary_key=True)
-#     role_name=Column(XTVARCHAR(16),server_default='',default='',unique=True)
-#     note=Column(XTVARCHAR(255),server_default='',default='')
-# class UserRole(Base):
-#     __tablename__ = 'user_role'
-#     id = Column(INTEGER, autoincrement=True, primary_key=True)
-#     role_id=Column(INTEGER,ForeignKey("role.id"))
-#     role_name=Column(XTVARCHAR(16),server_default='',default='')
-#     user_id=Column(BIGINT,ForeignKey("user.id"))
-#     role = relationship("Role", back_populates="users")
-#     user = relationship("User",back_populates="roles")
+from .ModelBase import Base,XTVARCHAR
+import typing
+if typing.TYPE_CHECKING:
+    from .User import User
+class Role(Base):
+    __tablename__ = 'role'
+    role_id=Column(INTEGER,autoincrement=True,primary_key=True)
+    role_name=Column(XTVARCHAR(16),server_default='',default='',unique=True)
+    note=Column(XTVARCHAR(255),server_default='',default='')
+    UserRole: typing.List['UserRole']=relationship("UserRole", back_populates='Role', primaryjoin='foreign(Role.role_id)==UserRole.role_id')
+class UserRole(Base):
+    __tablename__ = 'user_role'
+    id = Column(INTEGER, autoincrement=True, primary_key=True)
+    role_id=Column(INTEGER,index=True)
+    role_name=Column(XTVARCHAR(16),server_default='',default='')
+    user_id=Column(BIGINT,index=True)
+    Role:'Role'= relationship("Role", back_populates="UserRole",primaryjoin=foreign(Role.role_id)==role_id)
+    User:'User' = relationship("User",back_populates="UserRole",primaryjoin="foreign(User.user_id)==UserRole.user_id")
 
 class Permission(Base):
     __tablename__ = 'permission'

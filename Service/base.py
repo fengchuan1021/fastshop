@@ -45,6 +45,7 @@ class CRUDBase(Generic[ModelType]):
         else:
             db_model = self.model(**shema_in.dict())
         dbSession.add(db_model)
+
         return db_model
 
     async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:BaseModel | Dict={},order_by:Any='',options:list=[],**kwargs:Dict)->List[ModelType]:
@@ -83,7 +84,7 @@ class CRUDBase(Generic[ModelType]):
     async def delete(self,dbSession: AsyncSession, model:ModelType)->None:
         await dbSession.delete(model)
 
-    async def deleteByPk(self,db: AsyncSession,pk:str)->None:
+    async def deleteByPk(self,db: AsyncSession,pk:int)->None:
         model=await self.findByPk(db,pk)
         if model:
             await db.delete(model)

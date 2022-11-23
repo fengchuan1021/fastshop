@@ -28,39 +28,52 @@ from .thirdpartmarket.market.TikTokService import TikTokService
 from .thirdpartmarket.market.WishService import WishService
 from .user.UserService import UserService
 
-def getModelname(name:str)->str:
-    return name[0].upper()+name[1:].replace('Service', '')
+def findModelByName(lowername:str)->Any:
 
+    if tmp:=getattr(Models,lowername[0].upper()+lowername[1:],None):
+        return tmp
+    for name,value in Models.__dict__.items():
+
+        if not 65<=ord(name[0])<=90:
+            continue
+
+        if name.lower()==lowername:
+            return value
+    raise Exception(f'not found {name}')
 def __getattr__(name: str) -> Any:
+    lowername=name.replace('Service','')
+    for i in lowername:
+        if not 97<=ord(i)<=122:
+            raise Exception("service name should be all lowercase")
     for annotationname,classtype in thismodule.__annotations__.items():
+
         if annotationname==name:
+
             if isinstance(classtype,typing._GenericAlias) or issubclass(classtype,CRUDBase):#type: ignore
-                tmpinstance = classtype(model:=getattr(Models, getModelname(name)),model.__name__ not in settings.not_cache_models)
+                tmpinstance = classtype(model:=findModelByName(lowername),model.__name__ not in settings.not_cache_models)#type: ignore
             else:
                 tmpinstance = classtype()
             setattr(thismodule, name, tmpinstance)
             return tmpinstance
-    if hasattr(Models, getModelname(name)):
-        model = getattr(Models, getModelname(name))
-        tmpinstance = CRUDBase(model,model.__name__ not in settings.not_cache_models)
-        setattr(thismodule, name, tmpinstance)
-        return tmpinstance
+
     raise Exception(f'not found {name}')
 
+roleService : CRUDBase[Models.Role]
+userroleService : CRUDBase[Models.UserRole]
 permissionService : PermissionService
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
 appService : CRUDBase[Models.App]
-preAttrSpecificationService : CRUDBase[Models.PreAttrSpecification]
-productAttributeService : CRUDBase[Models.ProductAttribute]
-productSpecificationService : CRUDBase[Models.ProductSpecification]
+preattrspecificationService : CRUDBase[Models.PreAttrSpecification]
+productattributeService : CRUDBase[Models.ProductAttribute]
+productspecificationService : CRUDBase[Models.ProductSpecification]
 brandService : CRUDBase[Models.Brand]
 categoryService : CategoryService
-productCategoryService : CRUDBase[Models.ProductCategory]
+productcategoryService : CRUDBase[Models.ProductCategory]
 productService : ProductService
 variantService : VariantService
-variantImageService : CRUDBase[Models.VariantImage]
-variantShopService : CRUDBase[Models.VariantShop]
+variantimageService : CRUDBase[Models.VariantImage]
+variantshopService : CRUDBase[Models.VariantShop]
 marketService : CRUDBase[Models.Market]
 merchantService : CRUDBase[Models.Merchant]
 shopService : ShopService
@@ -70,9 +83,9 @@ paymentService : PaymentService
 adyenService : AdyenService
 onerwayService : OnerwayService
 paypalService : PaypalService
-productSearchService : ProductSearchService
-variantSiteService : VariantSiteService
-thirdMarketService : ThirdMarketService
-onBuyService : OnBuyService
-tikTokService : TikTokService
+productsearchService : ProductSearchService
+variantsiteService : VariantSiteService
+thirdmarketService : ThirdMarketService
+onbuyService : OnBuyService
+tiktokService : TikTokService
 wishService : WishService

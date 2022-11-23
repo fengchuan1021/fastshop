@@ -14,7 +14,7 @@ import Service
 
 
 from Service import CRUDBase
-from UserRole import UserRole
+
 
 from component.cache import cache
 
@@ -45,11 +45,12 @@ class PermissionService(CRUDBase[Models.Permission]):
         return tree
 
     async def setUserRolePermission(self,db:AsyncSession,roleid:int,apis:List[str])->None:
+        rolemodel=await Service.roleService.findByPk(db,roleid)
         oldpermissions=await self.getList(db,filters={'roleid':roleid})
         for oldpermission in oldpermissions:
             if oldpermission.api_name not in apis:
                 await db.delete(oldpermission)
-        sql = insert(Models.Permission).prefix_with("ignore").values([{'role_id': roleid,'role_name':UserRole(roleid).name,'api_name':api} for api in apis])
+        sql = insert(Models.Permission).prefix_with("ignore").values([{'role_id': roleid,'role_name':rolemodel.role_name,'api_name':api} for api in apis])
         await db.execute(sql)
 
 
@@ -71,7 +72,8 @@ class PermissionService(CRUDBase[Models.Permission]):
         result = (await db.execute(statment)).scalars().all()
         return result
     async def setRoleDisplayedMenu(self,db:AsyncSession,role_id:int,menus:List[str]=[])->None:
-        role_name = UserRole(role_id).name
+        rolemodel=await Service.roleService.findByPk(db,role_id)
+        role_name = rolemodel.role_name
         newmenu = []
         def addparentmenu(path:str)->None:
             nonlocal newmenu

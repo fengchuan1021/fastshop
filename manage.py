@@ -133,24 +133,18 @@ def resetdb()->None:
 def initall()->None:
 
     os.environ['migratedb'] = '1'
-    print('settings:',settings.MODE)
-    print('settings',settings.DBURL)
     from devtools import patchlibrary,addadmin
-    print('begin patch library:')
     patchlibrary.patch()
-    print('end patch library')
-
     if os.path.exists('.git'):
         if branch=='DEV':
             subprocess.check_call(['git', "config", "--local", "core.hooksPath", ".githooks/"])
-        print('end setup git hook')
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':
         inidb()
-    if os.getenv('MODE','MAIN')!='MAIN':
         try:
             addadmin.addroot()
         except Exception as e:
             pass
+        upgrade()
         click.secho('Success: backend username:root,password:root', fg='red')
     click.secho('Success: project has init successfully', fg='green')
 
@@ -160,6 +154,40 @@ def importopenapi(filepath:str)->None:
     from devtools.generatefromopenapi import mymain
     content=open(filepath,'r',encoding='utf8').read()
     mymain(content)
+@app.command()
+def upgrade()->None:
+    import settings
+    from sqlalchemy import create_engine
+    from devtools import addadmin
+    from alembic import command
+
+    from alembic.config import Config
+    engine = create_engine(settings.SYNC_DBURL)
+    connection = engine.connect()
+    flag=engine.execute("SELECT COUNT(*) FROM information_schema.TABLES WHERE table_name ='alembic_version'").scalar()
+
+    try:
+        configstr = str(Path(settings.BASE_DIR).joinpath('alembic.ini'))
+        config = Config(configstr)
+        command.upgrade(config=config, revision='head')
+    except Exception as e:
+        pass
+
+    if not flag:
+        try:
+            addadmin.addroot()
+        except Exception as e:
+            pass
+@app.command()
+def generateupdatesql()->None:
+    os.environ['migratedb']='1'
+    from alembic import command
+    import settings
+    from alembic.config import Config
+    configstr = str(Path(settings.BASE_DIR).joinpath('alembic.ini'))
+    config = Config(configstr)
+    command.revision(config=config, autogenerate=True)
+
 @app.command()
 def updatemodel()->None:
     from devtools.debugtools import before_appstart

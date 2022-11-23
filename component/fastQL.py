@@ -24,7 +24,7 @@ async def fastQL(db: AsyncSession,
            returntotal:bool=False,
            token:Optional[settings.UserTokenData]=None,
            permissioncheck:bool=False,
-           returnarray:bool=True,
+           returnsingleobj:bool=False,
             )->Any:
     if query[-1] != '}':
         query = query + '{}'
@@ -42,6 +42,9 @@ async def fastQL(db: AsyncSession,
 
     results=await db.execute(statment,params)
     data=results.scalars().all()
-    if not returnarray:
+
+    if returnsingleobj:
+
+        print('debug??')
         return DotMap(data[0] if data else None,None)
     return DotMap(data,total)

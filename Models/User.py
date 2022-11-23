@@ -5,12 +5,13 @@ from sqlalchemy.orm import relationship, backref
 
 from typing import List
 from .ModelBase import Base,XTVARCHAR
-from UserRole import UserRole
+
 import typing
 if typing.TYPE_CHECKING:
     from .shop.Shop import Shop
     from .shop.Merchant import Merchant
     from .shop.Warehouse import Warehouse
+    from .Permission import UserRole
 class User(Base):
     __tablename__ = 'user'
 
@@ -24,7 +25,7 @@ class User(Base):
     balance = Column(DECIMAL(10,2), server_default=text("'0'"))
     password = Column(XTVARCHAR(512), nullable=False)
     gender = Column(ENUM('man', 'woman'))
-    userrole = Column(INTEGER(11),nullable=False,default=0,server_default=text("'0'"))
+    #userrole = Column(INTEGER(11),nullable=False,default=0,server_default=text("'0'"))
 
     mark=Column(XTVARCHAR(512))
 
@@ -37,15 +38,17 @@ class User(Base):
     Warehouse: 'Warehouse' = relationship('Warehouse', uselist=False,
                                         primaryjoin='foreign(User.user_id)==Warehouse.user_id', back_populates='User')
 
-    def is_admin(self)->int:
-        if not self.userrole:
-            self.userrole =0
-        return self.userrole & UserRole.admin.value
+    UserRole: List['UserRole'] = relationship("UserRole", back_populates="User", primaryjoin="foreign(User.user_id)==UserRole.user_id")
 
-    def set_admin(self, value:bool)->None:
-        if not self.userrole:
-            self.userrole = 0
-        if value:
-            self.userrole = self.userrole | UserRole.admin.value
-        else:
-            self.userrole=self.userrole & (UserRole.admin.value-1)
+    # def is_admin(self)->int:
+    #     if not self.userrole:
+    #         self.userrole =0
+    #     return self.userrole & UserRole.admin.value
+    #
+    # def set_admin(self, value:bool)->None:
+    #     if not self.userrole:
+    #         self.userrole = 0
+    #     if value:
+    #         self.userrole = self.userrole | UserRole.admin.value
+    #     else:
+    #         self.userrole=self.userrole & (UserRole.admin.value-1)
