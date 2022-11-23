@@ -8,9 +8,9 @@ from .ModelBase import Base,XTVARCHAR
 
 import typing
 if typing.TYPE_CHECKING:
-    from .shop.Shop import Shop
-    from .shop.Merchant import Merchant
-    from .shop.Warehouse import Warehouse
+    from .store.Store import Store
+    from .store.Merchant import Merchant
+    from .store.Warehouse import Warehouse
     from .Permission import UserRole
 class User(Base):
     __tablename__ = 'user'
@@ -33,8 +33,8 @@ class User(Base):
     #children:List["User"] = relationship('User',uselist=True, primaryjoin='foreign(User.parent_id) == User.user_id',backref=backref('parent', remote_side='User.user_id'))
 
     Merchant:'Merchant'=relationship('Merchant',uselist=False,primaryjoin='foreign(User.user_id)==Merchant.user_id',back_populates='User')
-    Shop: 'Shop' = relationship('Shop', uselist=True,
-                                        primaryjoin='foreign(User.user_id)==Shop.user_id', back_populates='User')
+    Store: 'Store' = relationship('Store', uselist=True,
+                                        primaryjoin='foreign(User.user_id)==Store.user_id', back_populates='User')
     Warehouse: 'Warehouse' = relationship('Warehouse', uselist=False,
                                         primaryjoin='foreign(User.user_id)==Warehouse.user_id', back_populates='User')
 

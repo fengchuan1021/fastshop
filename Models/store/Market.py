@@ -8,7 +8,7 @@ from .Warehouse import Warehouse
 from Models.ModelBase import Base,XTVARCHAR
 import typing
 if typing.TYPE_CHECKING:
-    from .Shop import Shop
+    from .Store import Store
 
 class Market(Base):
     __tablename__ = 'market'
@@ -18,4 +18,4 @@ class Market(Base):
     market_country=Column(XTVARCHAR(32),default='')
     market_url = Column(XTVARCHAR(32), default='')
 
-    Shop:typing.List['Shop']=relationship("Shop",uselist=True,primaryjoin='foreign(Market.market_id) == Shop.market_id',back_populates='Market')
+    Store:typing.List['Store']=relationship("Store",uselist=True,primaryjoin='foreign(Market.market_id) == Shop.market_id',back_populates='Market')
