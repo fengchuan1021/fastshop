@@ -6,13 +6,15 @@ from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER
 from sqlalchemy.orm import relationship, backref
 from .Warehouse import Warehouse
 from Models.ModelBase import Base,XTVARCHAR
-import typing
-if typing.TYPE_CHECKING:
+
+from typing import List,TYPE_CHECKING
+if TYPE_CHECKING:
     from .Market import Market
     from ..User import User
     from ..product.VariantStore import VariantStore
     from .Merchant import Merchant
-
+    from ..product.Category import Category
+    from ..product.Product import Product,Variant
 class Store(Base):
     __tablename__ = 'store'
 
@@ -39,8 +41,16 @@ class Store(Base):
     Merchant: 'Merchant' = relationship("Merchant", uselist=False, primaryjoin='foreign(Merchant.merchant_id) == Store.merchant_id',
                                     back_populates='Store')
 
-    VariantStore:'VariantStore'= relationship("VariantStore", uselist=True, primaryjoin='foreign(VariantStore.store_id) == Store.store_id',
+    VariantStore:List['VariantStore']= relationship("VariantStore", uselist=True, primaryjoin='foreign(VariantStore.store_id) == Store.store_id',
                                     back_populates='Store')
+    Category: List['Category']=relationship("Category", uselist=True, primaryjoin='foreign(Store.store_id) == Category.store_id', back_populates='Store')
+    Product: List['Product'] = relationship("Product", uselist=True,
+                                              primaryjoin='foreign(Store.store_id) == Product.store_id',
+                                              back_populates='Store')
+
+    Variant: List['Variant'] = relationship("Variant", uselist=True,
+                                              primaryjoin='foreign(Store.store_id) == Variant.store_id',
+                                              back_populates='Store')
     # Variants: 'VariantSite' = relationship('VariantSite', uselist=True,
 
     #                                    primaryjoin='foreign(VariantSite.site_id) == Site.site_id',

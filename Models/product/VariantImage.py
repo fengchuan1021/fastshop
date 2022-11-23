@@ -25,12 +25,12 @@ class VariantImage(Base):
                                      )
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
-    Merchant:'Merchant'=relationship('Variant', uselist=False,
+    Merchant:'Merchant'=relationship('Merchant', uselist=False,
                            primaryjoin='foreign(Merchant.merchant_id) == VariantImage.merchant_id',
-                           back_populates='VariantImage')
+                           )#back_populates='VariantImage'
     Store:'Store'=relationship('Store', uselist=False,
                            primaryjoin='foreign(Store.store_id) == VariantImage.store_id',
-                           back_populates='VariantImage')
+                           )#back_populates='VariantImage'
 
 # class ProductImgLog(Base):
 #     __tablename__ = 'product_image_log'

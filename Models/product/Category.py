@@ -23,7 +23,7 @@ class Category(Base):
 
     children:'Category'=relationship("Category",uselist=True,primaryjoin='foreign(Category.parent_id) == Category.category_id',backref=backref('Parent', remote_side='Category.category_id'))
     Store:'Store'=relationship("Store",uselist=False,primaryjoin='foreign(Store.store_id) == Category.store_id',back_populates="Category")
-    ProductCategory:typing.List['ProductCategory']=relationship("ProductCategory",uselist=True,primaryjoin='foreign(Store.store_id) == ProductCategory.category_id',back_populates="Category")
+    ProductCategory:typing.List['ProductCategory']=relationship("ProductCategory",uselist=True,primaryjoin='foreign(Category.category_id) == ProductCategory.category_id',back_populates="Category")
 class ProductCategory(Base):
     '产品和分类的对应关系'
     __tablename__ = 'product_category'

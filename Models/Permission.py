@@ -1,5 +1,5 @@
 from sqlalchemy import Column, UniqueConstraint
-from sqlalchemy.dialects.mysql import INTEGER, BIGINT
+from sqlalchemy.dialects.mysql import INTEGER, BIGINT, ENUM
 from sqlalchemy.orm import relationship, foreign
 
 from .ModelBase import Base,XTVARCHAR
@@ -28,6 +28,17 @@ class Permission(Base):
     role_id=Column(INTEGER,index=True)
     role_name=Column(XTVARCHAR(32))
     api_name=Column(XTVARCHAR(255),comment="routes array the role has permission to access. ")
+
+class Graphpermission(Base):
+    __tablename__ = 'Graphpermission'
+    Graphpermission_id=Column(INTEGER,autoincrement=True,primary_key=True)
+    table_name=Column(XTVARCHAR(32),nullable=False)
+    allowread_columns=Column(XTVARCHAR(512),default='')
+    allowwrite_columns = Column(XTVARCHAR(512), default='')
+    allowdelete=Column(ENUM("N",'Y'),default='N')
+    role_id=Column(INTEGER,index=True)
+    role_name=Column(XTVARCHAR(32),default='')
+    extra_filter=Column(XTVARCHAR(512),default='')
 
 class Roledisplayedmenu(Base):
     __tablename__ = 'roledisplayedmenu'

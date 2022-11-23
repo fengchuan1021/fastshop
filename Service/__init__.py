@@ -61,6 +61,7 @@ def __getattr__(name: str) -> Any:
 roleService : CRUDBase[Models.Role]
 userroleService : CRUDBase[Models.UserRole]
 permissionService : PermissionService
+graphpermissionService : CRUDBase[Models.Graphpermission]
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
 appService : CRUDBase[Models.App]

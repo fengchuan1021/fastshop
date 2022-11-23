@@ -3,10 +3,12 @@ from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT,INTEGER
 from sqlalchemy.orm import relationship, backref
 from Models.ModelBase import Base,XTVARCHAR
-import typing
-if typing.TYPE_CHECKING:
+from typing import List,TYPE_CHECKING
+if TYPE_CHECKING:
     from Models.User import User
-
+    from ..product.Product import Product
+    from ..product.Product import Variant
+    from .Store import Store
 class Merchant(Base):
     __tablename__='merchant'
     merchant_id=Column(INTEGER, primary_key=True, autoincrement=True)
@@ -22,7 +24,19 @@ class Merchant(Base):
                              primaryjoin='foreign(User.user_id) ==Merchant.user_id',
                              back_populates='Merchant'
                              )#type: ignore
+    Product:List['Product']=relationship('Product',uselist=True,
+                             primaryjoin='foreign(Merchant.merchant_id) ==Product.merchant_id',
+                             back_populates='Merchant'
+                             )#type: ignore
 
+    Variant:List['Variant']=relationship('Variant',uselist=True,
+                             primaryjoin='foreign(Merchant.merchant_id) ==Variant.merchant_id',
+                             back_populates='Merchant'
+                             )#type: ignore
+    Store:List['Store']=relationship('Store',uselist=True,
+                             primaryjoin='foreign(Merchant.merchant_id) ==Store.merchant_id',
+                             back_populates='Merchant'
+                             )#type: ignore
     # tiktok_appid=Column(XTVARCHAR(64),default='')
     # tiktok_secret=Column(XTVARCHAR(128), default='')
     # tiktok_shopid=Column(XTVARCHAR(128),default='')

@@ -32,13 +32,13 @@ class User(Base):
     #parent_id = Column(BIGINT,index=True)
     #children:List["User"] = relationship('User',uselist=True, primaryjoin='foreign(User.parent_id) == User.user_id',backref=backref('parent', remote_side='User.user_id'))
 
-    Merchant:'Merchant'=relationship('Merchant',uselist=False,primaryjoin='foreign(User.user_id)==Merchant.user_id',back_populates='User')
-    Store: 'Store' = relationship('Store', uselist=True,
-                                        primaryjoin='foreign(User.user_id)==Store.user_id', back_populates='User')
+    Merchant:'Merchant'=relationship('Merchant',uselist=False,primaryjoin='foreign(User.user_id)==Merchant.user_id',back_populates='User',viewonly=True)
+    # Store: 'Store' = relationship('Store', uselist=True,
+    #                                     primaryjoin='foreign(User.user_id)==Store.user_id', back_populates='User')
     Warehouse: 'Warehouse' = relationship('Warehouse', uselist=False,
-                                        primaryjoin='foreign(User.user_id)==Warehouse.user_id', back_populates='User')
+                                        primaryjoin='foreign(User.user_id)==Warehouse.user_id', back_populates='User',viewonly=True)
 
-    UserRole: List['UserRole'] = relationship("UserRole", back_populates="User", primaryjoin="foreign(User.user_id)==UserRole.user_id")
+    UserRole: List['UserRole'] = relationship("UserRole", back_populates="User", primaryjoin="foreign(User.user_id)==UserRole.user_id",viewonly=True)
 
     # def is_admin(self)->int:
     #     if not self.userrole:

@@ -167,9 +167,9 @@ class Variant(Base):
 
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
-    Merchant:'Merchant'=relationship('Variant', uselist=False,
+    Merchant:'Merchant'=relationship('Merchant', uselist=False,
                            primaryjoin='foreign(Merchant.merchant_id) == Variant.merchant_id',
-                           back_populates='Product')
+                           back_populates='Variant')
     Store:'Store'=relationship('Store', uselist=False,
                            primaryjoin='foreign(Store.store_id) == Variant.store_id',
-                           back_populates='Product')
+                           back_populates='Variant')
