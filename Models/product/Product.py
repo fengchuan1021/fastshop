@@ -8,9 +8,12 @@ from typing import TYPE_CHECKING, List
 from .Brand import Brand
 if TYPE_CHECKING:
     from Models.product.VariantImage import VariantImage
-    from .VariantShop import VariantShop
+    from .VariantStore import VariantStore
     from .Brand import Brand
     from .AttrSpecification import ProductAttribute,ProductSpecification
+    from .Category import ProductCategory
+    from ..store.Merchant import Merchant
+    from ..store.Store import Store
 class MeasureUnit(enum.Enum):
     OUNCE = "OUNCE"  # oz（盎司）
     POUND = "POUND"  # lb（磅）
@@ -109,6 +112,15 @@ class Product(Base):
     ProductSpecification:List['ProductSpecification'] = relationship('ProductSpecification', uselist=True,
                            primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
                            back_populates='Product')
+    ProductCategory:List['ProductCategory']=relationship('ProductCategory',uselist=True,primaryjoin='foreign(Product.product_id)==ProductCategory.product_id',back_populates='Product')
+    merchant_id=Column(INTEGER,index=True)
+    store_id=Column(INTEGER,index=True)
+    Merchant:'Merchant'=relationship('Merchant', uselist=False,
+                           primaryjoin='foreign(Merchant.merchant_id) == Product.merchant_id',
+                           back_populates='Product')
+    Store:'Store'=relationship('Store', uselist=False,
+                           primaryjoin='foreign(Store.store_id) == Product.store_id',
+                           back_populates='Product')
 # class VariantStatis(Base):
 #     '''for statistics'''
 #     __tablename__ = 'variant_Statis'
@@ -148,7 +160,16 @@ class Variant(Base):
                                                primaryjoin='foreign(Variant.variant_id) == VariantImage.variant_id')
 
 
-    VariantShop:List['VariantShop']=relationship('VariantShop',uselist=True,
-                                           primaryjoin='foreign(VariantShop.variant_id) == Variant.variant_id',
+    VariantStore:List['VariantStore']=relationship('VariantStore',uselist=True,
+                                           primaryjoin='foreign(VariantStore.variant_id) == Variant.variant_id',
                                            back_populates='Variant'
                                            )
+
+    merchant_id=Column(INTEGER,index=True)
+    store_id=Column(INTEGER,index=True)
+    Merchant:'Merchant'=relationship('Variant', uselist=False,
+                           primaryjoin='foreign(Merchant.merchant_id) == Variant.merchant_id',
+                           back_populates='Product')
+    Store:'Store'=relationship('Store', uselist=False,
+                           primaryjoin='foreign(Store.store_id) == Variant.store_id',
+                           back_populates='Product')

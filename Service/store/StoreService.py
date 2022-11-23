@@ -10,8 +10,8 @@ from sqlalchemy.sql import and_, or_
 from component.cache import cache
 
 
-class ShopService(CRUDBase[Models.Shop]):
+class StoreService(CRUDBase[Models.Store]):
     @cache
-    async def findByDomainname(self,db:AsyncSession,domainname:str)->Models.Shop:#type: ignore
-        statment=select(Models.Shop).where(Models.Shop.domainname==domainname)
+    async def findByDomainname(self,db:AsyncSession,domainname:str)->Models.Store:#type: ignore
+        statment=select(Models.Store).where(Models.Store.domainname==domainname)
         return (await db.execute(statment)).scalar_one_or_none()#type: ignore

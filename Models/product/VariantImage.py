@@ -6,6 +6,10 @@ from sqlalchemy.dialects.mysql import BIGINT, INTEGER
 
 from component.snowFlakeId import snowFlack
 from .Product import Variant
+import typing
+if typing.TYPE_CHECKING:
+    from ..store.Merchant import Merchant
+    from ..store.Store import Store
 class VariantImage(Base):
     __tablename__ = 'variant_image'
     __table_args__ = (Index('product_id_order_index', "variant_id", "image_order"),)
@@ -19,6 +23,14 @@ class VariantImage(Base):
                            primaryjoin='foreign(Variant.variant_id) == VariantImage.variant_id',
                            back_populates='VariantImage'
                                      )
+    merchant_id=Column(INTEGER,index=True)
+    store_id=Column(INTEGER,index=True)
+    Merchant:'Merchant'=relationship('Variant', uselist=False,
+                           primaryjoin='foreign(Merchant.merchant_id) == VariantImage.merchant_id',
+                           back_populates='VariantImage')
+    Store:'Store'=relationship('Store', uselist=False,
+                           primaryjoin='foreign(Store.store_id) == VariantImage.store_id',
+                           back_populates='VariantImage')
 
 # class ProductImgLog(Base):
 #     __tablename__ = 'product_image_log'

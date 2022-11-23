@@ -20,8 +20,8 @@ from .payment.paymethods.PaypalService import PaypalService
 from .product.CategoryService import CategoryService
 from .product.ProductService import VariantService,ProductService
 from .search.ProductSearchService import ProductSearchService
-from .shop.ShopService import ShopService
-from .shop.VariantSiteService import VariantSiteService
+from .store.StoreService import StoreService
+from .store.VariantStoreService import VariantSiteService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
 from .thirdpartmarket.market.OnBuyService import OnBuyService
 from .thirdpartmarket.market.TikTokService import TikTokService
@@ -73,10 +73,10 @@ productcategoryService : CRUDBase[Models.ProductCategory]
 productService : ProductService
 variantService : VariantService
 variantimageService : CRUDBase[Models.VariantImage]
-variantshopService : CRUDBase[Models.VariantShop]
+variantstoreService : CRUDBase[Models.VariantStore]
 marketService : CRUDBase[Models.Market]
 merchantService : CRUDBase[Models.Merchant]
-shopService : ShopService
+storeService : StoreService
 warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService
 paymentService : PaymentService

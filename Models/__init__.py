@@ -9,8 +9,8 @@ from .product.Brand import Brand
 from .product.Category import Category,ProductCategory
 from .product.Product import Product,Variant
 from .product.VariantImage import VariantImage
-from .product.VariantShop import VariantShop
-from .shop.Market import Market
-from .shop.Merchant import Merchant
-from .shop.Shop import Shop
-from .shop.Warehouse import Warehouse
+from .product.VariantStore import VariantStore
+from .store.Market import Market
+from .store.Merchant import Merchant
+from .store.Store import Store
+from .store.Warehouse import Warehouse
