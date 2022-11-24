@@ -87,7 +87,7 @@ class Role(enum.Enum):
     merchant=2#商家
 
 class UserTokenData(BaseModel):
-    id:int
+    user_id:Optional[int]
     phone:Optional[str]
     userrole:int=0
     username=''

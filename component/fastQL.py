@@ -6,16 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import Service
 import settings
 from common import filterbuilder, PermissionException, findModelByName
+from component.graphqlpermission import getAuthorizedColumns
 from component.sqlparser import parseSQL
 from typing import List
 from component.cache import cache
-@cache
-async def getAuthorizedColumns(db:AsyncSession,modelname:str,role:int,method:str='read')->Any:
-    permission=Service.graphpermissionService.getList(db,filter={"model_name":modelname,"role_id":role})
 
-    columns=getattr(permission,f'{method}_columns')
-    extra=getattr(permission,f'{method}_extra')
-    return columns.split(',') if columns else [],extra.split(',') if extra else []
 
 async def fastQuery(db: AsyncSession,
            query:str,
@@ -30,8 +25,10 @@ async def fastQuery(db: AsyncSession,
     if query[-1] != '}':
         query = query + '{}'
 
+
+
     where, params = filterbuilder(filter)
-    statment=parseSQL(query).where(text(where))
+    statment=(await parseSQL(query,db,context)).where(text(where))
     total=None
     if returntotal:
         count_statment=statment.with_only_columns([func.count()],maintain_column_froms=True)
@@ -54,7 +51,7 @@ async def fastQuery(db: AsyncSession,
 
 async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[settings.UserTokenData]=None)->Any:
     '''context 来指定用什么用户角色来添加数据'''
-    '''比如用root用户执行函数 context 里边userrole为商家 即以商家角色添加数据'''
+    '''context 里边userrole为商家 即以商家角色添加数据'''
     '''getAuthorizedColumns去权限表里边查找商家能读取/写入的字段'''
     columns=['*']
     extra=[]
@@ -94,6 +91,7 @@ async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[setti
     extra=[]
     if context:
         columns,extra=await getAuthorizedColumns(db,modelname,context.userrole,method='delete')
+        print('delete',columns,extra)
         if columns[0]!='Y':
             return False #no permission
 
@@ -104,4 +102,25 @@ async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[setti
         return False
 
 
+if __name__=='__main__':
 
+    from component.dbsession import getdbsession
+    from common import async2sync
+    from settings import UserTokenData
+    async def test():#type: ignore
+        async with getdbsession() as db:#type: ignore
+            print('??')
+            ql="store{appid,market{market_url}}"
+            #results=await fastQuery(db,ql,filter={"store_name":"myshop"},context=UserTokenData(userrole=2,merchant_id=1))
+
+            #result2=await fastDel(db,'store',13)
+            #result2=await fastDel(db,'store',13,context=UserTokenData(userrole=2,merchant_id=2))
+            data={
+                "market_id":13,
+                "market_name":"tiktok",
+                "Store":{
+                    "store_name":"Mystore"
+                }
+            }
+            await fastAdd(db,'market',data)
+    async2sync(test)()

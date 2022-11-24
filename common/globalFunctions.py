@@ -25,7 +25,7 @@ async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
     # except ExpiredSignatureError:
     #     raise
     except Exception as e:
-        guest_token=settings.UserTokenData(id=snowFlack.getId(),is_guest=True)
+        guest_token=settings.UserTokenData(user_id=snowFlack.getId(),is_guest=True)
         return guest_token
 
 async def get_token(request:Request)->settings.UserTokenData:

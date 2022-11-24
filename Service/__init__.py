@@ -18,10 +18,8 @@ from .payment.paymethods.AdyenService import AdyenService
 from .payment.paymethods.OnerwayService import OnerwayService
 from .payment.paymethods.PaypalService import PaypalService
 from .product.CategoryService import CategoryService
-from .product.ProductService import VariantService,ProductService
 from .search.ProductSearchService import ProductSearchService
 from .store.StoreService import StoreService
-from .store.VariantStoreService import VariantSiteService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
 from .thirdpartmarket.market.OnBuyService import OnBuyService
 from .thirdpartmarket.market.TikTokService import TikTokService
@@ -59,8 +57,8 @@ productspecificationService : CRUDBase[Models.ProductSpecification]
 brandService : CRUDBase[Models.Brand]
 categoryService : CategoryService
 productcategoryService : CRUDBase[Models.ProductCategory]
-productService : ProductService
-variantService : VariantService
+productService : CRUDBase[Models.Product]
+variantService : CRUDBase[Models.Variant]
 variantimageService : CRUDBase[Models.VariantImage]
 variantstoreService : CRUDBase[Models.VariantStore]
 marketService : CRUDBase[Models.Market]
@@ -73,7 +71,6 @@ adyenService : AdyenService
 onerwayService : OnerwayService
 paypalService : PaypalService
 productsearchService : ProductSearchService
-variantsiteService : VariantSiteService
 thirdmarketService : ThirdMarketService
 onbuyService : OnBuyService
 tiktokService : TikTokService

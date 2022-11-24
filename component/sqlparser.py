@@ -1,9 +1,12 @@
-from sqlalchemy import select
+from sqlalchemy import select, text
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, load_only, contains_eager
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Optional
 from sqlalchemy.sql.selectable import Select
 import Models
+import settings
 from common import findModelByName
+from component.graphqlpermission import getAuthorizedColumns
 
 
 def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
@@ -42,13 +45,26 @@ def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
                 columns.append(tmpstr)
         return modelname,columns,joinmodel
 
-def parseSQL(query:str,parentmodel:Any=None,statment:Any=None)->Any:
+async def parseSQL(query:str,db: AsyncSession=None,context:Optional[settings.UserTokenData]=None,parentmodel:Any=None,statment:Any=None)->Any:
     modelname,columns,joinmodel=getmodelnamecloums(query)
+    extra=[]
+    if context:
+        permittedcolumns,extra=await getAuthorizedColumns(db,modelname,context.userrole,'read')
+        if permittedcolumns[0]!='*':
+            if not columns:
+                columns=permittedcolumns
+            else:
+                for c in columns:
+                    if c not in permittedcolumns:
+                        raise PermissionError(f"{c} not allow permission for read")
 
     model = findModelByName(modelname)
     option=None
     if None==statment:
-        statment=select(model)
+        if extra:
+            statment=select(model).where(text(' and '.join( [f'{modelname}.{i}={getattr(context,i)}' for i in extra] )))
+        else:
+            statment = select(model)
     else:
         relivatetoparent=getattr(parentmodel,model.__name__)
         option=contains_eager(relivatetoparent)
@@ -57,7 +73,7 @@ def parseSQL(query:str,parentmodel:Any=None,statment:Any=None)->Any:
         option=option.load_only(*columns) if option else load_only(*columns)
     childsoptions=[]
     for joint in joinmodel:
-        statment,childsoption=parseSQL(joint,model,statment)
+        statment,childsoption=await parseSQL(joint,db,context,model,statment)
         if childsoption:
             childsoptions.append(childsoption)
     if childsoptions and option:
@@ -65,3 +81,14 @@ def parseSQL(query:str,parentmodel:Any=None,statment:Any=None)->Any:
     if not parentmodel:
         return statment if not option else statment.options(option)
     return statment,option
+
+if __name__=='__main__':
+
+    from component.dbsession import getdbsession
+    from common import async2sync
+    from settings import UserTokenData
+    async def test():#type: ignore
+        async with getdbsession() as db:
+            print('??')
+            print(await parseSQL("Store{appid,Market{market_url}}",db,context=UserTokenData(userrole=2,merchant_id=1)))
+    async2sync(test)()
