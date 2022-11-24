@@ -15,7 +15,7 @@ class DotMap:
         self.data=data
         self.total=total
 
-async def fastQL(db: AsyncSession,
+async def fastQuery(db: AsyncSession,
            query:str,
            filter:Dict={},
            pagenum:int=0,
@@ -23,7 +23,6 @@ async def fastQL(db: AsyncSession,
            orderby:str='',
            returntotal:bool=False,
            token:Optional[settings.UserTokenData]=None,
-           permissioncheck:bool=False,
            returnsingleobj:bool=False,
             )->Any:
     if query[-1] != '}':
@@ -48,3 +47,6 @@ async def fastQL(db: AsyncSession,
     if returntotal==False:
         return data
     return data,total
+
+async def fastAdd(db: AsyncSession,mainmodel:str,data:Dict,token:Optional[settings.UserTokenData]=None)->Any:
+    pass

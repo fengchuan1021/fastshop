@@ -22,7 +22,7 @@ else:
         def process_bind_param(self, value:str, dialect:Any)->str:#type: ignore
             if settings.AUTO_TRUNCATE_COLUMN:
                 if not value:
-                    return ''
+                    return value
                 return value[:self.impl.length]
             else:
                 return value

@@ -13,7 +13,7 @@ import settings
 from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from common import XTJsonResponse
-from component.fastQL import fastQL
+from component.fastQL import fastQuery
 
 from .__init__ import dependencies
 from .UserShema import (
@@ -81,8 +81,7 @@ async def login(
         return {'status':'failed','msg':"username or password not valid"}
     merchant = await Service.merchantService.findOne(db, {'user_id':user.user_id})#type: ignore
     #merchant=None
-    roles=await fastQL(db,"userrole{role{role_id,role_name}}",filter={"user_id":user.user_id})#type: ignore
-
+    roles=await fastQuery(db,"userrole{role{role_id,role_name}}",filter={"user_id":user.user_id})#type: ignore
 
     dic={'merchant_id':merchant.merchant_id} if merchant else {}
     dic['userrole']=[role.role_id for role in roles]#type: ignore

@@ -4,7 +4,7 @@ import os
 from typing import Any,TypeVar,TYPE_CHECKING
 import Models
 import sys
-from common import findModelByLowername
+from common import findModelByName
 import settings
 import typing
 thismodule = sys.modules[__name__]
@@ -40,7 +40,7 @@ def __getattr__(name: str) -> Any:
         if annotationname==name:
 
             if isinstance(classtype,typing._GenericAlias) or issubclass(classtype,CRUDBase):#type: ignore
-                tmpinstance = classtype(model:=findModelByLowername(lowername),model.__name__ in settings.cache_models)#type: ignore
+                tmpinstance = classtype(model:=findModelByName(lowername),model.__name__ in settings.cache_models)#type: ignore
             else:
                 tmpinstance = classtype()
             setattr(thismodule, name, tmpinstance)

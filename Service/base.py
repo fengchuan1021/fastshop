@@ -41,8 +41,11 @@ class CRUDBase(Generic[ModelType]):
 
     async def create(self,dbSession: AsyncSession,shema_in:BaseModel|Dict) -> ModelType:
         if isinstance(shema_in,dict):
+
             db_model = self.model(**shema_in)
         else:
+            print('what??', shema_in)
+            print('what?',shema_in.dict())
             db_model = self.model(**shema_in.dict())
         dbSession.add(db_model)
 

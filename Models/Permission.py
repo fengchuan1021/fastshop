@@ -30,12 +30,12 @@ class Permission(Base):
     api_name=Column(XTVARCHAR(255),comment="routes array the role has permission to access. ")
 
 class Graphpermission(Base):
-    __tablename__ = 'Graphpermission'
+    __tablename__ = 'graphpermission'
     Graphpermission_id=Column(INTEGER,autoincrement=True,primary_key=True)
-    table_name=Column(XTVARCHAR(32),nullable=False)
-    allowread_columns=Column(XTVARCHAR(512),default='')
-    allowwrite_columns = Column(XTVARCHAR(512), default='')
-    allowdelete=Column(ENUM("N",'Y'),default='N')
+    model_name=Column(XTVARCHAR(32),nullable=False)
+    readable_columns=Column(XTVARCHAR(512),default='')
+    writable_columns = Column(XTVARCHAR(512), default='')
+    delete_permission=Column(ENUM("N",'Y'),default='N')
     role_id=Column(INTEGER,index=True)
     role_name=Column(XTVARCHAR(32),default='')
     extra_filter=Column(XTVARCHAR(512),default='')

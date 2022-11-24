@@ -82,7 +82,7 @@ class SupportLang(enum.Enum):
 class UserTokenData(BaseModel):
     id:int
     phone:Optional[str]
-    userrole:Optional[List[int]]
+    userrole:List[int]=[]
     username=''
     nickname:Optional[str]=''
     is_guest=False
