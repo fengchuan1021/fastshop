@@ -45,7 +45,7 @@ def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
 def parseSQL(query:str,parentmodel:Any=None,statment:Any=None)->Any:
     modelname,columns,joinmodel=getmodelnamecloums(query)
 
-    model = findModelByName(modelname)#type: ignore
+    model = findModelByName(modelname)
     option=None
     if None==statment:
         statment=select(model)
