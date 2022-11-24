@@ -7,6 +7,12 @@ from XTTOOLS import toJson,toBytesJson,XTJsonResponse
 import Models
 from functools import lru_cache
 from typing import Type
+
+# class XTContext:
+#     def __init__(self, **kwargs):
+#         for key,v in kwargs.items():
+#             setattr(self,key,v)
+
 @lru_cache(maxsize=None)
 def findModelByName(name:str)->Type[Models.ModelType]:
 

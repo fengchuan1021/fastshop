@@ -48,8 +48,6 @@ def __getattr__(name: str) -> Any:
 
     raise Exception(f'not found {name}')
 
-roleService : CRUDBase[Models.Role]
-userroleService : CRUDBase[Models.UserRole]
 permissionService : PermissionService
 graphpermissionService : CRUDBase[Models.Graphpermission]
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]

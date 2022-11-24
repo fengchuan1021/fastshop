@@ -3,17 +3,19 @@ from typing import Any, Dict, Optional
 from sqlalchemy import text, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import Service
 import settings
-from common import filterbuilder
+from common import filterbuilder, PermissionException, findModelByName
 from component.sqlparser import parseSQL
+from typing import List
+from component.cache import cache
+@cache
+async def getAuthorizedColumns(db:AsyncSession,modelname:str,role:int,method:str='read')->Any:
+    permission=Service.graphpermissionService.getList(db,filter={"model_name":modelname,"role_id":role})
 
-class DotMap:
-    def __init__(self,data:Any,total:Optional[int]=None)->None:
-        '''data: result
-        total: total len of result
-        '''
-        self.data=data
-        self.total=total
+    columns=getattr(permission,f'{method}_columns')
+    extra=getattr(permission,f'{method}_extra')
+    return columns.split(',') if columns else [],extra.split(',') if extra else []
 
 async def fastQuery(db: AsyncSession,
            query:str,
@@ -22,7 +24,7 @@ async def fastQuery(db: AsyncSession,
            pagesize:int=0,
            orderby:str='',
            returntotal:bool=False,
-           token:Optional[settings.UserTokenData]=None,
+           context:Optional[settings.UserTokenData]=None,
            returnsingleobj:bool=False,
             )->Any:
     if query[-1] != '}':
@@ -48,5 +50,47 @@ async def fastQuery(db: AsyncSession,
         return data
     return data,total
 
-async def fastAdd(db: AsyncSession,mainmodel:str,data:Dict,token:Optional[settings.UserTokenData]=None)->Any:
-    pass
+
+
+async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[settings.UserTokenData]=None)->Any:
+    '''context 来指定用什么用户角色来添加数据'''
+    '''比如用root用户执行函数 context 里边userrole为商家 即以商家角色添加数据'''
+    '''getAuthorizedColumns去权限表里边查找商家能读取/写入的字段'''
+    columns=['*']
+    extra=[]
+    allpermission = False
+    if context:
+        columns,extra=await getAuthorizedColumns(db,modelname,context.userrole,method='write')
+    if '*' in columns:
+        allpermission=True
+
+    dic={}
+    children=[]
+    _lowerrelation=[i.lower() for i in columns if 'A'<=i[0]<='Z']
+    for key,value in data.items():
+
+        if isinstance(value,(dict,list)):
+            if not allpermission and key.lower() not in _lowerrelation:
+                raise PermissionException(f"not permission access {key}")
+            children.append(key)
+        else:
+            if not allpermission and key not in columns:
+                raise PermissionException(f"not permission access {key}")
+            dic[key]=value
+    model=findModelByName(modelname)
+    if context:
+        dic.update({i:getattr(context,i) for i in extra})
+    db.add(model(**dic))
+    await db.flush()
+    for child in children:
+        if isinstance(data[child],dict):
+            data[child][modelname+"_id"]=model.id
+            await fastAdd(db, child,data[child], context)
+        else:
+            for tmpdata in data[child]:
+                await fastAdd(db,child,tmpdata, context)
+
+
+
+
+

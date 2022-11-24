@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
     from .store.Store import Store
     from .store.Merchant import Merchant
     from .store.Warehouse import Warehouse
-    from .Permission import UserRole
+
 class User(Base):
     __tablename__ = 'user'
 
@@ -25,7 +25,7 @@ class User(Base):
     balance = Column(DECIMAL(10,2), server_default=text("'0'"))
     password = Column(XTVARCHAR(512), nullable=False)
     gender = Column(ENUM('man', 'woman'))
-    #userrole = Column(INTEGER(11),nullable=False,default=0,server_default=text("'0'"))
+    userrole = Column(INTEGER(11),nullable=False,default=0,server_default=text("'0'"))
 
     mark=Column(XTVARCHAR(512))
 
@@ -38,7 +38,7 @@ class User(Base):
     Warehouse: 'Warehouse' = relationship('Warehouse', uselist=False,
                                         primaryjoin='foreign(User.user_id)==Warehouse.user_id', back_populates='User',viewonly=True)
 
-    UserRole: List['UserRole'] = relationship("UserRole", back_populates="User", primaryjoin="foreign(User.user_id)==UserRole.user_id",viewonly=True)
+    #UserRole: List['UserRole'] = relationship("UserRole", back_populates="User", primaryjoin="foreign(User.user_id)==UserRole.user_id",viewonly=True)
 
     # def is_admin(self)->int:
     #     if not self.userrole:

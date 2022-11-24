@@ -41,17 +41,14 @@ class CRUDBase(Generic[ModelType]):
 
     async def create(self,dbSession: AsyncSession,shema_in:BaseModel|Dict) -> ModelType:
         if isinstance(shema_in,dict):
-
             db_model = self.model(**shema_in)
         else:
-            print('what??', shema_in)
-            print('what?',shema_in.dict())
             db_model = self.model(**shema_in.dict())
         dbSession.add(db_model)
 
         return db_model
 
-    async def getList(self,dbSession: AsyncSession,offset:int=0,limit:int=0,filter:BaseModel | Dict={},order_by:Any='',options:list=[],**kwargs:Dict)->List[ModelType]:
+    async def getList(self,dbSession: AsyncSession,filter:BaseModel | Dict={},offset:int=0,limit:int=0,order_by:Any='',options:list=[],**kwargs:Dict)->List[ModelType]:
         if not order_by:
              order_by=self.model.id.desc()
         where,params=filterbuilder(filter)

@@ -6,20 +6,20 @@ from .ModelBase import Base,XTVARCHAR
 import typing
 if typing.TYPE_CHECKING:
     from .User import User
-class Role(Base):
-    __tablename__ = 'role'
-    role_id=Column(INTEGER,autoincrement=True,primary_key=True)
-    role_name=Column(XTVARCHAR(16),server_default='',default='',unique=True)
-    note=Column(XTVARCHAR(255),server_default='',default='')
-    UserRole: typing.List['UserRole']=relationship("UserRole", back_populates='Role', primaryjoin='foreign(Role.role_id)==UserRole.role_id')
-class UserRole(Base):
-    __tablename__ = 'user_role'
-    id = Column(INTEGER, autoincrement=True, primary_key=True)
-    role_id=Column(INTEGER,index=True)
-    role_name=Column(XTVARCHAR(16),server_default='',default='')
-    user_id=Column(BIGINT,index=True)
-    Role:'Role'= relationship("Role", back_populates="UserRole",primaryjoin=foreign(Role.role_id)==role_id)
-    User:'User' = relationship("User",back_populates="UserRole",primaryjoin="foreign(User.user_id)==UserRole.user_id")
+# class Role(Base):
+#     __tablename__ = 'role'
+#     role_id=Column(INTEGER,autoincrement=True,primary_key=True)
+#     role_name=Column(XTVARCHAR(16),server_default='',default='',unique=True)
+#     note=Column(XTVARCHAR(255),server_default='',default='')
+#     UserRole: typing.List['UserRole']=relationship("UserRole", back_populates='Role', primaryjoin='foreign(Role.role_id)==UserRole.role_id')
+# class UserRole(Base):
+#     __tablename__ = 'user_role'
+#     id = Column(INTEGER, autoincrement=True, primary_key=True)
+#     role_id=Column(INTEGER,index=True)
+#     role_name=Column(XTVARCHAR(16),server_default='',default='')
+#     user_id=Column(BIGINT,index=True)
+#     Role:'Role'= relationship("Role", back_populates="UserRole",primaryjoin=foreign(Role.role_id)==role_id)
+#     User:'User' = relationship("User",back_populates="UserRole",primaryjoin="foreign(User.user_id)==UserRole.user_id")
 
 class Permission(Base):
     __tablename__ = 'permission'
@@ -33,12 +33,17 @@ class Graphpermission(Base):
     __tablename__ = 'graphpermission'
     Graphpermission_id=Column(INTEGER,autoincrement=True,primary_key=True)
     model_name=Column(XTVARCHAR(32),nullable=False)
-    readable_columns=Column(XTVARCHAR(512),default='')
-    writable_columns = Column(XTVARCHAR(512), default='')
-    delete_permission=Column(ENUM("N",'Y'),default='N')
+    read_columns=Column(XTVARCHAR(512),default='')
+    write_columns = Column(XTVARCHAR(512), default='')
+    update_columns=Column(XTVARCHAR(512), default='')
+    delete_columns=Column(ENUM("N",'Y'),default='N')
+
     role_id=Column(INTEGER,index=True)
     role_name=Column(XTVARCHAR(32),default='')
-    extra_filter=Column(XTVARCHAR(512),default='')
+    read_extra=Column(XTVARCHAR(512),default='')
+    write_extra=Column(XTVARCHAR(512),default='')
+    update_extra=Column(XTVARCHAR(512),default='')
+    delete_extra=Column(XTVARCHAR(512),default='')
 
 class Roledisplayedmenu(Base):
     __tablename__ = 'roledisplayedmenu'

@@ -5,7 +5,6 @@ import typing
 
 from redis.asyncio import Redis
 import redis.asyncio as redis
-
 from XTTOOLS import toJson
 import asyncio
 from functools import wraps
@@ -27,7 +26,7 @@ class _Cache:
         self._enable = True
         self._init=False
         self._loop:asyncio.AbstractEventLoop
-        self.ignore_arg_types = [Request,AsyncSession]
+        self.ignore_arg_types = [Request,AsyncSession]#,XTContext
         try:
             self.init()
         except Exception as e:
