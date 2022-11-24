@@ -89,8 +89,19 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
         else:
             for tmpdata in data[child]:
                 await fastAdd(db,child,tmpdata, context)
+async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None)->Any:
 
+    extra=[]
+    if context:
+        columns,extra=await getAuthorizedColumns(db,modelname,context.userrole,method='delete')
+        if columns[0]!='Y':
+            return False #no permission
 
+    if service := getattr(Service, modelname + 'Service', None):
+        await service.deleteByPk(db, id,{i:getattr(context,i) for i in extra})
+        return {'status': 'success'}
+    else:
+        return False
 
 
 

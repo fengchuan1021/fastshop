@@ -10,7 +10,7 @@ import settings
 from component.dbsession import get_webdbsession
 from common.globalFunctions import get_token
 from common import Common500Response, CommonResponse, filterbuilder
-from component.fastQL import fastQuery
+from component.fastQL import fastQuery,fastAdd,fastDel
 from component.sqlparser import parseSQL
 import orjson
 router = APIRouter()
@@ -20,16 +20,15 @@ async def create(modelname:str,body:Dict=Body(...),
            db: AsyncSession = Depends(get_webdbsession),
            token: settings.UserTokenData = Depends(get_token),
            )->Any:
-    if 1 in token.userrole:
-        #ok root permission
-        pass
+    await fastAdd(db,modelname,body,token)
+    return {'status': 'success'}
 
-    if service:=getattr(Service,modelname+'Service',None):
-        await service.create(db,body)
-        await db.commit()
-        return {'status':'success'}
-    else:
-        return Common500Response(status='validateerror',msg='model no exists')
+    # if service:=getattr(Service,modelname+'Service',None):
+    #     await service.create(db,body)
+    #     await db.commit()
+    #     return {'status':'success'}
+    # else:
+    #     return Common500Response(status='validateerror',msg='model no exists')
 
 @router.patch('/graphql/{modelname:str}/{id:str}')
 async def update(modelname:str,id:str,body:Dict=Body(...),
@@ -78,8 +77,8 @@ async def delete(modelname:str,id:str,
             db: AsyncSession = Depends(get_webdbsession),
             token: settings.UserTokenData = Depends(get_token),
             )->Any:
-    if service:=getattr(Service,modelname+'Service',None):
-        model=await service.deleteByPk(db,id)
+    status=await fastDel(db,modelname,id,token)
+    if status:
         return {'status':'success'}
     else:
         return Common500Response(status='validateerror',msg='model no exists')

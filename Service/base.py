@@ -29,8 +29,12 @@ class CRUDBase(Generic[ModelType]):
         return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"#type: ignore
 
     @cache(key_builder='getpkcachename',expire=3600*48)#type: ignore
-    async def findByPk(self,dbSession: AsyncSession,id: int) -> Optional[ModelType]:
-        results=await dbSession.execute(select(self.model).where(self.model.id==id))
+    async def findByPk(self,dbSession: AsyncSession,id: int,condition:Dict={}) -> Optional[ModelType]:
+        if condition:
+            w,p=filterbuilder(condition)
+            results=await dbSession.execute(select(self.model).where(self.model.id==id).where(text(w)),p)
+        else:
+            results = await dbSession.execute(select(self.model).where(self.model.id == id))
         return results.scalar_one_or_none()
     async def findOne(self,dbSession: AsyncSession,filter:BaseModel | Dict={})->Optional[ModelType]:
         where, params = filterbuilder(filter)
@@ -84,8 +88,8 @@ class CRUDBase(Generic[ModelType]):
     async def delete(self,dbSession: AsyncSession, model:ModelType)->None:
         await dbSession.delete(model)
 
-    async def deleteByPk(self,db: AsyncSession,pk:int)->None:
-        model=await self.findByPk(db,pk)
+    async def deleteByPk(self,db: AsyncSession,pk:int,condition:Any={})->None:
+        model=await self.findByPk(db,pk,condition)
         if model:
             await db.delete(model)
 
