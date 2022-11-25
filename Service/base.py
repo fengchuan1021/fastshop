@@ -53,6 +53,7 @@ class CRUDBase(Generic[ModelType]):
         return db_model
 
     async def getList(self,dbSession: AsyncSession,filter:BaseModel | Dict={},offset:int=0,limit:int=0,order_by:Any='',options:list=[],**kwargs:Dict)->List[ModelType]:
+        print('getlist:::::')
         if not order_by:
              order_by=self.model.id.desc()
         where,params=filterbuilder(filter)
@@ -103,3 +104,14 @@ class CRUDBase(Generic[ModelType]):
             for key,value in dic.items():
                 setattr(model,key,value)
 
+    async def find(self,db:AsyncSession,filter:Any={})->List[ModelType]:
+
+        where,params=filterbuilder(filter)
+        txtwhere = text(where)
+        stament=select(self.model).where(txtwhere)
+        r=await db.execute(stament,params)
+        tmp=r.scalars().all()
+        print('find???/')
+        print(tmp)
+        return tmp
+        #return await self.getList(db,filter)

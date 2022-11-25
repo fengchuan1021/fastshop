@@ -33,7 +33,7 @@ class Store(Base):
     Warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) == Store.warehouse_id',back_populates='Store')
 
     market_id=Column(INTEGER,index=True)
-    Market:'Market'=relationship("Market",uselist=False,primaryjoin='foreign(Market.market_id) == Store.market_id',back_populates='Store')
+    #Market:'Market'=relationship("Market",uselist=False,primaryjoin='foreign(Market.market_id) == Store.market_id',back_populates='Store')
 
     # User: 'User' = relationship("User", uselist=False, primaryjoin='foreign(User.user_id) == Shop.user_id',
     #                                 back_populates='Shop')
