@@ -33,7 +33,7 @@ class Store(Base):
     Warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) == Store.warehouse_id',back_populates='Store')
 
     market_id=Column(INTEGER,index=True)
-    #Market:'Market'=relationship("Market",uselist=False,primaryjoin='foreign(Market.market_id) == Store.market_id',back_populates='Store')
+    Market:'Market'=relationship("Market",uselist=False,primaryjoin='foreign(Market.market_id) == Store.market_id',back_populates='Store')
 
     # User: 'User' = relationship("User", uselist=False, primaryjoin='foreign(User.user_id) == Shop.user_id',
     #                                 back_populates='Shop')
@@ -46,11 +46,11 @@ class Store(Base):
     Category: List['Category']=relationship("Category", uselist=True, primaryjoin='foreign(Store.store_id) == Category.store_id', back_populates='Store')
     Product: List['Product'] = relationship("Product", uselist=True,
                                               primaryjoin='foreign(Store.store_id) == Product.store_id',
-                                              back_populates='Store')
+                                              back_populates='Store',viewonly=True)
 
     Variant: List['Variant'] = relationship("Variant", uselist=True,
                                               primaryjoin='foreign(Store.store_id) == Variant.store_id',
-                                              back_populates='Store')
+                                              back_populates='Store',viewonly=True)
     # Variants: 'VariantSite' = relationship('VariantSite', uselist=True,
 
     #                                    primaryjoin='foreign(VariantSite.site_id) == Site.site_id',

@@ -21,15 +21,15 @@ class VariantImage(Base):
     image_order=Column(INTEGER,server_default="0")
     Variant:'Variant' = relationship('Variant', uselist=False,
                            primaryjoin='foreign(Variant.variant_id) == VariantImage.variant_id',
-                           back_populates='VariantImage'
+                           back_populates='VariantImage',viewonly=True
                                      )
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
     Merchant:'Merchant'=relationship('Merchant', uselist=False,
-                           primaryjoin='foreign(Merchant.merchant_id) == VariantImage.merchant_id',
+                           primaryjoin='foreign(Merchant.merchant_id) == VariantImage.merchant_id',viewonly=True
                            )#back_populates='VariantImage'
     Store:'Store'=relationship('Store', uselist=False,
-                           primaryjoin='foreign(Store.store_id) == VariantImage.store_id',
+                           primaryjoin='foreign(Store.store_id) == VariantImage.store_id',viewonly=True
                            )#back_populates='VariantImage'
 
 # class ProductImgLog(Base):

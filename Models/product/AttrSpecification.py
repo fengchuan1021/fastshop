@@ -29,7 +29,7 @@ class ProductAttribute(Base):
     attributename=Column(XTVARCHAR(32))
     attributevalue= Column(XTVARCHAR(32))
     display_order = Column(INTEGER, default=0, server_default="0")
-    Product:'Product'=relationship('Product',uselist=False,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',back_populates='ProductAttribute')
+    Product:'Product'=relationship('Product',uselist=False,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',back_populates='ProductAttribute',viewonly=True)
 
 class ProductSpecification(Base):
     __tablename__ = 'product_specification'
@@ -41,4 +41,4 @@ class ProductSpecification(Base):
     display_order=Column(INTEGER,default=0,server_default="0")
     Product:'Product' = relationship('Product', uselist=False,
                            primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
-                           back_populates='ProductSpecification')
+                           back_populates='ProductSpecification',viewonly=True)

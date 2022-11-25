@@ -31,8 +31,8 @@ class ProductCategory(Base):
     product_category_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     category_id = Column(BIGINT,index=True)
     product_id=Column(BIGINT,index=True)
-    Product:'Product'=relationship("Product",uselist=False,primaryjoin='foreign(Product.product_id) == ProductCategory.product_id',back_populates='ProductCategory')
+    Product:'Product'=relationship("Product",uselist=False,primaryjoin='foreign(Product.product_id) == ProductCategory.product_id',back_populates='ProductCategory',viewonly=True)
     Category: 'Category' = relationship("Category", uselist=False,
-                                      primaryjoin='foreign(Category.category_id) == ProductCategory.category_id',back_populates='ProductCategory')
+                                      primaryjoin='foreign(Category.category_id) == ProductCategory.category_id',back_populates='ProductCategory',viewonly=True)
     merchant_id=Column(INTEGER,default=0)
     store_id=Column(INTEGER,default=0)

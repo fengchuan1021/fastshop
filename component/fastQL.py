@@ -86,11 +86,11 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
         else:
             for tmpdata in data[child]:
                 await fastAdd(db,child,tmpdata, context)
-async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict={})->Any:
-    if modelname[-1]!='}':
-        modelname=modelname+'{}'
+async def fastDel(db: AsyncSession,query:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict={})->Any:
+    if query[-1]!='}':
+        query=query+'{}'
 
-    modelname,columns,joinmodel=getmodelnamecloums(modelname)
+    modelname,columns,joinmodel=getmodelnamecloums(query)
     print("???",modelname)
     print('why??',modelname,columns,joinmodel)
     extra=[]
@@ -107,7 +107,7 @@ async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[setti
         else:
             models=await service.find(db,extra_filter.update({i:getattr(context,i) for i in extra}))
             for model in models:
-                await fastDel(db,model.__class__.__name__.lower(),model.id,context)
+                await fastDel(db,query,model.id,context)
     else:
         raise Exception(f"{modelname} not found")
         return False

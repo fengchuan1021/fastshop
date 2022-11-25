@@ -44,7 +44,7 @@ async def writelog(logstr:str,request:str='')->None:
             'request': request,
             'timestamp': datetime.datetime.now(),
         }
-        await es.index(index=f"xtlog-{settings.MODE}", document=doc)
+        await es.index(index=f"xtlog-{settings.MODE.lower()}", document=doc)
 
 def async2sync(func:Callable[...,Any])->Callable[...,Any]:
     @wraps(func)

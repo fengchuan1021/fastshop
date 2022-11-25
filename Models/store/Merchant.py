@@ -22,20 +22,20 @@ class Merchant(Base):
     contacts_emial=Column(XTVARCHAR(32),default='')
     User:'User'=relationship('User',uselist=False,
                              primaryjoin='foreign(User.user_id) ==Merchant.user_id',
-                             back_populates='Merchant'
+                             back_populates='Merchant',viewonly=True
                              )#type: ignore
     Product:List['Product']=relationship('Product',uselist=True,
                              primaryjoin='foreign(Merchant.merchant_id) ==Product.merchant_id',
-                             back_populates='Merchant'
+                             back_populates='Merchant',viewonly=True
                              )#type: ignore
 
     Variant:List['Variant']=relationship('Variant',uselist=True,
                              primaryjoin='foreign(Merchant.merchant_id) ==Variant.merchant_id',
-                             back_populates='Merchant'
+                             back_populates='Merchant',viewonly=True
                              )#type: ignore
     Store:List['Store']=relationship('Store',uselist=True,
                              primaryjoin='foreign(Merchant.merchant_id) ==Store.merchant_id',
-                             back_populates='Merchant'
+                             back_populates='Merchant',viewonly=True
                              )#type: ignore
     # tiktok_appid=Column(XTVARCHAR(64),default='')
     # tiktok_secret=Column(XTVARCHAR(128), default='')

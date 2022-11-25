@@ -18,4 +18,4 @@ class Market(Base):
     market_country=Column(XTVARCHAR(32),default='')
     market_url = Column(XTVARCHAR(32), default='')
 
-    #Store:typing.List['Store']=relationship("Store",uselist=True,primaryjoin='foreign(Market.market_id) == Store.market_id',back_populates='Market')
+    Store:typing.List['Store']=relationship("Store",uselist=True,primaryjoin='foreign(Market.market_id) == Store.market_id',back_populates='Market')
