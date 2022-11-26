@@ -80,15 +80,14 @@ async def login(
     if not user:
         return {'status':'failed','msg':"username or password not valid"}
     merchant = await Service.merchantService.findOne(db, {'user_id':user.user_id})#type: ignore
-    #merchant=None
-    #roles=await fastQuery(db,"userrole{role{role_id,role_name}}",filter={"user_id":user.user_id})#type: ignore
+
 
     dic={'merchant_id':merchant.merchant_id} if merchant else {}
-    #dic['userrole']=[role.role_id for role in roles]#type: ignore
+
 
     newtoken=await Service.userService.create_access_token(user,extra_data=dic)#type: ignore
     refreshtoken=await Service.userService.create_refresh_token(user)#type: ignore
-    # install pydantic plugin,press alt+enter auto complete the args.
+
     return FrontendUserLoginPostOutShema(status='success',token=newtoken,refreshtoken=refreshtoken)
 
 
