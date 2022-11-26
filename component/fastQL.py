@@ -14,7 +14,7 @@ from component.cache import cache
 
 async def fastQuery(db: AsyncSession,
            query:str,
-           filter:Dict={},
+           filter:Dict=None,
            pagenum:int=0,
            pagesize:int=0,
            orderby:str='',
@@ -86,7 +86,7 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
         else:
             for tmpdata in data[child]:
                 await fastAdd(db,child,tmpdata, context)
-async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict={})->Any:
+async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict=None)->Any:
 
 
     extra=[]
@@ -96,10 +96,13 @@ async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[setti
             return False #no permission
 
     if service := getattr(Service, modelname + 'Service', None):
+        tmpdic={i:getattr(context,i) for i in extra}
+        if extra_filter:
+            tmpdic.update(extra_filter)
         if id:
-            await service.deleteByPk(db, id,extra_filter.update({i:getattr(context,i) for i in extra}))
+            await service.deleteByPk(db, id,tmpdic)
         else:
-            models=await service.find(db,extra_filter.update({i:getattr(context,i) for i in extra}))
+            models=await service.find(db,tmpdic)
             for model in models:
                 await fastDel(db,modelname,model.id,context,extra_filter)
     else:

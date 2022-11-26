@@ -38,12 +38,12 @@ class OnBuyService(Market):
             token=data["access_token"]
             await cache.set(f'onbuy_token:{store.store_id}',token,int(data['expires_at'])-int(time.time()))
             return token
-    async def buildurl(self,url:str,params:Dict={},store:'Models.Store'=None)->str:
+    async def buildurl(self,url:str,params:Dict=None,store:'Models.Store'=None)->str:
         if TYPE_CHECKING:
             store=cast(Models.Store,store)
         token=await self.getToken(store)
         self.session.headers.update({'Authorization':token})
-        return f'{url}?{urlencode(params)}'
+        return f'{url}?{urlencode(params)}'#type: ignore
 
     async def getBrands(self,db:AsyncSession,store_id:str)->Any:
         url='/v2/brands'

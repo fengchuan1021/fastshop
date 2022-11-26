@@ -29,14 +29,14 @@ class CRUDBase(Generic[ModelType]):
         return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"#type: ignore
 
     @cache(key_builder='getpkcachename',expire=3600*48)#type: ignore
-    async def findByPk(self,dbSession: AsyncSession,id: int,condition:Dict={}) -> Optional[ModelType]:
+    async def findByPk(self,dbSession: AsyncSession,id: int,condition:Dict=None) -> Optional[ModelType]:
         if condition:
             w,p=filterbuilder(condition)
             results=await dbSession.execute(select(self.model).where(self.model.id==id).where(text(w)),p)
         else:
             results = await dbSession.execute(select(self.model).where(self.model.id == id))
         return results.scalar_one_or_none()
-    async def findOne(self,dbSession: AsyncSession,filter:BaseModel | Dict={})->Optional[ModelType]:
+    async def findOne(self,dbSession: AsyncSession,filter:Optional[BaseModel | Dict]=None)->Optional[ModelType]:
         where, params = filterbuilder(filter)
         txtwhere=text(where)
         statment=select(self.model).where(txtwhere)
@@ -52,7 +52,7 @@ class CRUDBase(Generic[ModelType]):
 
         return db_model
 
-    async def getList(self,dbSession: AsyncSession,filter:BaseModel | Dict={},offset:int=0,limit:int=0,order_by:Any='',options:list=[],**kwargs:Dict)->List[ModelType]:
+    async def getList(self,dbSession: AsyncSession,filter:Optional[BaseModel | Dict]=None,offset:int=0,limit:int=0,order_by:Any='',options:list=[],**kwargs:Dict)->List[ModelType]:
         print('getlist:::::')
         if not order_by:
              order_by=self.model.id.desc()
@@ -67,7 +67,7 @@ class CRUDBase(Generic[ModelType]):
 
         return results.scalars().all()
 
-    async def pagination(self,dbSession: AsyncSession,pagenum:int=1,pagesize:int=20,filter:BaseModel | Dict={},order_by:str='',calcTotalNum:bool=False,options:list=[],**kwargs:Dict)->Tuple[List[ModelType],int]:
+    async def pagination(self,dbSession: AsyncSession,pagenum:int=1,pagesize:int=20,filter:Optional[BaseModel | Dict]=None,order_by:str='',calcTotalNum:bool=False,options:list=[],**kwargs:Dict)->Tuple[List[ModelType],int]:
         where,params=filterbuilder(filter)
         txtwhere=text(where)
         if not order_by:
@@ -89,7 +89,7 @@ class CRUDBase(Generic[ModelType]):
     async def delete(self,dbSession: AsyncSession, model:ModelType)->None:
         await dbSession.delete(model)
 
-    async def deleteByPk(self,db: AsyncSession,pk:int,condition:Any={})->None:
+    async def deleteByPk(self,db: AsyncSession,pk:int,condition:Any=None)->None:
         model=await self.findByPk(db,pk,condition)
         if model:
             await db.delete(model)
@@ -104,7 +104,7 @@ class CRUDBase(Generic[ModelType]):
             for key,value in dic.items():
                 setattr(model,key,value)
 
-    async def find(self,db:AsyncSession,filter:Any={})->List[ModelType]:
+    async def find(self,db:AsyncSession,filter:Any=None)->List[ModelType]:
 
         where,params=filterbuilder(filter)
         txtwhere = text(where)

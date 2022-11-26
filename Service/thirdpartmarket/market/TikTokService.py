@@ -25,19 +25,19 @@ class TikTokService(Market):
         sign = hmac.new(key.encode('utf-8'), data.encode('utf-8'), digestmod=sha256).hexdigest()
         return sign
 
-    def buildurl(self,url:str,params:Dict={},store:'Models.Store'=None)->str:
+    def buildurl(self,url:str,params:Dict=None,store:'Models.Store'=None)->str:
         if TYPE_CHECKING:
             store=cast(Models.Store,store)
-        params.update({'app_key':store.appid,'store_id':store.appkey})
-        params['timestamp']=str(int(time.time()))
+        params.update({'app_key':store.appid,'store_id':store.appkey})#type: ignore
+        params['timestamp']=str(int(time.time()))#type: ignore
         signstring:str = merchant.tiktok_secret + url#type: ignore
-        for key in sorted(params):
-            signstring = signstring + key + params[key]
+        for key in sorted(params):#type: ignore
+            signstring = signstring + key + params[key]#type: ignore
         signstring = signstring + merchant.tiktok_secret#type: ignore
         sign=self.get_sign(signstring,merchant.tiktok_secret)#type: ignore
-        params['access_token']=store.token
-        params['sign']=sign
-        return f'{url}?{urlencode(params)}'
+        params['access_token']=store.token#type: ignore
+        params['sign']=sign#type: ignore
+        return f'{url}?{urlencode(params)}'#type: ignore
 
     async def getAuthorizedStore(self,db:AsyncSession,store_id:str)->Any:
         url = "/api/store/get_authorized_store"

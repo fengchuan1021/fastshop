@@ -62,7 +62,7 @@ class UserService(CRUDBase[Models.User]):
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
         return encoded_jwt
 
-    async def create_access_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None,extra_data:Dict={})->str:
+    async def create_access_token(self,data:Models.User, expires_delta: Union[timedelta, None] = None,extra_data:Dict=None)->str:
         to_encode = settings.UserTokenData.from_orm(data).dict()
 
         if expires_delta:
