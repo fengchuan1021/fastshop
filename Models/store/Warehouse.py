@@ -2,12 +2,13 @@ from sqlalchemy.orm import relationship
 
 from component.snowFlakeId import snowFlack
 from sqlalchemy import Column
-from sqlalchemy.dialects.mysql import BIGINT,ENUM,FLOAT
+from sqlalchemy.dialects.mysql import BIGINT,ENUM,FLOAT,INTEGER
 from Models.ModelBase import Base,XTVARCHAR
 import typing
 if typing.TYPE_CHECKING:
     from Models.User import User
     from .Store import Store
+    from .Merchant import Merchant
 class Warehouse(Base):
     __tablename__ = 'warehouse'
 
@@ -28,14 +29,18 @@ class Warehouse(Base):
     address_street1=Column(XTVARCHAR(255))
     address_srreet2=Column(XTVARCHAR(255))
     address_postcode=Column(XTVARCHAR(255))
-    user_id=Column(BIGINT,index=True)
+    #user_id=Column(BIGINT,index=True)
+    merchant_id=Column(INTEGER,index=True)
+    # User:'User'=relationship('User',uselist=False,
+    #                          primaryjoin='foreign(Warehouse.user_id) ==User.user_id',
+    #                          back_populates='Warehouse',cascade=''
+    #                          )#type: ignore
 
-    User:'User'=relationship('User',uselist=False,
-                             primaryjoin='foreign(User.user_id) ==Warehouse.user_id',
-                             back_populates='Warehouse'
+    Merchant:'Merchant'=relationship('Merchant',uselist=False,
+                             primaryjoin='foreign(Warehouse.merchant_id) ==Merchant.merchant_id',
+                             back_populates='Warehouse',cascade=''
                              )#type: ignore
-
     Store:typing.List['Store']=relationship('Store',uselist=True,
-                             primaryjoin='foreign(Warehouse.warehouse_id) ==Store.warehouse_id',
-                             back_populates='Warehouse'
+                             primaryjoin='foreign(Store.warehouse_id) ==Warehouse.warehouse_id',
+                             back_populates='Warehouse',cascade=''
                              )#type: ignore
