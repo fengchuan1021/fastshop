@@ -36,10 +36,15 @@ class CRUDBase(Generic[ModelType]):
         else:
             results = await dbSession.execute(select(self.model).where(self.model.id == id))
         return results.scalar_one_or_none()
+
+    async def find(self,db:AsyncSession,filter:Any=None)->List[ModelType]:
+        where,params=filterbuilder(filter)
+        stament=select(self.model).where(text(where))
+        return (await db.execute(stament,params)).scalars().all()
+
     async def findOne(self,dbSession: AsyncSession,filter:Optional[BaseModel | Dict]=None)->Optional[ModelType]:
         where, params = filterbuilder(filter)
-        txtwhere=text(where)
-        statment=select(self.model).where(txtwhere)
+        statment=select(self.model).where(text(where))
         results = await dbSession.execute(statment,params)
         return results.scalar_one_or_none()
 
@@ -104,14 +109,4 @@ class CRUDBase(Generic[ModelType]):
             for key,value in dic.items():
                 setattr(model,key,value)
 
-    async def find(self,db:AsyncSession,filter:Any=None)->List[ModelType]:
 
-        where,params=filterbuilder(filter)
-        txtwhere = text(where)
-        stament=select(self.model).where(txtwhere)
-        r=await db.execute(stament,params)
-        tmp=r.scalars().all()
-        print('find???/')
-        print(tmp)
-        return tmp
-        #return await self.getList(db,filter)
