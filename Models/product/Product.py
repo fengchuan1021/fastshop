@@ -105,22 +105,27 @@ class Product(Base):
     language=Column(ENUM('en',"cn"),default='en',comment="语言，XT内部使用")
     en_product_id=Column(BIGINT,default=0,index=True,comment="语言如果是非en,指向原en产品")
 
-    Variant:List['Variant']=relationship('Variant',uselist=True, primaryjoin='foreign(Product.product_id) == Variant.product_id',back_populates='Product',viewonly=True)
+    Variant:List['Variant']=relationship('Variant',uselist=True, primaryjoin='foreign(Variant.product_id) == Product.product_id',back_populates='Product',cascade='')
 
-    ProductAttribute:List['ProductAttribute']=relationship('ProductAttribute',uselist=True,primaryjoin='foreign(Product.product_id) == ProductAttribute.product_id',back_populates='Product',viewonly=True)
+    ProductAttribute:List['ProductAttribute']=relationship('ProductAttribute',uselist=True,primaryjoin='foreign(ProductAttribute.product_id) == Product.product_id',back_populates='Product',cascade='')
 
     ProductSpecification:List['ProductSpecification'] = relationship('ProductSpecification', uselist=True,
-                           primaryjoin='foreign(Product.product_id) == ProductSpecification.product_id',
-                           back_populates='Product',viewonly=True)
-    ProductCategory:List['ProductCategory']=relationship('ProductCategory',uselist=True,primaryjoin='foreign(Product.product_id)==ProductCategory.product_id',back_populates='Product',viewonly=True)
+                           primaryjoin='foreign(ProductSpecification.product_id) == Product.product_id',
+                           back_populates='Product',cascade='')
+    ProductCategory:List['ProductCategory']=relationship('ProductCategory',uselist=True,primaryjoin='foreign(ProductCategory.product_id)==Product.product_id',back_populates='Product',cascade='')
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
     Merchant:'Merchant'=relationship('Merchant', uselist=False,
-                           primaryjoin='foreign(Merchant.merchant_id) == Product.merchant_id',
-                           back_populates='Product',viewonly=True)
+                           primaryjoin='foreign(Product.merchant_id) == Merchant.merchant_id',
+                           back_populates='Product',cascade='')
     Store:'Store'=relationship('Store', uselist=False,
-                           primaryjoin='foreign(Store.store_id) == Product.store_id',
-                           back_populates='Product',viewonly=True)
+                           primaryjoin='foreign(Product.store_id) == Store.store_id',
+                           back_populates='Product',cascade='')
+
+    VariantStore:List['VariantStore']=relationship('VariantStore',uselist=True,
+                                           primaryjoin='foreign(VariantStore.product_id) == Product.product_id',
+                                           back_populates='Product',cascade=''
+                                           )
 # class VariantStatis(Base):
 #     '''for statistics'''
 #     __tablename__ = 'variant_Statis'
@@ -136,7 +141,7 @@ class Variant(Base):
     variant_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     sku=Column(XTVARCHAR(80))
 
-    product_id=Column(BIGINT,server_default="0")
+    product_id=Column(BIGINT,server_default="0",index=True)
     #price = Column(DECIMAL(10,2), server_default="0",default=0)
 
     specification=Column(XTVARCHAR(12),server_default='')
@@ -153,23 +158,23 @@ class Variant(Base):
     title=Column(XTVARCHAR(255),nullable=True)
 
 
-    Product:Product=relationship("Product",uselist=False,primaryjoin='foreign(Product.product_id)==Variant.variant_id',back_populates='Variant',viewonly=True)
+    Product:Product=relationship("Product",uselist=False,primaryjoin='foreign(Variant.product_id)==Product.product_id',back_populates='Variant',cascade='')
     #dynamic:"ProductDynamic" = relationship(ProductDynamic, uselist=False, backref="product_static")
     VariantImage:List['VariantImage'] = relationship('VariantImage',uselist=True,
 
-                                               primaryjoin='foreign(Variant.variant_id) == VariantImage.variant_id')
+                                               primaryjoin='foreign(VariantImage.variant_id) == Variant.variant_id',cascade='')
 
 
     VariantStore:List['VariantStore']=relationship('VariantStore',uselist=True,
                                            primaryjoin='foreign(VariantStore.variant_id) == Variant.variant_id',
-                                           back_populates='Variant',viewonly=True
+                                           back_populates='Variant',cascade=''
                                            )
 
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
     Merchant:'Merchant'=relationship('Merchant', uselist=False,
-                           primaryjoin='foreign(Merchant.merchant_id) == Variant.merchant_id',
-                           back_populates='Variant',viewonly=True)
+                           primaryjoin='foreign(Variant.merchant_id) == Merchant.merchant_id',
+                           back_populates='Variant',cascade='')
     Store:'Store'=relationship('Store', uselist=False,
-                           primaryjoin='foreign(Store.store_id) == Variant.store_id',
-                           back_populates='Variant',viewonly=True)
+                           primaryjoin='foreign(Variant.store_id) == Store.store_id',
+                           back_populates='Variant',cascade='')

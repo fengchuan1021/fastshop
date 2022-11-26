@@ -30,23 +30,23 @@ class Store(Base):
     #user_id=Column(BIGINT,index=True)
     merchant_id=Column(INTEGER,index=True)
     warehouse_name=Column(XTVARCHAR(32))
-    Warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Warehouse.warehouse_id) == Store.warehouse_id',back_populates='Store')
+    Warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Store.warehouse_id) == Warehouse.warehouse_id',back_populates='Store',cascade='')
 
     market_id=Column(INTEGER,index=True)
-    Market:'Market'=relationship("Market",uselist=False,primaryjoin='foreign(Market.market_id) == Store.market_id',back_populates='Store')
+    Market:'Market'=relationship("Market",uselist=False,primaryjoin='foreign(Store.market_id) == Market.market_id',back_populates='Store',cascade='')
 
     # User: 'User' = relationship("User", uselist=False, primaryjoin='foreign(User.user_id) == Shop.user_id',
     #                                 back_populates='Shop')
 
-    Merchant: 'Merchant' = relationship("Merchant", uselist=False, primaryjoin='foreign(Merchant.merchant_id) == Store.merchant_id',
-                                    back_populates='Store')
+    Merchant: 'Merchant' = relationship("Merchant", uselist=False, primaryjoin='foreign(Store.merchant_id) == Merchant.merchant_id',
+                                    back_populates='Store',cascade='')
 
     VariantStore:List['VariantStore']= relationship("VariantStore", uselist=True, primaryjoin='foreign(VariantStore.store_id) == Store.store_id',
-                                    back_populates='Store')
-    Category: List['Category']=relationship("Category", uselist=True, primaryjoin='foreign(Store.store_id) == Category.store_id', back_populates='Store')
+                                    back_populates='Store',cascade='')
+    Category: List['Category']=relationship("Category", uselist=True, primaryjoin='foreign(Category.store_id) == Store.store_id', back_populates='Store',cascade='')
     Product: List['Product'] = relationship("Product", uselist=True,
-                                              primaryjoin='foreign(Store.store_id) == Product.store_id',
-                                              back_populates='Store',viewonly=True)
+                                              primaryjoin='foreign(Product.store_id) == Store.store_id',
+                                              back_populates='Store',cascade='')
 
     Variant: List['Variant'] = relationship("Variant", uselist=True,
                                               primaryjoin='foreign(Store.store_id) == Variant.store_id',

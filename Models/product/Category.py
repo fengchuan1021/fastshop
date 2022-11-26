@@ -21,9 +21,9 @@ class Category(Base):
     category_image=Column(XTVARCHAR(512),server_default="",default='')
     #use virtual foreign key.
 
-    children:'Category'=relationship("Category",uselist=True,primaryjoin='foreign(Category.parent_id) == Category.category_id',backref=backref('Parent', remote_side='Category.category_id'))
-    Store:'Store'=relationship("Store",uselist=False,primaryjoin='foreign(Store.store_id) == Category.store_id',back_populates="Category")
-    ProductCategory:typing.List['ProductCategory']=relationship("ProductCategory",uselist=True,primaryjoin='foreign(Category.category_id) == ProductCategory.category_id',back_populates="Category")
+    Children:'Category'=relationship("Category",uselist=True,primaryjoin='foreign(Category.parent_id) == Category.category_id',backref=backref('Parent', remote_side='Category.category_id'),cascade='')
+    Store:'Store'=relationship("Store",uselist=False,primaryjoin='foreign(Category.store_id) == Store.store_id',back_populates="Category",cascade='')
+    ProductCategory:typing.List['ProductCategory']=relationship("ProductCategory",uselist=True,primaryjoin='foreign(ProductCategory.category_id) == Category.category_id',back_populates="Category",cascade='')
 class ProductCategory(Base):
     '产品和分类的对应关系'
     __tablename__ = 'product_category'
@@ -31,8 +31,8 @@ class ProductCategory(Base):
     product_category_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     category_id = Column(BIGINT,index=True)
     product_id=Column(BIGINT,index=True)
-    Product:'Product'=relationship("Product",uselist=False,primaryjoin='foreign(Product.product_id) == ProductCategory.product_id',back_populates='ProductCategory',viewonly=True)
+    Product:'Product'=relationship("Product",uselist=False,primaryjoin='foreign(ProductCategory.product_id) == Product.product_id',back_populates='ProductCategory',cascade='')
     Category: 'Category' = relationship("Category", uselist=False,
-                                      primaryjoin='foreign(Category.category_id) == ProductCategory.category_id',back_populates='ProductCategory',viewonly=True)
+                                      primaryjoin='foreign(ProductCategory.category_id) == Category.category_id',back_populates='ProductCategory',cascade='')
     merchant_id=Column(INTEGER,default=0)
     store_id=Column(INTEGER,default=0)

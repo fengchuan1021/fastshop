@@ -15,21 +15,21 @@ class VariantImage(Base):
     __table_args__ = (Index('product_id_order_index', "variant_id", "image_order"),)
     variant_image_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
 
-    variant_id = Column(BIGINT,server_default="0")
+    variant_id = Column(BIGINT,server_default="0",index=True)
     image_url=Column(XTVARCHAR(512))
     image_alt=Column(XTVARCHAR(255))
     image_order=Column(INTEGER,server_default="0")
     Variant:'Variant' = relationship('Variant', uselist=False,
-                           primaryjoin='foreign(Variant.variant_id) == VariantImage.variant_id',
-                           back_populates='VariantImage',viewonly=True
+                           primaryjoin='foreign(VariantImage.variant_id) ==Variant.variant_id ',
+                           back_populates='VariantImage',cascade=''
                                      )
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
     Merchant:'Merchant'=relationship('Merchant', uselist=False,
-                           primaryjoin='foreign(Merchant.merchant_id) == VariantImage.merchant_id',viewonly=True
+                           primaryjoin='foreign(VariantImage.merchant_id) == Merchant.merchant_id',cascade=''
                            )#back_populates='VariantImage'
     Store:'Store'=relationship('Store', uselist=False,
-                           primaryjoin='foreign(Store.store_id) == VariantImage.store_id',viewonly=True
+                           primaryjoin='foreign(VariantImage.store_id) == Store.store_id',cascade=''
                            )#back_populates='VariantImage'
 
 # class ProductImgLog(Base):
