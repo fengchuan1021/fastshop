@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from ..product.Product import Product
     from ..product.Product import Variant
     from .Store import Store
+    from .Warehouse import Warehouse
 class Merchant(Base):
     __tablename__='merchant'
     merchant_id=Column(INTEGER, primary_key=True, autoincrement=True)
@@ -37,6 +38,10 @@ class Merchant(Base):
                              primaryjoin='foreign(Store.merchant_id) ==Merchant.merchant_id',
                              back_populates='Merchant',cascade=''
                              )
+    Warehouse:'Warehouse'=relationship('Warehouse',uselist=True,
+                             primaryjoin='foreign(Warehouse.merchant_id) ==Merchant.merchant_id',
+                             back_populates='Merchant',cascade=''
+                             )#type: ignore
     # tiktok_appid=Column(XTVARCHAR(64),default='')
     # tiktok_secret=Column(XTVARCHAR(128), default='')
     # tiktok_shopid=Column(XTVARCHAR(128),default='')

@@ -86,13 +86,9 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
         else:
             for tmpdata in data[child]:
                 await fastAdd(db,child,tmpdata, context)
-async def fastDel(db: AsyncSession,query:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict={})->Any:
-    if query[-1]!='}':
-        query=query+'{}'
+async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict={})->Any:
 
-    modelname,columns,joinmodel=getmodelnamecloums(query)
-    print("???",modelname)
-    print('why??',modelname,columns,joinmodel)
+
     extra=[]
     if context:
         columns,extra=await getAuthorizedColumns(db,modelname,context.userrole,method='delete')
@@ -102,12 +98,10 @@ async def fastDel(db: AsyncSession,query:str,id:int=0,context:Optional[settings.
     if service := getattr(Service, modelname + 'Service', None):
         if id:
             await service.deleteByPk(db, id,extra_filter.update({i:getattr(context,i) for i in extra}))
-            for tmpmodelname in columns+joinmodel:
-                await fastDel(db,tmpmodelname,0,context,{f'{modelname}_id':id})
         else:
             models=await service.find(db,extra_filter.update({i:getattr(context,i) for i in extra}))
             for model in models:
-                await fastDel(db,query,model.id,context)
+                await fastDel(db,modelname,model.id,context,extra_filter)
     else:
         raise Exception(f"{modelname} not found")
         return False
