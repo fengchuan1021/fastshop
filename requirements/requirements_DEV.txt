@@ -185,3 +185,5 @@ elasticsearch-dsl==7.4.0
 
 python-multipart
 XTTOOLS
+cachetools
+types-cachetools

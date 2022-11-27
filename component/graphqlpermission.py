@@ -1,8 +1,10 @@
 from typing import List,Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from component.cache import cache
+
 import Service
-@cache
+from cachetools import cached, LRUCache, TTLCache
+from cachetools.keys import hashkey
+@cached(cache={}, key=lambda db,modelname,role,method: f"{modelname}_{role}_{method}")#type: ignore
 async def getAuthorizedColumns(db:AsyncSession,modelname:str,role:int,method:str='read')->Any:
     permission=await Service.graphpermissionService.findOne(db,filter={"model_name":modelname,"role_id":role})
     if not permission:
