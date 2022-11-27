@@ -65,7 +65,6 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
     children=[]
     _lowerrelation=[i.lower() for i in columns if 'A'<=i[0]<='Z']
     for key,value in data.items():
-
         if isinstance(value,(dict,list)):
             if not allpermission and key.lower() not in _lowerrelation:
                 raise PermissionException(f"not permission access {key}")
@@ -74,10 +73,10 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
             if not allpermission and key not in columns:
                 raise PermissionException(f"not permission access {key}")
             dic[key]=value
-    model=findModelByName(modelname)
+    modelclass=findModelByName(modelname)
     if context:
         dic.update({i:getattr(context,i) for i in extra})
-    db.add(model(**dic))
+    model=modelclass(**dic)
     await db.flush()
     for child in children:
         if isinstance(data[child],dict):
@@ -85,9 +84,9 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
             await fastAdd(db, child,data[child], context)
         else:
             for tmpdata in data[child]:
+                tmpdata[modelname+"_id"]=model.id
                 await fastAdd(db,child,tmpdata, context)
 async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict=None)->Any:
-
 
     extra=[]
     if context:
@@ -124,12 +123,16 @@ if __name__=='__main__':
             #result2=await fastDel(db,'store',13)
             #result2=await fastDel(db,'store',13,context=UserTokenData(userrole=2,merchant_id=2))
             data={
-                "market_id":13,
-                "market_name":"tiktok",
-                "Store":{
-                    "store_name":"Mystore"
-                }
+
+                "market_name":"amazon33",
+                "Store":[{
+                    "store_name":"Mystore1333"
+                },
+                    {
+                        "store_name": "Mystore233"
+                    }
+                ]
             }
-            #await fastAdd(db,'market',data)
-            await fastDel(db,'market{store}')
+            await fastAdd(db,'market',data)
+            #await fastDel(db,'market{store}')
     async2sync(test)()
