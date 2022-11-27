@@ -105,7 +105,7 @@ class Product(Base):
     language=Column(ENUM('en',"cn"),default='en',comment="语言，XT内部使用")
     en_product_id=Column(BIGINT,default=0,index=True,comment="语言如果是非en,指向原en产品")
 
-    Variant:List['Variant']=relationship('Variant',uselist=True, primaryjoin='foreign(Variant.product_id) == Product.product_id',back_populates='Product',cascade='')
+    Variant:List['Variant']=relationship('Variant',uselist=True, primaryjoin='foreign(Variant.product_id) == Product.product_id',back_populates='Product',cascade='delete')
 
     ProductAttribute:List['ProductAttribute']=relationship('ProductAttribute',uselist=True,primaryjoin='foreign(ProductAttribute.product_id) == Product.product_id',back_populates='Product',cascade='')
 
@@ -162,7 +162,7 @@ class Variant(Base):
     #dynamic:"ProductDynamic" = relationship(ProductDynamic, uselist=False, backref="product_static")
     VariantImage:List['VariantImage'] = relationship('VariantImage',uselist=True,
 
-                                               primaryjoin='foreign(VariantImage.variant_id) == Variant.variant_id',cascade='')
+                                               primaryjoin='foreign(VariantImage.variant_id) == Variant.variant_id',cascade='delete')
 
 
     VariantStore:List['VariantStore']=relationship('VariantStore',uselist=True,
