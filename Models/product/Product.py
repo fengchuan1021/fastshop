@@ -7,7 +7,7 @@ from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING, List
 from .Brand import Brand
 if TYPE_CHECKING:
-    from Models import VariantImage,VariantStore,ProductAttribute,ProductSpecification,ProductCategory,Merchant,Store,SupplierVariant
+    from Models import VariantImage,VariantStore,ProductAttribute,ProductSpecification,ProductCategory,Merchant,Store,SupplierVariant,VariantWarehouse
 
 class MeasureUnit(enum.Enum):
     OUNCE = "OUNCE"  # oz（盎司）
@@ -182,3 +182,8 @@ class Variant(Base):
     SupplierVariant: List['SupplierVariant'] = relationship('SupplierVariant',
                                         primaryjoin="foreign(SupplierVariant.variant_id)==Variant.variant_id",
                                         cascade='', back_populates='Variant')
+
+    VariantWarehouse:List['VariantWarehouse']=relationship('VariantWarehouse',uselist=True,
+                                                           primaryjoin='foreign(VariantWarehouse.variant_id) ==Variant.variant_id',
+                                                           back_populates='Variant', cascade=''
+                                                           )

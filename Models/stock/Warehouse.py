@@ -4,11 +4,9 @@ from component.snowFlakeId import snowFlack
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT,ENUM,FLOAT,INTEGER
 from Models.ModelBase import Base,XTVARCHAR
-import typing
-if typing.TYPE_CHECKING:
-    from Models.User import User
-    from Models.store.Store import Store
-    from Models.store.Merchant import Merchant
+from typing import List,TYPE_CHECKING
+if TYPE_CHECKING:
+    from Models import VariantWarehouse,Merchant,Store,PurchaseReceipt
 class Warehouse(Base):
     __tablename__ = 'warehouse'
 
@@ -44,3 +42,9 @@ class Warehouse(Base):
     #                          primaryjoin='foreign(Store.warehouse_id) ==Warehouse.warehouse_id',
     #                          back_populates='Warehouse',cascade=''
     #                          )#type: ignore
+    VariantWarehouse:List['VariantWarehouse']=relationship('VariantWarehouse',uselist=True,
+                                                           primaryjoin='foreign(VariantWarehouse.warehouse_id) ==Warehouse.warehouse_id',
+                                                           back_populates='Warehouse', cascade=''
+                                                           )
+    PurchaseReceipt: List['PurchaseReceipt'] = relationship('PurchaseReceipt',uselist=True, primaryjoin='foreign(PurchaseReceipt.warehouse_id)==Warehouse.warehouse_id',
+                                        back_populates='Warehouse', cascade='')
