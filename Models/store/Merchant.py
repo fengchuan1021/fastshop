@@ -1,7 +1,6 @@
-from component.snowFlakeId import snowFlack
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT,INTEGER
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from Models.ModelBase import Base,XTVARCHAR
 from typing import List,TYPE_CHECKING
 if TYPE_CHECKING:
@@ -9,7 +8,7 @@ if TYPE_CHECKING:
     from ..product.Product import Product
     from ..product.Product import Variant
     from .Store import Store
-    from .Warehouse import Warehouse
+    from Models.stock.Warehouse import Warehouse
 class Merchant(Base):
     __tablename__='merchant'
     merchant_id=Column(INTEGER, primary_key=True, autoincrement=True)

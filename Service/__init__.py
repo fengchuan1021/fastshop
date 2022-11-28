@@ -61,10 +61,14 @@ productService : CRUDBase[Models.Product]
 variantService : CRUDBase[Models.Variant]
 variantimageService : CRUDBase[Models.VariantImage]
 variantstoreService : CRUDBase[Models.VariantStore]
+purchasereceiptService : CRUDBase[Models.PurchaseReceipt]
+purchasereceiptitemsService : CRUDBase[Models.PurchaseReceiptItems]
+supplierService : CRUDBase[Models.Supplier]
+suppliervariantService : CRUDBase[Models.SupplierVariant]
+warehouseService : CRUDBase[Models.Warehouse]
 marketService : CRUDBase[Models.Market]
 merchantService : CRUDBase[Models.Merchant]
 storeService : StoreService
-warehouseService : CRUDBase[Models.Warehouse]
 uploadService : UploadService
 paymentService : PaymentService
 adyenService : AdyenService

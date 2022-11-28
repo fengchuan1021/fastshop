@@ -7,8 +7,8 @@ from Models.ModelBase import Base,XTVARCHAR
 import typing
 if typing.TYPE_CHECKING:
     from Models.User import User
-    from .Store import Store
-    from .Merchant import Merchant
+    from Models.store.Store import Store
+    from Models.store.Merchant import Merchant
 class Warehouse(Base):
     __tablename__ = 'warehouse'
 

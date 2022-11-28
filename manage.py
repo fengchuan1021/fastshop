@@ -140,8 +140,8 @@ def initall()->None:
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':
         inidb()
         try:
-            from devtools import addadmin
-            addadmin.addroot()
+            from devtools.addadmin import addroot
+            addroot()#type: ignore
         except Exception as e:
             pass
         upgrade()
@@ -158,7 +158,7 @@ def importopenapi(filepath:str)->None:
 def upgrade()->None:
     import settings
     from sqlalchemy import create_engine
-    from devtools import addadmin
+    from devtools.addadmin import addroot
     from alembic import command
 
     from alembic.config import Config
@@ -175,7 +175,7 @@ def upgrade()->None:
 
     if not flag:
         try:
-            addadmin.addroot()
+            addroot()#type: ignore
         except Exception as e:
             pass
 @app.command()
@@ -192,5 +192,9 @@ def generateupdatesql()->None:
 def updatemodel()->None:
     from devtools.debugtools import before_appstart
     before_appstart()
+@app.command()
+def addadmin()->None:
+    from devtools.addadmin import addroot
+    addroot()#type: ignore
 if __name__ == "__main__":
     app()

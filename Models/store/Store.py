@@ -3,14 +3,13 @@
 import settings
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER
-from sqlalchemy.orm import relationship, backref
-from .Warehouse import Warehouse
+from sqlalchemy.orm import relationship
+from Models.stock.Warehouse import Warehouse
 from Models.ModelBase import Base,XTVARCHAR
 
 from typing import List,TYPE_CHECKING
 if TYPE_CHECKING:
     from .Market import Market
-    from ..User import User
     from ..product.VariantStore import VariantStore
     from .Merchant import Merchant
     from ..product.Category import Category

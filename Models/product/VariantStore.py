@@ -10,7 +10,8 @@ from component.snowFlakeId import snowFlack
 if typing.TYPE_CHECKING:
     from .Product import Variant,Product
     from ..store.Store import Store
-    from ..store.Warehouse import Warehouse
+
+
 class VariantStore(Base):
     __tablename__ = 'variant_store'
     variant_store_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId)

@@ -1,10 +1,6 @@
-
-
-import settings
 from sqlalchemy import Column
-from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER
-from sqlalchemy.orm import relationship, backref
-from .Warehouse import Warehouse
+from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.orm import relationship
 from Models.ModelBase import Base,XTVARCHAR
 import typing
 if typing.TYPE_CHECKING:

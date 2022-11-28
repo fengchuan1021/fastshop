@@ -10,7 +10,9 @@ from .product.Category import Category,ProductCategory
 from .product.Product import Product,Variant
 from .product.VariantImage import VariantImage
 from .product.VariantStore import VariantStore
+from .stock.PurchaseReceipt import PurchaseReceipt,PurchaseReceiptItems
+from .stock.Supplier import Supplier,SupplierVariant
+from .stock.Warehouse import Warehouse
 from .store.Market import Market
 from .store.Merchant import Merchant
 from .store.Store import Store
-from .store.Warehouse import Warehouse

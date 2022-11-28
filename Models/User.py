@@ -1,16 +1,14 @@
 from component.snowFlakeId import snowFlack
 from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, DECIMAL
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
-from typing import List
 from .ModelBase import Base,XTVARCHAR
 
 import typing
 if typing.TYPE_CHECKING:
-    from .store.Store import Store
     from .store.Merchant import Merchant
-    from .store.Warehouse import Warehouse
+
 
 class User(Base):
     __tablename__ = 'user'
