@@ -40,7 +40,7 @@ class Warehouse(Base):
                              primaryjoin='foreign(Warehouse.merchant_id) ==Merchant.merchant_id',
                              back_populates='Warehouse',cascade=''
                              )#type: ignore
-    Store:typing.List['Store']=relationship('Store',uselist=True,
-                             primaryjoin='foreign(Store.warehouse_id) ==Warehouse.warehouse_id',
-                             back_populates='Warehouse',cascade=''
-                             )#type: ignore
+    # Store:typing.List['Store']=relationship('Store',uselist=True,
+    #                          primaryjoin='foreign(Store.warehouse_id) ==Warehouse.warehouse_id',
+    #                          back_populates='Warehouse',cascade=''
+    #                          )#type: ignore
