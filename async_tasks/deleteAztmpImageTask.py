@@ -1,14 +1,14 @@
 import os
 
 from celery_app import celery_app
-from common.globalFunctions import async2sync
+from common.globalFunctions import cmdlineApp
 from component.cache import cache
 from azure.storage.blob import BlobServiceClient
 import time
 from collections import defaultdict
 
 @celery_app.task
-@async2sync
+@cmdlineApp
 async def deleteAztmpfile():#type: ignore
     tm=int(time.time())
     files=await cache.redis.zrange('aztmpfiles',0,tm)

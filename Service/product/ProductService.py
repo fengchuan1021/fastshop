@@ -113,12 +113,12 @@
 #
 # if __name__ == "__main__":
 #     pass
-#     from common.globalFunctions import async2sync
+#     from common.globalFunctions import cmdlineApp
 #     from component.dbsession import getdbsession
 #     async def productdetailbyvariantid()->None:
 #         async with getdbsession() as db:
 #             tmp=await Service.productService.productdetailbyvariantid(db,87318319723451458,'cn')
 #             print(tmp)
-#     async2sync(productdetailbyvariantid)()
+#     cmdlineApp(productdetailbyvariantid)()
 #
 #

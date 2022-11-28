@@ -31,6 +31,7 @@ class Permission(Base):
 
 class Graphpermission(Base):
     __tablename__ = 'graphpermission'
+    __table_args__ = (UniqueConstraint('role_id', "model_name", name="rolemodelname"),)
     Graphpermission_id=Column(INTEGER,autoincrement=True,primary_key=True)
     model_name=Column(XTVARCHAR(32),nullable=False)
     read_columns=Column(XTVARCHAR(512),default='')
@@ -38,7 +39,7 @@ class Graphpermission(Base):
     update_columns=Column(XTVARCHAR(512), default='')
     delete_columns=Column(ENUM("N",'Y'),default='N')
 
-    role_id=Column(INTEGER,index=True)
+    role_id=Column(INTEGER)
     role_name=Column(XTVARCHAR(32),default='')
     read_extra=Column(XTVARCHAR(512),default='')
     write_extra=Column(XTVARCHAR(512),default='')

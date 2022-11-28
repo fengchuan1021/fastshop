@@ -64,7 +64,7 @@
 #
 # if __name__ == "__main__":
 #     print('11')
-#     from common.globalFunctions import async2sync
+#     from common.globalFunctions import cmdlineApp
 #     from component.dbsession import getdbsession
 #     import Service
 #     async def test():#type: ignore
@@ -73,4 +73,4 @@
 #             #print(result)
 #
 #
-#     async2sync(test)()
+#     cmdlineApp(test)()

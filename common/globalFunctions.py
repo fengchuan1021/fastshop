@@ -8,7 +8,7 @@ import datetime
 from functools import wraps
 from typing import Callable,Any
 from elasticsearchclient import es
-
+from component.cache import cache
 
 async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
     try:
@@ -46,12 +46,20 @@ async def writelog(logstr:str,request:str='')->None:
         }
         await es.index(index=f"xtlog-{settings.MODE.lower()}", document=doc)
 
-def async2sync(func:Callable[...,Any])->Callable[...,Any]:
+def cmdlineApp(func:Callable[...,Any])->Callable[...,Any]:
     @wraps(func)
     def decorator(*args:Any,**kwargs:Any)->Any:
 
         loop = asyncio.get_event_loop()
         asyncio.set_event_loop(loop)
+        cache.init(prefix=settings.CACHE_PREFIX, expire=settings.DEFAULT_CACHE_EXPIRE, enable=settings.ENABLE_CACHE,
+                   writeurl=settings.REDISURL,
+                   readurl=settings.SLAVEREDISURL,
+                   ignore_arg_types=[settings.UserTokenData],
+                   )
+        snowFlack.init(settings.NODEID)
+
+
         try:
             result=loop.run_until_complete(func(*args,**kwargs))
             return result

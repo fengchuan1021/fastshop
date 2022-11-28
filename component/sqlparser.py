@@ -85,10 +85,10 @@ async def parseSQL(query:str,db: AsyncSession=None,context:Optional[settings.Use
 if __name__=='__main__':
 
     from component.dbsession import getdbsession
-    from common import async2sync
+    from common import cmdlineApp
     from settings import UserTokenData
     async def test():#type: ignore
         async with getdbsession() as db:
             print('??')
             print(await parseSQL("Store{appid,Market{market_url}}",db,context=UserTokenData(userrole=2,merchant_id=1)))
-    async2sync(test)()
+    cmdlineApp(test)()

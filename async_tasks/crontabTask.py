@@ -1,12 +1,12 @@
 from celery_app import celery_app
 import datetime
 
-from common.globalFunctions import async2sync
+from common.globalFunctions import cmdlineApp
 from sqlalchemy import update
 import Models
 from component.dbsession import getdbsession
 @celery_app.task
-@async2sync
+@cmdlineApp
 async def active_banneduser()->None:# type: ignore
     async with getdbsession() as dbsession:
         pass

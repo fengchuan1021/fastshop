@@ -25,6 +25,7 @@ class _Cache:
     def __init__(self)->None:
         self._enable = True
         self._init=False
+        self.writeurl=''
         self._loop:asyncio.AbstractEventLoop
         self.ignore_arg_types = [Request,AsyncSession]#,XTContext
         try:
@@ -54,9 +55,11 @@ class _Cache:
             self._loop=loop
         if not writeurl:
             writeurl=os.getenv('REDISURL','')
+
         if not readurl:
             readurl=os.getenv('SLAVEREDISURL',writeurl)
-        if writeurl:
+        if writeurl and writeurl!=self.writeurl:
+            self.writeurl=writeurl
             writepool = redis.ConnectionPool.from_url(url=writeurl)
             self.write_redis: Redis = redis.Redis(connection_pool=writepool)
 

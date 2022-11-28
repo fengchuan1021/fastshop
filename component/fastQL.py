@@ -112,7 +112,7 @@ async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[setti
 if __name__=='__main__':
 
     from component.dbsession import getdbsession
-    from common import async2sync
+    from common import cmdlineApp
     from settings import UserTokenData
     async def test():#type: ignore
         async with getdbsession() as db:#type: ignore
@@ -135,4 +135,4 @@ if __name__=='__main__':
             }
             await fastAdd(db,'market',data)
             #await fastDel(db,'market{store}')
-    async2sync(test)()
+    cmdlineApp(test)()
