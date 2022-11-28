@@ -19,10 +19,11 @@ from pathlib import Path
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
-if os.name!='nt':
+import platform
+if 'linux' in platform.platform().lower():
     import uvloop
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-else:
+elif 'windows' in platform.platform().lower():
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from starlette.background import BackgroundTask

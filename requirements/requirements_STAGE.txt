@@ -37,7 +37,7 @@ six==1.16.0
 sniffio==1.3.0
 SQLAlchemy==1.4.41
 sse-starlette==1.1.6
-starlette==0.19.1
+starlette==0.21.0
 typer==0.4.2
 typing_extensions==4.3.0
 uvicorn==0.18.3

@@ -44,14 +44,33 @@ async def update(modelname:str,id:str,body:Dict=Body(...),
         return Common500Response(status='validateerror',msg='model no exists')
 
 
-# class InShema(BaseModel):
-#     query:Optional[str]=''
-#     pagesize: Optional[int] =None
-#     pagenum: Optional[int] =None
-#     filter: Optional[Dict] = {}
-#     orderby:str=''
-#     returncount:bool=False
+class InShema(BaseModel):
+    query:str
+    id:Optional[int]=0
+    pagesize: Optional[int] =0
+    pagenum: Optional[int] =0
+    filter: Optional[Dict] = {}
+    orderby:str=''
+    returntotal:bool=False
 #queryparams:InShema=InShema(),
+
+@router.post('/graphql')
+async def postquery(
+        inshema:InShema,
+        db: AsyncSession = Depends(get_webdbsession),
+        token: settings.UserTokenData = Depends(get_token),
+)->Any:
+
+    if inshema.id:
+        modelname=inshema.query if (pos:=inshema.query.find('{'))==-1 else inshema.query[0:pos]
+        _filter[f'{modelname.lower()}_id']=id#type: ignore
+    result=await fastQuery(db,inshema.query,inshema.filter,inshema.pagenum,inshema.pagesize,inshema.orderby,inshema.returntotal,token,id)
+    if id:
+        return CommonResponse(status='success',data=result)
+    if inshema.returncount:
+        return CommonResponse(status='success',data=result[0],total=result[1])
+    else:
+        return CommonResponse(status='success',data=result)
 
 
 @router.get('/graphql/{query:str}/{id:int}')
