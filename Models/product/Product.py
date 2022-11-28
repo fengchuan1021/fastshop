@@ -183,7 +183,7 @@ class Variant(Base):
                                         primaryjoin="foreign(SupplierVariant.variant_id)==Variant.variant_id",
                                         cascade='', back_populates='Variant')
 
-    # VariantWarehouse:List['VariantWarehouse']=relationship('VariantWarehouse',uselist=True,
-    #                                                        primaryjoin='foreign(VariantWarehouse.variant_id) ==Variant.variant_id',
-    #                                                        back_populates='Variant', cascade=''
-    #                                                        )
+    VariantWarehouse:List['VariantWarehouse']=relationship('VariantWarehouse',uselist=True,
+                                                           primaryjoin='foreign(VariantWarehouse.variant_id) ==Variant.variant_id',
+                                                           back_populates='Variant', cascade=''
+                                                           )

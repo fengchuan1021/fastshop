@@ -27,6 +27,7 @@ class VariantStore(Base):
     variant_id=Column(BIGINT(20),index=True)
     store_id = Column(INTEGER, index=True)
     product_id=Column(BIGINT(20),index=True)
+    merchant_id = Column(INTEGER, default=0)
     #warehouse_id = Column(BIGINT(20), index=True)
     Variant:'Variant'=relationship("Variant",uselist=False,primaryjoin='foreign(VariantStore.variant_id) == Variant.variant_id',back_populates='VariantStore',cascade='')
     Store:'Store'=relationship('Store',uselist=False,primaryjoin='foreign(VariantStore.store_id) ==Store.store_id',back_populates='VariantStore',cascade='')

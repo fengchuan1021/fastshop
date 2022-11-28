@@ -24,7 +24,7 @@ class Supplier(Base):
     bankaccount=Column(XTVARCHAR(32),nullable=True,comment="供货商银行账号")
     paymethod=Column(ENUM("bank transfer",'cash'),nullable=True,comment="付款方式 银行转账 现金")
     drawee=Column(XTVARCHAR(32),nullable=True,comment="付款人")
-
+    merchant_id = Column(INTEGER, index=True)
     PurchaseReceipt:List['PurchaseReceipt']=relationship('PurchaseReceipt',uselist=True,
                                                          primaryjoin='foreign(PurchaseReceipt.supplier_id)==Supplier.supplier_id',back_populates='Supplier',cascade=''
                                                          )
@@ -40,3 +40,5 @@ class SupplierVariant(Base):
     Variant: 'Variant' = relationship('Variant',
                                         primaryjoin="foreign(SupplierVariant.variant_id)==Variant.variant_id",
                                         cascade='', back_populates='SupplierVariant')
+
+    merchant_id = Column(INTEGER, index=True)

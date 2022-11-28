@@ -35,6 +35,7 @@ class PurchaseReceipt(Base):
     PurchaseReceiptItems:List['PurchaseReceiptItems']=relationship('PurchaseReceiptItems',primaryjoin='foreign(PurchaseReceiptItems.purchase_receipt_id)==PurchaseReceipt.purchase_receipt_id',
                                                    uselist=True,back_populates='PurchaseReceipt',cascade=''
                                                    )
+    merchant_id = Column(INTEGER, index=True)
 
 class PurchaseReceiptItems(Base):
     '''采购单详情'''
@@ -53,3 +54,5 @@ class PurchaseReceiptItems(Base):
     PurchaseReceipt:'PurchaseReceipt'=relationship('PurchaseReceipt',primaryjoin='foreign(PurchaseReceiptItems.purchase_receipt_id)==PurchaseReceipt.purchase_receipt_id',
                                                    uselist=False,back_populates='PurchaseReceiptItems',cascade=''
                                                    )
+
+    merchant_id = Column(INTEGER, index=True)

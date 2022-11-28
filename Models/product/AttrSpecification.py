@@ -1,12 +1,12 @@
-import typing
+
 
 from sqlalchemy.orm import relationship, backref
 from Models.ModelBase import Base,XTVARCHAR
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, TEXT
-
-if typing.TYPE_CHECKING:
-    from .Product import Product
+from typing import List,TYPE_CHECKING
+if TYPE_CHECKING:
+    from Models import Merchant,Product
 from component.snowFlakeId import snowFlack
 
 
@@ -30,6 +30,7 @@ class ProductAttribute(Base):
     attributevalue= Column(XTVARCHAR(32))
     display_order = Column(INTEGER, default=0, server_default="0")
     Product:'Product'=relationship('Product',uselist=False,primaryjoin='foreign(ProductAttribute.product_id) ==Product.product_id ',back_populates='ProductAttribute',cascade='')
+    merchant_id=Column(INTEGER,default=0)
 
 class ProductSpecification(Base):
     __tablename__ = 'product_specification'
@@ -42,3 +43,4 @@ class ProductSpecification(Base):
     Product:'Product' = relationship('Product', uselist=False,
                            primaryjoin='foreign(ProductSpecification.product_id) == Product.product_id',
                            back_populates='ProductSpecification',cascade='')
+    merchant_id = Column(INTEGER, default=0)

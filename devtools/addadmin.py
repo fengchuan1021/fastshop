@@ -14,7 +14,7 @@ async def adddefaultadmin()->None:
             #await Service.userService.create(db, root)  # type: ignore
             db.add(root)
             db.add(merchant)
-            db.commit()
+            db.flush()
             merchantModel=Models.Merchant(user_id=merchant.user_id,merchant_name='unineed')
             db.add(merchantModel)
             #await Service.userService.create(db, merchant)  # type: ignore
