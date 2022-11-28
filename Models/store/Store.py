@@ -9,11 +9,8 @@ from Models.ModelBase import Base,XTVARCHAR
 
 from typing import List,TYPE_CHECKING
 if TYPE_CHECKING:
-    from .Market import Market
-    from ..product.VariantStore import VariantStore
-    from .Merchant import Merchant
-    from ..product.Category import Category
-    from ..product.Product import Product,Variant
+    from Models import Market,VariantStore,Category,Variant,Merchant
+
 class Store(Base):
     __tablename__ = 'store'
 
@@ -43,9 +40,9 @@ class Store(Base):
     VariantStore:List['VariantStore']= relationship("VariantStore", uselist=True, primaryjoin='foreign(VariantStore.store_id) == Store.store_id',
                                     back_populates='Store',cascade='')
     Category: List['Category']=relationship("Category", uselist=True, primaryjoin='foreign(Category.store_id) == Store.store_id', back_populates='Store',cascade='')
-    Product: List['Product'] = relationship("Product", uselist=True,
-                                              primaryjoin='foreign(Product.store_id) == Store.store_id',
-                                              back_populates='Store',cascade='')
+    # Product: List['Product'] = relationship("Product", uselist=True,
+    #                                           primaryjoin='foreign(Product.store_id) == Store.store_id',
+    #                                           back_populates='Store',cascade='')
 
     Variant: List['Variant'] = relationship("Variant", uselist=True,
                                               primaryjoin='foreign(Variant.store_id) == Store.store_id',

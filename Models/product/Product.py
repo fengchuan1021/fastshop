@@ -114,13 +114,13 @@ class Product(Base):
                            back_populates='Product',cascade='')
     ProductCategory:List['ProductCategory']=relationship('ProductCategory',uselist=True,primaryjoin='foreign(ProductCategory.product_id)==Product.product_id',back_populates='Product',cascade='')
     merchant_id=Column(INTEGER,index=True)
-    store_id=Column(INTEGER,index=True)
+    #store_id=Column(INTEGER,index=True)
     Merchant:'Merchant'=relationship('Merchant', uselist=False,
                            primaryjoin='foreign(Product.merchant_id) == Merchant.merchant_id',
                            back_populates='Product',cascade='')
-    Store:'Store'=relationship('Store', uselist=False,
-                           primaryjoin='foreign(Product.store_id) == Store.store_id',
-                           back_populates='Product',cascade='')
+    # Store:'Store'=relationship('Store', uselist=False,
+    #                        primaryjoin='foreign(Product.store_id) == Store.store_id',
+    #                        back_populates='Product',cascade='')
 
     VariantStore:List['VariantStore']=relationship('VariantStore',uselist=True,
                                            primaryjoin='foreign(VariantStore.product_id) == Product.product_id',
@@ -183,7 +183,7 @@ class Variant(Base):
                                         primaryjoin="foreign(SupplierVariant.variant_id)==Variant.variant_id",
                                         cascade='', back_populates='Variant')
 
-    VariantWarehouse:List['VariantWarehouse']=relationship('VariantWarehouse',uselist=True,
-                                                           primaryjoin='foreign(VariantWarehouse.variant_id) ==Variant.variant_id',
-                                                           back_populates='Variant', cascade=''
-                                                           )
+    # VariantWarehouse:List['VariantWarehouse']=relationship('VariantWarehouse',uselist=True,
+    #                                                        primaryjoin='foreign(VariantWarehouse.variant_id) ==Variant.variant_id',
+    #                                                        back_populates='Variant', cascade=''
+    #                                                        )

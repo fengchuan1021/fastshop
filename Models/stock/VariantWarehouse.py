@@ -18,7 +18,7 @@ class VariantWarehouse(Base):
     Warehouse:Warehouse=relationship('Warehouse',primaryjoin='foreign(VariantWarehouse.warehouse_id)==Warehouse.warehouse_id',uselist=False,back_populates='VariantWarehouse',
                                      cascade=''
                                      )
-    Variant:Variant=relationship('VariantWarehouse',primaryjoin='foreign(VariantWarehouse.variant_id)==Variant.variant_id',uselist=False,back_populates='VariantWarehouse',cascade='')
+    #Variant:'Variant'=relationship('VariantWarehouse',uselist=False,primaryjoin='foreign(VariantWarehouse.variant_id)==Variant.variant_id',back_populates='VariantWarehouse',cascade='')
 
     warehouse_name=Column(XTVARCHAR(32))
 
