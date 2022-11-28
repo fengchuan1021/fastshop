@@ -136,6 +136,10 @@ def initall()->None:
     patchlibrary.patch()
     if os.path.exists('.git'):
         if branch=='DEV':
+            try:
+                subprocess.check_call(['pip', "install", "-r", "requirements/requirements_DEV.txt"])
+            except Exception as e:
+                print(e)
             subprocess.check_call(['git', "config", "--local", "core.hooksPath", ".githooks/"])
     if os.getenv('DEBIAN_FRONTEND','')!='noninteractive':
         inidb()
