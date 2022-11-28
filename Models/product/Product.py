@@ -55,17 +55,22 @@ class Product(Base):
     useage_status=Column(ENUM("NEW","USED","REFURBISHED"),server_default='NEW',default='NEW',comment="产品状态 全新 二手 翻新")
     tags=Column(XTVARCHAR(512),server_default='',default='',comment='product tag')
     measureunit=Column(ENUM(*[i.value for i in MeasureUnit]))
-    referencevalue=Column(INTEGER,default=0,server_default='0',
-                          comment='''参考值：将用于计算产品单价，并在产品页面展示产品单价
+
+
+    '''参考值：将用于计算产品单价，并在产品页面展示产品单价
                            单价=（产品价格*参考值）/ 数量，详情查看<a href="https://merchantfaq.wish.com/hc/zh-cn/articles/4405383750555" target="_blank">后台说明</a>
                            例：<br>价格为15美元的产品，【计量单位】选择<b>毫升</b>，【参考值】<br>填写100，【数量值】填写200
                            单价展示<b>每100毫升的价格</b>，<br>单价=（15*100）/200=每100毫升7.5美元'''
+    referencevalue=Column(INTEGER,default=0,server_default='0',
+                          comment=''
                           )
+
+    '''数量值：每个产品包含多少单位的数量，用于计算产品单价
+                                单价=（产品价格*参考值）/ 数量，详情查看<a href="https://merchantfaq.wish.com/hc/zh-cn/articles/4405383750555" target="_blank">后台说明</a>
+                                例：<br>价格为15美元的产品，【计量单位】选择<b>毫升</b>，【参考值】<br>填写100，【数量值】填写200
+                                单价展示<b>每100毫升的价格</b>，<br>单价=（15*100）/200=每100毫升7.5美元'''
     quantityvalue=Column(INTEGER,default=0,server_default='0',
-                         comment='''数量值：每个产品包含多少单位的数量，用于计算产品单价
-                            单价=（产品价格*参考值）/ 数量，详情查看<a href="https://merchantfaq.wish.com/hc/zh-cn/articles/4405383750555" target="_blank">后台说明</a>
-                            例：<br>价格为15美元的产品，【计量单位】选择<b>毫升</b>，【参考值】<br>填写100，【数量值】填写200
-                            单价展示<b>每100毫升的价格</b>，<br>单价=（15*100）/200=每100毫升7.5美元'''
+                         comment=''
                          )
 
 

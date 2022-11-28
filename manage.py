@@ -150,6 +150,7 @@ def initall()->None:
             pass
         upgrade()
         click.secho('Success: backend username:root,password:root', fg='red')
+    Path(__file__).parent.joinpath('img').mkdir(exist_ok=True)
     click.secho('Success: project has init successfully', fg='green')
 
 
