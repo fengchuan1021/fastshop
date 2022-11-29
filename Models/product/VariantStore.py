@@ -29,6 +29,9 @@ class VariantStore(Base):
     store_id = Column(INTEGER, index=True)
     product_id=Column(BIGINT(20),index=True)
     merchant_id = Column(INTEGER, default=0)
+
+    warehouse_ids=Column(XTVARCHAR(512),default='',server_default='',comment="use which warehouse,if empty use all warehouse")#该店铺的此商品从哪几个仓库发货，为空表示所有仓库
+    deliver_strategy=Column(XTVARCHAR(512),default='',server_default='',comment="deliver stratege,use ',' delimiter")#发货策略
     #warehouse_id = Column(BIGINT(20), index=True)
     Variant:'Variant'=relationship("Variant",uselist=False,primaryjoin='foreign(VariantStore.variant_id) == Variant.variant_id',back_populates='VariantStore',cascade='')
     Store:'Store'=relationship('Store',uselist=False,primaryjoin='foreign(VariantStore.store_id) ==Store.store_id',back_populates='VariantStore',cascade='')

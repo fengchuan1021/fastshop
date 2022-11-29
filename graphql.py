@@ -21,6 +21,7 @@ async def create(modelname:str,body:Dict=Body(...),
            token: settings.UserTokenData = Depends(get_token),
            )->Any:
     await fastAdd(db,modelname,body,token)
+    await db.commit()
     return {'status': 'success'}
 
     # if service:=getattr(Service,modelname+'Service',None):
@@ -60,7 +61,7 @@ async def postquery(
         db: AsyncSession = Depends(get_webdbsession),
         token: settings.UserTokenData = Depends(get_token),
 )->Any:
-
+    print('????')
     if inshema.id:
         modelname=inshema.query if (pos:=inshema.query.find('{'))==-1 else inshema.query[0:pos]
         _filter[f'{modelname.lower()}_id']=id#type: ignore

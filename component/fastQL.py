@@ -77,6 +77,8 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
     if context:
         dic.update({i:getattr(context,i) for i in extra})
     model=modelclass(**dic)
+    db.add(model)
+
     await db.flush()
     for child in children:
         if isinstance(data[child],dict):
