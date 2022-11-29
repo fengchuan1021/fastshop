@@ -14,7 +14,7 @@ class PurchaseReceipt(Base):
     purchase_receipt_id=Column(BIGINT, primary_key=True, default=snowFlack.getId,comment="primary key")
     supplier_id = Column(INTEGER, index=True)
     supplier_name=Column(XTVARCHAR(32))
-
+    merchant_id = Column(INTEGER, index=True)
     purchaser_id = Column(BIGINT,index=True)
     purchaser_name = Column(XTVARCHAR(32))
     avgtype=Column(ENUM('AVGNUMBER','AVGMONEY','AVGWEIGHT'))#运费均摊 按数量 按金额 按重量
@@ -35,13 +35,13 @@ class PurchaseReceipt(Base):
     PurchaseReceiptItems:List['PurchaseReceiptItems']=relationship('PurchaseReceiptItems',primaryjoin='foreign(PurchaseReceiptItems.purchase_receipt_id)==PurchaseReceipt.purchase_receipt_id',
                                                    uselist=True,back_populates='PurchaseReceipt',cascade=''
                                                    )
-    merchant_id = Column(INTEGER, index=True)
+
 
 class PurchaseReceiptItems(Base):
     '''采购单详情'''
     __tablename__='purchase_receipt_items'
     purchase_receipt_items_id=Column(BIGINT, primary_key=True, default=snowFlack.getId,comment="primary key")
-
+    merchant_id = Column(INTEGER, index=True)
     purchase_receipt_id=Column(BIGINT,index=True)
 
     variant_id=Column(BIGINT,index=True)
@@ -54,5 +54,7 @@ class PurchaseReceiptItems(Base):
     PurchaseReceipt:'PurchaseReceipt'=relationship('PurchaseReceipt',primaryjoin='foreign(PurchaseReceiptItems.purchase_receipt_id)==PurchaseReceipt.purchase_receipt_id',
                                                    uselist=False,back_populates='PurchaseReceiptItems',cascade=''
                                                    )
-
-    merchant_id = Column(INTEGER, index=True)
+    Variant: 'Variant' = relationship('Variant',
+                                                      primaryjoin='foreign(PurchaseReceiptItems.variant_id)==Variant.variant_id',
+                                                      uselist=False, back_populates='PurchaseReceiptItems', cascade=''
+                                                      )
