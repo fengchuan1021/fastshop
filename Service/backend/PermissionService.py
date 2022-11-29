@@ -59,21 +59,12 @@ class PermissionService(CRUDBase[Models.Permission]):
         return f"{cache.get_prefix()}:rolemenu:{func_args.arguments.get('roleid')}"
     @cache(key_builder='getrolemenucachekey')#type: ignore
     async def getroledisplayedmenu(self,db:AsyncSession,roleid:int)->List[Models.Roledisplayedmenu]:
-        role_ids = []
-        tmpid = roleid
-        j = 1
-        while tmpid:
-            if tmpid & j:
-                role_ids.append(j)
-                tmpid -= j
-            j *= 2
-
-        statment = select(Models.Roledisplayedmenu).where(Models.Roledisplayedmenu.role_id.in_(role_ids))
+        statment = select(Models.Roledisplayedmenu).where(Models.Roledisplayedmenu.role_id==roleid)
         result = (await db.execute(statment)).scalars().all()
         return result
     async def setRoleDisplayedMenu(self,db:AsyncSession,role_id:int,menus:List[str]=[])->None:
-        rolemodel=await Service.roleService.findByPk(db,role_id)
-        role_name = rolemodel.role_name
+
+        role_name = UserRole(role_id).name
         newmenu = []
         def addparentmenu(path:str)->None:
             nonlocal newmenu
@@ -96,7 +87,6 @@ class PermissionService(CRUDBase[Models.Permission]):
         sql = insert(Models.Roledisplayedmenu).prefix_with('ignore').values(
             [{'role_id': role_id, 'role_name': role_name, 'menu_path': menu_path} for menu_path in newmenu])
         await db.execute(sql)
-        print('delet:',f"{cache.get_prefix()}:rolemenu:{role_id}")
         await cache.delete(f"{cache.get_prefix()}:rolemenu:{role_id}")
 if __name__ == '__main__':
     #from modules.backend.permission.PermissionShema import BackendPermissionPermissionlistGetRequest,Filter
