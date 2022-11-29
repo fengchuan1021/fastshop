@@ -17,7 +17,7 @@ from Service import CRUDBase
 
 
 from component.cache import cache
-
+from UserRole import UserRole
 
 class PermissionService(CRUDBase[Models.Permission]):
     async def getroutelist(self,*args:Any)->Dict:
@@ -45,12 +45,12 @@ class PermissionService(CRUDBase[Models.Permission]):
         return tree
 
     async def setUserRolePermission(self,db:AsyncSession,roleid:int,apis:List[str])->None:
-        rolemodel=await Service.roleService.findByPk(db,roleid)
+
         oldpermissions=await self.getList(db,filters={'roleid':roleid})
         for oldpermission in oldpermissions:
             if oldpermission.api_name not in apis:
                 await db.delete(oldpermission)
-        sql = insert(Models.Permission).prefix_with("ignore").values([{'role_id': roleid,'role_name':rolemodel.role_name,'api_name':api} for api in apis])
+        sql = insert(Models.Permission).prefix_with("ignore").values([{'role_id': roleid,'role_name':UserRole(roleid).name,'api_name':api} for api in apis])
         await db.execute(sql)
 
 

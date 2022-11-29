@@ -12,7 +12,7 @@ from fastapi import Request
 
 
 async def permission_check(request: Request,db: AsyncSession = Depends(get_webdbsession),token: settings.UserTokenData = Depends(get_token))->None:
-    if 1 in token.userrole:
+    if 1==token.userrole:
         pass
     else:
         raise PermissionException(msg="you dont have permission access this api")

@@ -5,13 +5,19 @@ from typing import Literal
 
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional,List
 
 class PermissionSetrolemodelpermissionPostRequest(BaseModel):
     model_name: str
     role_id: int
     role_name: Optional[str] = None
-    writable_columns: str
-    readable_columns: str
-    delete_permission: bool
-    extra_filter: str
+
+    read_columns: List[str]
+    writa_columns: List[str]
+    update_columns: List[str]
+    delete_columns: Optional[Literal['Y',"N"]]='N'
+
+    read_extra: List[str]
+    writa_extra: List[str]
+    update_extra: List[str]
+    delete_extra: List[str]

@@ -163,26 +163,7 @@ async def createrole(
 # </editor-fold>
 
 
-# <editor-fold desc="getrolelist get: /backend/permission/role/">
-@router.get(
-    '/backend/permission/role/',
-    response_class=XTJsonResponse,
-    response_model=BackendPermissionRoleGetResponse,
-)
-async def getrolelist(
-    db: AsyncSession = Depends(get_webdbsession),
-    token: settings.UserTokenData = Depends(get_token),
-) -> Any:
-    """
-    getrolelist
-    """
-    #roles=[Role(role_name=r.name,id=r.value) for r in UserRole.UserRole]
-    roles=await Service.roleService.getList(db)
-    return BackendPermissionRoleGetResponse(status='success',roles=roles)
 
-
-
-# </editor-fold>
 
 
 # <editor-fold desc="getroledisplayedmenu get: /backend/permission/getroledisplayedmenu">
