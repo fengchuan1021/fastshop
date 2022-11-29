@@ -50,7 +50,7 @@ AMQPURL="{AMQPURL}"
 REDISURL="{REDISURL}"
 SLAVEREDISURL="{REDISURL}"
 ELASTICSEARCHURL='{ELASTICSEARCHURL}'
-NODEID="66"
+NODEID="1"
 ''')
     db = pymysql.connect(host=DB_HOST,
                          user=DB_USER,
