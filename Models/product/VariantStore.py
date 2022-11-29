@@ -19,6 +19,7 @@ class VariantStore(Base):
 
     store_name=Column(XTVARCHAR(32))
     price=Column(DECIMAL(10,2))
+    qtyshare = Column(ENUM("YES", "NO"), server_default="YES", default="YES")
     qty=Column(INTEGER)
     status = Column(ENUM("ONLINE", "OFFLINE"), server_default="OFFLINE", default="OFFLINE")
 
