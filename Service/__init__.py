@@ -20,10 +20,11 @@ from .payment.paymethods.PaypalService import PaypalService
 from .product.CategoryService import CategoryService
 from .search.ProductSearchService import ProductSearchService
 from .store.StoreService import StoreService
+from .thirdpartmarket.market.WishService import WishService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
 from .thirdpartmarket.market.OnBuyService import OnBuyService
 from .thirdpartmarket.market.TikTokService import TikTokService
-from .thirdpartmarket.market.WishService import WishService
+
 from .user.UserService import UserService
 
 
@@ -51,6 +52,12 @@ graphpermissionService : CRUDBase[Models.Graphpermission]
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
 appService : CRUDBase[Models.App]
+orderService : CRUDBase[Models.Order]
+orderaddressService : CRUDBase[Models.OrderAddress]
+orderitemService : CRUDBase[Models.OrderItem]
+orderstatushistoryService : CRUDBase[Models.OrderStatusHistory]
+ordershipmentService : CRUDBase[Models.OrderShipment]
+ordershipmentitemService : CRUDBase[Models.OrderShipmentItem]
 preattrspecificationService : CRUDBase[Models.PreAttrSpecification]
 productattributeService : CRUDBase[Models.ProductAttribute]
 productspecificationService : CRUDBase[Models.ProductSpecification]

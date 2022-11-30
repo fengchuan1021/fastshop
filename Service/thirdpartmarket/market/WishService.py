@@ -13,11 +13,11 @@ import Service
 import settings
 import aiohttp
 from component.cache import cache
-#from Service.thirdpartmarket import Market
+from Service.thirdpartmarket import Market
 from component.dbsession import getdbsession
 
 
-class WishService():#WishService
+class WishService(Market):
     def __init__(self) -> None:
         pass
         # self.session = aiohttp.ClientSession(base_url=settings.WISH_BASEURL)
@@ -152,14 +152,14 @@ if __name__ == '__main__':
     import asyncio
 
 
-    async def test():  # type: ignore
-        wishService = WishService()
-        async with getdbsession() as db:
-            store = await Service.storeService.findByPk(db, 1)
-            await Service.wishService.getProductList(db, store)
-        # await wishService.getCurrencyList()
-        # await wishService.getBrandList()
-        # await wishService.getOrders()
-
-
-    asyncio.run(test())
+    # async def test():  # type: ignore
+    #     wishService = WishService()
+    #     async with getdbsession() as db:
+    #         store = await Service.storeService.findByPk(db, 1)
+    #         await Service.wishService.getProductList(db, store)
+    #     # await wishService.getCurrencyList()
+    #     # await wishService.getBrandList()
+    #     # await wishService.getOrders()
+    #
+    #
+    # asyncio.run(test())
