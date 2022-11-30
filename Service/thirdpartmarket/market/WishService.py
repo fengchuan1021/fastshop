@@ -1,6 +1,6 @@
 import asyncio
 import datetime
-from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast
+from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast, Optional
 import orjson
 from dateutil import parser
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,7 +40,21 @@ class WishService(Market):
     #         await self.getAccessToken()
     #     self.session = aiohttp.ClientSession(base_url=self.baseurl,headers={'authorization': f'Bearer {self.access_token}'})
     #     return self
-
+    async def post(self,url:str,body:Dict,headers:Dict=None)->Any:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url,json=body,headers=headers) as resp:
+                return resp.json()
+    async def get(self,url: str, store: Optional[Models.Store], params: Dict = None) -> str:
+        store=cast(Models.Store,store)
+        if not params:
+            params = {}
+        async with aiohttp.ClientSession() as session:
+            if params:
+                finalurl = f'{settings.WISH_BASEURL}{url}?{urlencode(params)}'
+            else:
+                finalurl = settings.WISH_BASEURL + url
+            async with session.get(finalurl, headers={'authorization': f'Bearer {store.token}'}) as response:
+                return await response.json()
     async def getAccessToken(self, code: str) -> None:
         url = "/api/v3/oauth/access_token"
 
@@ -51,37 +65,41 @@ class WishService(Market):
             'authorization': "Bearer REPLACE_BEARER_TOKEN"
         }
         print('payload', payload)
-        async with self.session.post(url, json=payload, headers=headers) as resp:
-            ret = await resp.json()
-            return ret
-            print("tokenfromwish:", ret)
-            self.access_token = ret['data']['access_token']
-            self.refresh_token = ret['data']['refresh_token']
-            await cache.set("wishtoken", self.access_token, int(parser.parse(
-                ret['data']['expiry_time']).timestamp() - 3600 * 12 - datetime.datetime.now().timestamp()))
-            await cache.set('wishrefreshtoken', self.refresh_token)
+        data=await  self.post(url,payload,headers)
+        # async with self.session.post(url, json=payload, headers=headers) as resp:
+        #     ret = await resp.json()
+        #     return ret
+        #     print("tokenfromwish:", ret)
+        #     self.access_token = ret['data']['access_token']
+        #     self.refresh_token = ret['data']['refresh_token']
+        #     await cache.set("wishtoken", self.access_token, int(parser.parse(
+        #         ret['data']['expiry_time']).timestamp() - 3600 * 12 - datetime.datetime.now().timestamp()))
+        #     await cache.set('wishrefreshtoken', self.refresh_token)
 
     # some error
     async def getBrandList(self) -> None:
         url = "/api/v3/brands"
         params = {"limit": "100"}
-        print(self.session.headers)
-        async with self.session.get(url, params=params) as resp:
-            ret = await resp.json()
-            print(ret)
+        #print(self.session.headers)
+        data=await self.get(url,None,params)
+        # async with self.session.get(url, params=params) as resp:
+        #     ret = await resp.json()
+        #     print(ret)
 
     async def getCurrencyList(self) -> None:
         url = '/api/v3/currencies'
-        async with self.session.get(url) as resp:
-            ret = await resp.json()
-            print(ret)
+        data=await self.get(url,None)
+        # async with self.session.get(url) as resp:
+        #     ret = await resp.json()
+        #     print(ret)
 
     async def getOrders(self, ordertype='WISH_EXPRESS') -> None:  # type: ignore
         url = '/api/v3/orders'
         params = {'states': 'REQUIRE_REVIEW'}
-        async with self.session.get(url, params=params) as resp:
-            ret = await resp.json()
-            print('ret:', ret)
+        data=await self.get(url,None,params)
+        # async with self.session.get(url, params=params) as resp:
+        #     ret = await resp.json()
+        #     print('ret:', ret)
 
     async def createProduct(self):  # type: ignore
         url = '/api/v3/products'
@@ -90,31 +108,20 @@ class WishService(Market):
 
     async def getOrderDetail(self, db: AsyncSession, merchant_id: str, order_id: str) -> Any:
         url = f'/api/v3/orders/{order_id}'
-        async with self.session.get(url) as resp:
-            ret = await resp.json()
-            return ret
+        data=await self.get(url,None)
+        # async with self.session.get(url) as resp:
+        #     ret = await resp.json()
+        #     return ret
 
-    async def get(self, db: AsyncSession, url: str, store: Models.Store, params: Dict = None) -> str:
-        print('store:', store)
-        if not params:
-            params = {}
-        async with aiohttp.ClientSession() as session:
-            if params:
-                finalurl = f'{settings.WISH_BASEURL}{url}?{urlencode(params)}'
-            else:
-                finalurl = settings.WISH_BASEURL + url
-            async with session.get(finalurl, headers={'authorization': f'Bearer {store.token}'}) as response:
-                print('????')
 
-                return await response.json()
 
     async def getProductList(self, db: AsyncSession, store: Models.Store) -> List:
         url = '/api/v3/products'
-        data = []
+        data:Any = []
         while 1:
-            result = await self.get(db, url, store, {'limit': 1000})
-            data += result['data']
-            if len(result['data']) < 1000:
+            result = await self.get(url, store, {'limit': 1000})
+            data += result['data']#type: ignore
+            if len(result['data']) < 1000:#type: ignore
                 break
         return data
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
@@ -127,7 +134,7 @@ class WishService(Market):
                 if variantstore:#has in variant_store table
                     pass
                 else:
-                    variantstore=Models.VariantStore(variant_id=variant.variant_id,store_name='wish',price='0',
+                    variantstore=Models.VariantStore(variant_id=variant.variant_id,store_name='wish',price=0,
                                                      status="ONLINE",
                                                      market_variant_status=data["status"],
                                                      product_id=variant.product_id,

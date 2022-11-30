@@ -1,21 +1,14 @@
 from typing import Any
 
 from sqlalchemy import select
-
 import Models
 import Service
-import settings
 import os
-import importlib
-from pathlib import Path
-
 from common.CommonError import ResponseException
 from component.fastQL import fastQuery
 from .__init__ import Market
 from sqlalchemy.ext.asyncio import AsyncSession
-from common import CommonResponse,toJson
 
-import settings
 from pathlib import Path
 class ThirdMarketService():
 
@@ -24,11 +17,8 @@ class ThirdMarketService():
         files = os.listdir(Path(__file__).parent.joinpath('market'))
         for f in files:
             if f.endswith('Service.py'):
-                clsfile=importlib.import_module(Path(__file__).parent.joinpath('market',f[0:-3]).relative_to(settings.BASE_DIR).__str__().replace(os.path.sep,'.'))
-                cls=getattr(clsfile,f[0:-3])
-                self.markets[f[0:-10].lower()]=cls()
-
-
+                marketname=f[0:-10].lower()
+                self.markets[marketname]=getattr(Service,marketname+'Service')
 
     async def getMarket(self, marketname: str) -> Market:
         if (lowername:=marketname.lower()) in self.markets:
@@ -36,16 +26,19 @@ class ThirdMarketService():
         else:
             raise Exception(f"{marketname} not implement found")
 
+    async def getStoreandMarketService(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
+        store=await fastQuery(db,'store{market{market_name}}',{"store_id":store_id,"merchant_id": merchant_id},returnsingleobj=1)
+        if not store:
+            raise ResponseException({'status':"failed", 'msg':"store not found"})
+        return store,await self.getMarket(store.Market.market_name)
+
     async def getStoreOnlineProducts(
         self, db: AsyncSession, merchant_id: int, store_id: int
     ) -> Any:
         # store = await Service.storeService.findByPk(
         #     db, store_id, {"merchant_id": merchant_id}
         # )
-        store=await fastQuery(db,'store{market{market_name}}',{"store_id":store_id,"merchant_id": merchant_id},returnsingleobj=1)
-        if not store:
-            raise ResponseException({'status':"failed", 'msg':"store not found"})
-        marketservice=await self.getMarket(store.Market.market_name)
+        store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
         return await marketservice.getProductList(db,store)
 
 

@@ -38,8 +38,8 @@ async def onlineproduct(
     data=await Service.thirdmarketService.getStoreOnlineProducts(
         db, token.merchant_id, store_id
     )
-    # install pydantic plugin,press alt+enter auto complete the args.
-    return CommonResponse(status='success',data=data)
+
+    return {'status':'success','data':data}
 
 
 # </editor-fold>
