@@ -20,11 +20,10 @@ from .payment.paymethods.PaypalService import PaypalService
 from .product.CategoryService import CategoryService
 from .search.ProductSearchService import ProductSearchService
 from .store.StoreService import StoreService
-from .thirdpartmarket.market.WishService import WishService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
 from .thirdpartmarket.market.OnBuyService import OnBuyService
 from .thirdpartmarket.market.TikTokService import TikTokService
-
+from .thirdpartmarket.market.WishService import WishService
 from .user.UserService import UserService
 
 

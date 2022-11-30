@@ -1,4 +1,3 @@
-# type: ignore
 import asyncio
 import datetime
 from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast
