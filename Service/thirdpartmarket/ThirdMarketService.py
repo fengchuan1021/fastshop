@@ -17,21 +17,16 @@ from common import CommonResponse,toJson
 
 import settings
 from pathlib import Path
+from .market.WishService import WishService
+from .market.TikTokService import TikTokService
+from .market.OnBuyService import OnBuyService
 class ThirdMarketService():
     def __init__(self) -> None:
-        self.markets = {}
-        files = os.listdir(Path(__file__).parent.joinpath('market'))
-        for f in files:
-            if f.endswith("Service.py"):
-                clsfile = importlib.import_module(
-                    Path(__file__)
-                    .parent.joinpath("market", f[0:-3])
-                    .relative_to(settings.BASE_DIR)
-                    .__str__()
-                    .replace("\\", ".")
-                )
-                cls = getattr(clsfile, f[0:-3])
-                self.markets[f[0:-10].lower()] = cls()
+        self.markets = {'wish':WishService(),
+                        'tiktok':TikTokService(),
+                        'onbuy':OnBuyService()
+                        }
+
 
     async def getMarket(self, marketname: str) -> Market:
         if marketname in self.markets:
