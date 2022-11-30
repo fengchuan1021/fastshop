@@ -67,17 +67,25 @@ async def parseSQL(query:str,db: AsyncSession=None,context:Optional[settings.Use
             statment = select(model)
     else:
         relivatetoparent=getattr(parentmodel,model.__name__)
+
         option=contains_eager(relivatetoparent)
+
         statment=statment.join(relivatetoparent)#type: ignore
     if columns:
         option=option.load_only(*columns) if option else load_only(*columns)
+
     childsoptions=[]
     for joint in joinmodel:
+
         statment,childsoption=await parseSQL(joint,db,context,model,statment)
+
         if childsoption:
             childsoptions.append(childsoption)
-    if childsoptions and option:
-        option=option.options(*childsoptions)#type: ignore
+    if childsoptions:
+        if option:
+            option=option.options(*childsoptions)#type: ignore
+        else:
+            statment=statment.options(*childsoptions)
     if not parentmodel:
         return statment if not option else statment.options(option)
     return statment,option
@@ -89,6 +97,5 @@ if __name__=='__main__':
     from settings import UserTokenData
     async def test():#type: ignore
         async with getdbsession() as db:
-            print('??')
             print(await parseSQL("Store{appid,Market{market_url}}",db,context=UserTokenData(userrole=2,merchant_id=1)))
     cmdlineApp(test)()

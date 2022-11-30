@@ -8,8 +8,8 @@ import settings
 import aiohttp
 from component.cache import cache
 from urllib.parse import urlencode
-from Service.thirdpartmarket import Market
-class OnBuyService(Market):
+#from Service.thirdpartmarket import Market
+class OnBuyService():#Market
     def __init__(self)->None:
         self.session = aiohttp.ClientSession(base_url=settings.ONBUY_APIURL)
 

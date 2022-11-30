@@ -20,8 +20,10 @@ class VariantStore(Base):
     store_name=Column(XTVARCHAR(32))
     price=Column(DECIMAL(10,2))
     qtyshare = Column(ENUM("YES", "NO"), server_default="YES", default="YES")
-    qty=Column(INTEGER)
-    status = Column(ENUM("ONLINE", "OFFLINE"), server_default="OFFLINE", default="OFFLINE")
+    qty=Column(INTEGER,default=0,server_default='0')
+    status = Column(ENUM("ONLINE", "OFFLINE"), server_default="OFFLINE", default="OFFLINE")#上下架 状态
+    # 产品在第三方市场的状态 已审核 被市场删除...
+    market_variant_status=Column(ENUM("PENDING_REVIEW" ,"APPROVED" ,"REJECTED" ,"REMOVED_BY_WISH" ,"REMOVED_BY_MERCHANT"), server_default="APPROVED", default="APPROVED")
 
     #warehouse_name = Column(XTVARCHAR(32))
 

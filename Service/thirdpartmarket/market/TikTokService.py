@@ -10,8 +10,8 @@ import Service
 import settings
 import aiohttp
 from urllib.parse import urlencode
-from Service.thirdpartmarket import Market
-class TikTokService(Market):
+#from Service.thirdpartmarket import Market
+class TikTokService():#Market
     def __init__(self)->None:
         self.session = aiohttp.ClientSession(base_url=settings.TIKTOK_APIURL)
 
@@ -77,7 +77,7 @@ class TikTokService(Market):
             ret=await resp.json()
 
 
-    async def getProductList(self,db:AsyncSession,store_id:str)->List:
+    async def getProductList(self,db:AsyncSession,store_id:str)->List:#type ignore
         url = "/api/products/search"
         merchantmodel=await self.getStore(db,store_id)
         url=self.buildurl(url,{},merchantmodel)
