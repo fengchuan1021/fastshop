@@ -17,9 +17,6 @@ from common import CommonResponse,toJson
 
 import settings
 from pathlib import Path
-from .market.WishService import WishService
-from .market.TikTokService import TikTokService
-from .market.OnBuyService import OnBuyService
 class ThirdMarketService():
 
     def __init__(self) -> None:
