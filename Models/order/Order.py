@@ -114,7 +114,7 @@ class OrderItem(Base):
     Order:'Order'=relationship('Order',uselist=False,primaryjoin='foreign(OrderItem.order_id)==Order.order_id',back_populates='OrderItem',cascade='')
     Product:'Product'=relationship('Product',uselist=False,primaryjoin='foreign(OrderItem.product_id)==Product.product_id',cascade='')
     Variant: 'Variant' = relationship('Variant', uselist=False,
-                                      primaryjoin='foreign(OrderItem.variant_id)==Product.variant_id', cascade='')
+                                      primaryjoin='foreign(OrderItem.variant_id)==Variant.variant_id', cascade='')
 
 
 

@@ -44,7 +44,7 @@ class WishService(Market):
         async with aiohttp.ClientSession() as session:
             async with session.post(url,json=body,headers=headers) as resp:
                 return resp.json()
-    async def get(self,url: str, store: Optional[Models.Store], params: Dict = None) -> str:
+    async def get(self,url: str, store: Optional[Models.Store], params: Dict = None) -> Any:
         store=cast(Models.Store,store)
         if not params:
             params = {}
@@ -93,13 +93,11 @@ class WishService(Market):
         #     ret = await resp.json()
         #     print(ret)
 
-    async def getOrders(self, ordertype='WISH_EXPRESS') -> None:  # type: ignore
+    async def getOrderList(self, db:AsyncSession,store:Models.Store) -> List:  # type: ignore
         url = '/api/v3/orders'
         params = {'states': 'REQUIRE_REVIEW'}
-        data=await self.get(url,None,params)
-        # async with self.session.get(url, params=params) as resp:
-        #     ret = await resp.json()
-        #     print('ret:', ret)
+        data=await self.get(url,store,params)
+        return data
 
     async def createProduct(self):  # type: ignore
         url = '/api/v3/products'

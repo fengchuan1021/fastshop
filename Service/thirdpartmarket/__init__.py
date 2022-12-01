@@ -13,7 +13,7 @@ class Market:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def getOrderList(self,db:AsyncSession,enterprise_id:str)->List:
+    async def getOrderList(self,db:AsyncSession,store:Models.Store)->List:
         raise NotImplementedError
 
     @abc.abstractmethod

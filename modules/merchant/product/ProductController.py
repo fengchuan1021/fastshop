@@ -23,7 +23,7 @@ router = APIRouter(dependencies=dependencies)
 
 # <editor-fold desc="onlineproduct get: /merchant/onlineproduct/{store_id}">
 @router.get(
-    "/merchant/onlineproduct/{store_id}",
+    "/merchant/onlineproducts/{store_id}",
     response_class=XTJsonResponse,
     #response_model=MerchantOnlineproductStoreIdGetResponse,
 )
@@ -36,6 +36,30 @@ async def onlineproduct(
     onlineproduct
     """
     data=await Service.thirdmarketService.getStoreOnlineProducts(
+        db, token.merchant_id, store_id
+    )
+
+    return {'status':'success','data':data}
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="onlineproduct get: /merchant/onlineorders/{store_id}">
+@router.get(
+    "/merchant/onlineorders/{store_id}",
+    response_class=XTJsonResponse,
+    #response_model=MerchantOnlineproductStoreIdGetResponse,
+)
+async def onlineorders(
+    store_id: int,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    onlineorders
+    """
+    data=await Service.thirdmarketService.getStoreOnlineOrders(
         db, token.merchant_id, store_id
     )
 
