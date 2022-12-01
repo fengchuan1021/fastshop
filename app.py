@@ -12,9 +12,9 @@ import os
 from sqlalchemy.exc import IntegrityError,OperationalError
 import importlib
 from typing import Any
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from redis.exceptions import ConnectionError
-from common import Common500Response, TokenException, PermissionException,XTJsonResponse,writelog,getorgeneratetoken, get_token
+from common import Common500Response, TokenException, PermissionException,XTJsonResponse,writelog,getorgeneratetoken
 from component.snowFlakeId import snowFlack
 from component.cache import cache
 from pathlib import Path
@@ -111,10 +111,6 @@ for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
 if not settings.AZ_BLOB_CONNSTR:
     from fastapi.staticfiles import StaticFiles
     app.mount("/img", StaticFiles(directory="img"), name="img")
-
-
-import graphql
-app.include_router(graphql.router,prefix='/api')
 
 @app.post('/')
 async def forazureping(request:Request)->dict:#, site: "Models.Site" =Depends(getSiteInfo)
