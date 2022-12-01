@@ -44,7 +44,9 @@ class ThirdMarketService():
 
         store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
         return await marketservice.getOrderList(db,store)
-
+    async def getStoreOnlineProductDetail(self,db:AsyncSession,merchant_id:int,store_id:int,product_id:str)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getProductDetail(db,store,product_id)
 if __name__ == "__main__":
     from component.dbsession import getdbsession
     from common import cmdlineApp

@@ -97,7 +97,9 @@ class WishService(Market):
         url = '/api/v3/orders'
         params = {'states': 'REQUIRE_REVIEW'}
         data=await self.get(url,store,params)
-        return data
+        print("order:",data)
+
+        return data['data']
 
     async def createProduct(self):  # type: ignore
         url = '/api/v3/products'
@@ -121,6 +123,12 @@ class WishService(Market):
             data += result['data']#type: ignore
             if len(result['data']) < 1000:#type: ignore
                 break
+        #print('len:',len(data))
+        return data
+
+    async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str)->Any:
+        url=f'/api/v3/products/{product_id}'
+        data=await self.get(url,store)
         return data
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
         datas=await self.getProductList(db,store)
