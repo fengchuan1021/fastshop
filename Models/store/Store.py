@@ -19,9 +19,11 @@ class Store(Base):
     appid=Column(XTVARCHAR(512),default='')
 
     appkey=Column(XTVARCHAR(512),default='')
+
     appsecret=Column(XTVARCHAR(512),default='')
     token=Column(XTVARCHAR(512),default='')
     lang=Column(ENUM(*[i.value for i in settings.SupportLang]),server_default='en',default='en')
+    shop_id=Column(XTVARCHAR(32),default='',server_default='')
     #warehouse_id=Column(BIGINT,index=True)
     #user_id=Column(BIGINT,index=True)
     merchant_id=Column(INTEGER,index=True)

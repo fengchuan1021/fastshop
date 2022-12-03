@@ -1,38 +1,43 @@
+import time
 from typing import Any
 
 from sqlalchemy import select
-
 import Models
 import Service
-import settings
 import os
-import importlib
-from pathlib import Path
-
 from common.CommonError import ResponseException
 from component.fastQL import fastQuery
 from .__init__ import Market
 from sqlalchemy.ext.asyncio import AsyncSession
-from common import CommonResponse,toJson
 
-import settings
 from pathlib import Path
-from .market.WishService import WishService
-from .market.TikTokService import TikTokService
-from .market.OnBuyService import OnBuyService
 class ThirdMarketService():
-    def __init__(self) -> None:
-        self.markets = {'wish':WishService(),
-                        'tiktok':TikTokService(),
-                        'onbuy':OnBuyService()
-                        }
 
+    def __init__(self) -> None:
+        self.markets = {}
+        files = os.listdir(Path(__file__).parent.joinpath('market'))
+        for f in files:
+            if f.endswith('Service.py'):
+                marketname=f[0:-10].lower()
+                self.markets[marketname]=getattr(Service,marketname+'Service')
+    async def init(self,db:AsyncSession)->None:
+        marketmodels=await Service.marketService.getList(db)
+        for model in marketmodels:
+            if model.market_name in self.markets:
+                setattr(self.markets[model.market_name],'market_name',model.market_name)
+                setattr(self.markets[model.market_name], 'market_id', model.market_id)
 
     async def getMarket(self, marketname: str) -> Market:
-        if marketname in self.markets:
-            return self.markets[marketname]
+        if (lowername:=marketname.lower()) in self.markets:
+            return self.markets[lowername]
         else:
             raise Exception(f"{marketname} not implement found")
+
+    async def getStoreandMarketService(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
+        store=await fastQuery(db,'store{market{market_name}}',{"store_id":store_id,"merchant_id": merchant_id},returnsingleobj=1)
+        if not store:
+            raise ResponseException({'status':"failed", 'msg':"store not found"})
+        return store,await self.getMarket(store.Market.market_name)
 
     async def getStoreOnlineProducts(
         self, db: AsyncSession, merchant_id: int, store_id: int
@@ -40,13 +45,26 @@ class ThirdMarketService():
         # store = await Service.storeService.findByPk(
         #     db, store_id, {"merchant_id": merchant_id}
         # )
-        store=await fastQuery(db,'store{market{market_name}}',{"store_id":store_id,"merchant_id": merchant_id},returnsingleobj=1)
-        if not store:
-            raise ResponseException({'status':"failed", 'msg':"store not found"})
-        marketservice=await self.getMarket(store.Market.market_name)
+        store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
         return await marketservice.getProductList(db,store)
+    async def getStoreOnlineOrders(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
 
-
+        store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
+        return await marketservice.getOrderList(db,store)
+    async def getStoreOnlineProductDetail(self,db:AsyncSession,merchant_id:int,store_id:int,product_id:str)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getProductDetail(db,store,product_id)
+    async def syncOrder(self,db:AsyncSession,merchant_id:int,store_id:int,nmonth:int=1)->Any:
+        store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
+        endtime = int(time.time())
+        starttime=endtime-nmonth*31*3600*24
+        data=await marketservice.syncOrder(db,store,starttime,endtime)
+    async def syncProduct(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        await marketservice.syncProduct(db,store)
+    async def getSelfAuthrizeUrl(self,db:AsyncSession,merchant_id:int,store_id:int)->str:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getSelfAuthrizeUrl(db,store)
 if __name__ == "__main__":
     from component.dbsession import getdbsession
     from common import cmdlineApp

@@ -10,12 +10,12 @@ resources:
 variables:
   BRANCH_NAME: $[upper(replace(variables['Build.SourceBranch'], 'refs/heads/', ''))]
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'eb779d0e-ca11-41b8-bff4-63517a93f17c'
+  dockerRegistryServiceConnection: 'ee5dc520-f784-4261-b6c6-fd1ff960e101'
   imageRepository: 'xtpython'
   containerRegistry: 'xtmagento.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'xtmagento80ab-auth'
+  imagePullSecret: 'xtmagento7641d461-auth'
 
 
   # Agent VM image name???

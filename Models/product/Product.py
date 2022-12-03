@@ -5,7 +5,7 @@ from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, TEXT, DECIMAL, DATETIME
 from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING, List
-from .Brand import Brand
+
 
 if TYPE_CHECKING:
     from Models import VariantImage, VariantStore, ProductAttribute, ProductSpecification, ProductCategory, Merchant, \

@@ -19,12 +19,20 @@ class VariantStore(Base):
 
     store_name=Column(XTVARCHAR(32))
     price=Column(DECIMAL(10,2))
+    #货币
+    market_currency_code=Column(XTVARCHAR(8),default='',server_default='')
+    #在第三方市场上的sku 一般情况下和variant_sku 相同
+    market_sku=Column(XTVARCHAR(64),default='',server_default='')
     qtyshare = Column(ENUM("YES", "NO"), server_default="YES", default="YES")
     qty=Column(INTEGER,default=0,server_default='0')
     status = Column(ENUM("ONLINE", "OFFLINE"), server_default="OFFLINE", default="OFFLINE")#上下架 状态
     # 产品在第三方市场的状态 已审核 被市场删除...
     market_variant_status=Column(ENUM("PENDING_REVIEW" ,"APPROVED" ,"REJECTED" ,"REMOVED_BY_WISH" ,"REMOVED_BY_MERCHANT"), server_default="APPROVED", default="APPROVED")
-
+    #产品再第三方市场的id
+    market_variant_id=Column(XTVARCHAR(64),default='',server_default='')
+    market_product_id = Column(XTVARCHAR(64), default='', server_default='')
+    market_cost_price=Column(DECIMAL(10,2),default=0)
+    market_cost_currency_code = Column(DECIMAL(10, 2), default=0)
     #warehouse_name = Column(XTVARCHAR(32))
 
     variant_id=Column(BIGINT(20),index=True)

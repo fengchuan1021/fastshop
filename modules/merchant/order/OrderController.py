@@ -1,3 +1,4 @@
+
 # generated timestamp: 2022-11-29T09:01:02+00:00
 
 from __future__ import annotations
@@ -21,21 +22,21 @@ from .__init__ import dependencies
 router = APIRouter(dependencies=dependencies)
 
 
-# <editor-fold desc="onlineproduct get: /merchant/onlineproduct/{store_id}">
+# <editor-fold desc="onlineproduct get: /merchant/onlineorders/{store_id}">
 @router.get(
-    "/merchant/onlineproducts/{store_id}",
+    "/merchant/onlineorders/{store_id}",
     response_class=XTJsonResponse,
     #response_model=MerchantOnlineproductStoreIdGetResponse,
 )
-async def onlineproduct(
+async def onlineorders(
     store_id: int,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
-    onlineproduct
+    onlineorders
     """
-    data=await Service.thirdmarketService.getStoreOnlineProducts(
+    data=await Service.thirdmarketService.getStoreOnlineOrders(
         db, token.merchant_id, store_id
     )
 
@@ -45,29 +46,26 @@ async def onlineproduct(
 # </editor-fold>
 
 
-
-
-
-# <editor-fold desc="onlineproductdetail get: /merchant/onlineproductdetail/{store_id}/product_id">
+# <editor-fold desc="asynchalfyearorder get: /merchant/asynchalfyearorder/{store_id}">
 @router.get(
-    "/merchant/onlineproductdetail/{store_id}/{product_id}",
+    "/merchant/syncorder/{store_id}/{nmonth}",
     response_class=XTJsonResponse,
     #response_model=MerchantOnlineproductStoreIdGetResponse,
 )
-async def wishonlineproductdetail(
-    store_id:int,
-    product_id: str,
+async def asynchalfyearorder(
+    store_id: int,
+    nmonth:int=1,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
     """
-    wishonlineproductdetail
+    onlineorders
     """
-    data=await Service.thirdmarketService.getStoreOnlineProductDetail(
-        db, token.merchant_id, store_id,product_id
+    data=await Service.thirdmarketService.syncOrder(
+        db, token.merchant_id, store_id,nmonth
     )
 
-    return {'status':'success','data':data}
+    return {'status':'success','data':'success'}
 
 
 # </editor-fold>

@@ -93,3 +93,4 @@ class UserTokenData(BaseModel):
     exp:int=0
     class Config:
         orm_mode = True
+

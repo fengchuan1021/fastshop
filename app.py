@@ -1,5 +1,8 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
 import settings
 from common.CommonError import ResponseException
+from component.dbsession import getdbsession
 
 if settings.MODE=='DEV':
     import subprocess
@@ -9,12 +12,13 @@ if settings.MODE=='DEV':
 import fastapi.exceptions
 import asyncio
 import os
+os.environ['TZ'] = 'Europe/London'
 from sqlalchemy.exc import IntegrityError,OperationalError
 import importlib
 from typing import Any
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from redis.exceptions import ConnectionError
-from common import Common500Response, TokenException, PermissionException,XTJsonResponse,writelog,getorgeneratetoken, get_token
+from common import Common500Response, TokenException, PermissionException,XTJsonResponse,writelog,getorgeneratetoken
 from component.snowFlakeId import snowFlack
 from component.cache import cache
 from pathlib import Path
@@ -22,6 +26,7 @@ from pathlib import Path
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 import platform
+from Service import thirdmarketService
 if 'linux' in platform.platform().lower():
     import uvloop
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -99,6 +104,8 @@ async def startup()->None:
                ignore_arg_types=[settings.UserTokenData],
                )
     snowFlack.init(settings.NODEID)
+    async with getdbsession() as db:
+        await thirdmarketService.init(db)
 
 
 for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
@@ -111,10 +118,6 @@ for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):
 if not settings.AZ_BLOB_CONNSTR:
     from fastapi.staticfiles import StaticFiles
     app.mount("/img", StaticFiles(directory="img"), name="img")
-
-
-import graphql
-app.include_router(graphql.router,prefix='/api')
 
 @app.post('/')
 async def forazureping(request:Request)->dict:#, site: "Models.Site" =Depends(getSiteInfo)
