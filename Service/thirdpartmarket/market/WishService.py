@@ -18,7 +18,7 @@ import aiohttp
 from component.cache import cache
 from Service.thirdpartmarket import Market
 from component.dbsession import getdbsession
-import wishutil
+from . import wishutil
 from dateutil.parser import parse
 
 from component.snowFlakeId import snowFlack
@@ -154,7 +154,7 @@ class WishService(Market):
 
             for ourdbid,product_id in needupdate.items():
                 wishProduct=await self.getProductDetail(db,store,product_id)
-                await wishutil.addorupdateproduct(db,wishProduct,ourdbid)
+                await wishutil.addorupdateproduct(db,wishProduct,ourdbid)#type: ignore
 
 
 
