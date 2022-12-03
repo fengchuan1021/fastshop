@@ -1,3 +1,4 @@
+
 from sqlalchemy.orm import deferred, relationship, backref
 import enum
 from Models.ModelBase import Base, XTVARCHAR

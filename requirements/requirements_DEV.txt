@@ -111,3 +111,4 @@ wrapt==1.14.1
 XTTOOLS==1.2
 yarl==1.8.1
 types-python-dateutil
+types-pytz
