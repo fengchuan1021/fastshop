@@ -3,14 +3,14 @@ import datetime
 from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast, Optional
 import orjson
 import pytz,os #type: ignore
-from dateutil import parser
+from dateutil.parser import parse
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Request
 from urllib.parse import urlencode
 
 from sqlalchemy.orm import Load
 #from sqlalchemy.orm.strategy_options import load_only
-
+import math
 import Models
 import Service
 import settings
@@ -18,8 +18,11 @@ import aiohttp
 from component.cache import cache
 from Service.thirdpartmarket import Market
 from component.dbsession import getdbsession
-from . import wishutil
-from dateutil.parser import parse
+if __name__=='__main__':
+    import wishutil
+else:
+    from . import wishutil
+
 
 from component.snowFlakeId import snowFlack
 
@@ -62,6 +65,7 @@ class WishService(Market):
             else:
                 finalurl = settings.WISH_BASEURL + url
             async with session.get(finalurl, headers={'authorization': f'Bearer {store.token}'}) as response:
+
                 return await response.json()
     async def getAccessToken(self, code: str) -> None:
         url = "/api/v3/oauth/access_token"
@@ -125,36 +129,45 @@ class WishService(Market):
 
     async def getProductList(self, db: AsyncSession, store: Models.Store) ->Any:
         url = '/api/v3/products'
+        LIMIT=50
+        updated_at_max=None
+        params={'limit': LIMIT}
         while 1:
-            result = await self.get(url, store, {'limit': 1000})
+            if updated_at_max:
+                params['updated_at_max']=updated_at_max
+            result = await self.get(url, store,params )
             data = result['data']#type: ignore
+            if data:
+                updated_at_max=data[-1]["updated_at"]
             yield data
-            if len(result['data']) < 1000:#type: ignore
+            if len(result['data']) < LIMIT:#type: ignore
                 break
     async def syncProduct(self,db:AsyncSession,store:Models.Store)->Any:
-
         async for productSummarys in self.getProductList(db,store):
-            #print(productSummarys)
             needsync = {productSummary["id"]:productSummary['updated_at'] for productSummary in productSummarys}
             needupdate={}
-            #print('keys:',list(needsync.keys()))
             ourdbmodels=await Service.wishproductService.find(db,{"wish_id__in":needsync.keys()},Load(Models.WishProduct).load_only(Models.WishProduct.wish_id,Models.WishProduct.updated_at))
-            #print('whU:',ourdbmodels)
             for model in ourdbmodels:
                 if os.name=='nt':#for timezone bug in windows
-                    model.updated_at=model.updated_at.replace(tzinfo=pytz.UTC)#type: ignore
-                tmstamp=model.updated_at.timestamp()#type: ignore
+                    if isinstance(model.updated_at,str):
+                        tmstamp=parse(model.updated_at).replace(tzinfo=pytz.UTC).timestamp()
+                    else:
+                        tmstamp=model.updated_at.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
+                else:
+                    tmstamp=model.updated_at.timestamp() if not isinstance(model.updated_at,str) else parse(model.updated_at).timestamp()#type: ignore
                 if tmstamp!=parse(needsync[model.wish_id]).timestamp():
                     needupdate[model.wishproduct_id]=model.wish_id #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
                 del needsync[model.wish_id]
 
-            for product_id in needsync:
-                wishProduct=await self.getProductDetail(db,store,product_id)
-                await wishutil.addorupdateproduct(db,wishProduct)
+            newproducts_task=[self.getProductDetail(db,store,product_id) for product_id in needsync]#:#add new product
+
+            result=await asyncio.gather(*newproducts_task)
+            await wishutil.addproducts(db,result)
 
             for ourdbid,product_id in needupdate.items():
-                wishProduct=await self.getProductDetail(db,store,product_id)
-                await wishutil.addorupdateproduct(db,wishProduct,ourdbid)#type: ignore
+                print('needupdate',product_id)
+            #    wishProduct=await self.getProductDetail(db,store,product_id)
+            #    await wishutil.addorupdateproduct(db,wishProduct,ourdbid)#type: ignore
 
 
 
@@ -162,9 +175,18 @@ class WishService(Market):
 
     async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str)->Any:
         url=f'/api/v3/products/{product_id}'
-        data=await self.get(url,store)
-
-        return data['data']
+        while 1:
+            data=await self.get(url,store)
+            if data['code']==1056:#频率限制
+                await asyncio.sleep(0.5)
+            else:
+                return data['data']
+    # async def getProductDetailwithRatesLimit(self,db:AsyncSession,product_ids:List[str])->Any:
+    #     size=100
+    #     for i in range(math.ceil(len(product_ids)/size)):
+    #         tmpids=product_ids[i*size:(i+1)*size]
+    #         tasks=[self.getProductDetail(id) for id in tmpids]
+    #         results=
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
         datas=await self.getProductList(db,store)#type: ignore
         for data in datas:

@@ -24,20 +24,25 @@ class ThirdMarketService():
         marketmodels=await Service.marketService.getList(db)
         for model in marketmodels:
             if model.market_name in self.markets:
+                self.markets[model.market_id]=self.markets[model.market_name]#type: ignore
                 setattr(self.markets[model.market_name],'market_name',model.market_name)
                 setattr(self.markets[model.market_name], 'market_id', model.market_id)
 
-    async def getMarket(self, marketname: str) -> Market:
-        if (lowername:=marketname.lower()) in self.markets:
-            return self.markets[lowername]
+    async def getMarket(self, marketname_or_id: str|int) -> Market:
+        if isinstance(marketname_or_id,str):
+            if (lowername:=marketname_or_id.lower()) in self.markets:
+                return self.markets[lowername]
+            else:
+                raise Exception(f"{marketname_or_id} not implement found")
         else:
-            raise Exception(f"{marketname} not implement found")
+            return self.markets[marketname_or_id]#type: ignore
 
     async def getStoreandMarketService(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
-        store=await fastQuery(db,'store{market{market_name}}',{"store_id":store_id,"merchant_id": merchant_id},returnsingleobj=1)
+        #store=await fastQuery(db,'store{market{market_name}}',{"store_id":store_id,"merchant_id": merchant_id},returnsingleobj=1)
+        store=await Service.storeService.findOne(db,{"store_id":store_id,"merchant_id": merchant_id})
         if not store:
             raise ResponseException({'status':"failed", 'msg':"store not found"})
-        return store,await self.getMarket(store.Market.market_name)
+        return store,await self.getMarket(store.market_id)
 
     async def getStoreOnlineProducts(
         self, db: AsyncSession, merchant_id: int, store_id: int
