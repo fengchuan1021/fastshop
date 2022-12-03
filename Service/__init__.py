@@ -22,7 +22,7 @@ from .search.ProductSearchService import ProductSearchService
 from .store.StoreService import StoreService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
 from .thirdpartmarket.market.OnBuyService import OnBuyService
-from .thirdpartmarket.market.TikTokService import TikTokService#type: ignore
+from .thirdpartmarket.market.TikTokService import TikTokService
 from .thirdpartmarket.market.WishService import WishService
 from .user.UserService import UserService
 
@@ -67,6 +67,8 @@ productService : CRUDBase[Models.Product]
 variantService : CRUDBase[Models.Variant]
 variantimageService : CRUDBase[Models.VariantImage]
 variantstoreService : CRUDBase[Models.VariantStore]
+wishproductService : CRUDBase[Models.WishProduct]
+wishvariantService : CRUDBase[Models.WishVariant]
 purchasereceiptService : CRUDBase[Models.PurchaseReceipt]
 purchasereceiptitemsService : CRUDBase[Models.PurchaseReceiptItems]
 supplierService : CRUDBase[Models.Supplier]

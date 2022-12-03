@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import Models
 
 class Market:
+    market_id:int
+    market_name:str
     @abc.abstractmethod
     async def getProductList(self,db:AsyncSession,store:Models.Store)->List:
         raise NotImplementedError
@@ -20,5 +22,5 @@ class Market:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def getOrderDetail(self,db:AsyncSession,enterprise_id:str,order_id:str)->Any:
+    async def getOrderDetail(self,db:AsyncSession,store:Models.Store,order_id:Any)->Any:
         raise NotImplementedError

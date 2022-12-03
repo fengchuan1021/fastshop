@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 from sqlalchemy import select
@@ -19,6 +20,12 @@ class ThirdMarketService():
             if f.endswith('Service.py'):
                 marketname=f[0:-10].lower()
                 self.markets[marketname]=getattr(Service,marketname+'Service')
+    async def init(self,db:AsyncSession)->None:
+        marketmodels=await Service.marketService.getList(db)
+        for model in marketmodels:
+            if model.market_name in self.markets:
+                setattr(self.markets[model.market_name],'market_name',model.market_name)
+                setattr(self.markets[model.market_name], 'market_id', model.market_id)
 
     async def getMarket(self, marketname: str) -> Market:
         if (lowername:=marketname.lower()) in self.markets:
@@ -47,6 +54,17 @@ class ThirdMarketService():
     async def getStoreOnlineProductDetail(self,db:AsyncSession,merchant_id:int,store_id:int,product_id:str)->Any:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         return await marketservice.getProductDetail(db,store,product_id)
+    async def syncOrder(self,db:AsyncSession,merchant_id:int,store_id:int,nmonth:int=1)->Any:
+        store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
+        endtime = int(time.time())
+        starttime=endtime-nmonth*31*3600*24
+        data=await marketservice.syncOrder(db,store,starttime,endtime)
+    async def syncProduct(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        await marketservice.syncProduct(db,store)
+    async def getSelfAuthrizeUrl(self,db:AsyncSession,merchant_id:int,store_id:int)->str:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getSelfAuthrizeUrl(db,store)
 if __name__ == "__main__":
     from component.dbsession import getdbsession
     from common import cmdlineApp

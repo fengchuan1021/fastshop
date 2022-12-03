@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 from Models.ModelBase import Base, XTVARCHAR
 from sqlalchemy import Column
-from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, DECIMAL, DATETIME, DATE
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, DECIMAL, DATETIME, DATE,TIMESTAMP
 
 from component.snowFlakeId import snowFlack
 from typing import TYPE_CHECKING,List
@@ -52,6 +52,7 @@ class Order(Base):
     tax_amount = Column(DECIMAL(10, 4))
     total_item_count = Column(INTEGER, default=0)
     customer_note = Column(XTVARCHAR(255), default='', server_default='')
+    market_updatetime=Column(DATETIME(fsp=3))
     #created_at = Column(DATETIME) have create in baseclass.
     #updated_at = Column(DATETIME)
     OrderAddress: List['OrderAddress']=relationship('OrderAddress',uselist=True,primaryjoin='foreign(OrderAddress.order_id)==Order.order_id',back_populates='Order',cascade='')

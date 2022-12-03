@@ -30,8 +30,10 @@ def filterbuilder(filters:Optional[Dict | BaseModel],sep:str=' and ')->Tuple[str
 
         if opration in oprationtable:
             if opration=='in':
-                arr.append(f"{column} {oprationtable[opration]} (:{bindparamname})")
-                params[bindparamname]=','.join([str(v) for v in value])
+                arr.append(f"{column} {oprationtable[opration]} ({','.join([':params%d' % (n+i) for i in range(len(value))])})")
+                for i,v in enumerate(value):
+                    params[f'params{n+i}']=v# if isinstance(v,int) else f"'{v}'"
+                n+=i
             elif opration=='contains':
                 arr.append(f"{column} {oprationtable[opration]} :{bindparamname}")
                 params[bindparamname] = f"%{value}%"
