@@ -16,6 +16,8 @@ import Models
 import Service
 
 import aiohttp
+
+from common.CommonError import ResponseException
 from component.cache import cache
 from Service.thirdpartmarket import Market
 from component.dbsession import getdbsession
@@ -52,10 +54,13 @@ class WishService(Market):
     #         await self.getAccessToken()
     #     self.session = aiohttp.ClientSession(base_url=self.baseurl,headers={'authorization': f'Bearer {self.access_token}'})
     #     return self
-    async def post(self,url:str,body:Dict,headers:Dict=None)->Any:
+    async def post(self,url:str,store:Models.Store,body:Dict=None,headers:Dict=None)->Any:
+        tokenheader={'authorization': f'Bearer {store.token}'}
+        if headers:
+            tokenheader.update(headers)
         async with aiohttp.ClientSession() as session:
-            async with session.post(url,json=body,headers=headers) as resp:
-                return resp.json()
+            async with session.post(settings.WISH_BASEURL+url,json=body,headers=tokenheader) as resp:
+                return await resp.json()
     async def get(self,url: str, store: Optional[Models.Store], params: Dict = None) -> Any:
         store=cast(Models.Store,store)
         if not params:
@@ -78,7 +83,7 @@ class WishService(Market):
             'authorization': "Bearer REPLACE_BEARER_TOKEN"
         }
         print('payload', payload)
-        data=await  self.post(url,payload,headers)
+        #data=await  self.post(url,payload,headers)
         # async with self.session.post(url, json=payload, headers=headers) as resp:
         #     ret = await resp.json()
         #     return ret
@@ -149,7 +154,7 @@ class WishService(Market):
             if sem:
                 async with sem:
                     data=await self.get(url,store)
-                    await asyncio.sleep(0.5)
+                    await asyncio.sleep(1)
             else:
                 data = await self.get(url, store)
             if data['code']==1056:#频率限制
@@ -157,7 +162,27 @@ class WishService(Market):
                 await asyncio.sleep(1)
             else:
                 return data['data']
-    async def syncProduct(self,db:AsyncSession,store:Models.Store)->Any:
+    async def fullsyncProduct(self,db:AsyncSession,store:Models.Store)->Any:
+        url='/api/v3/products/bulk_get'
+        data=await self.post(url,store)
+        if data['code']==0:
+            id=data['data']['id']
+            while 1:
+                await asyncio.sleep(7)
+                statusdata=await self.get(f'/api/v3/products/bulk_get/{id}',store)
+                if statusdata['data']['status']=="READY":
+                    for url in statusdata['data']["file_urls"]:
+                        async with aiohttp.ClientSession() as session:
+                            async with session.get(url) as resp:
+                                txt=await resp.text()
+                                results=[orjson.loads(l) for l in txt.split('\n') if l]
+                                await wishutil.addproducts(db,results)
+
+                    break
+                elif statusdata['data']['status']=="EXCEPTION":
+                    raise ResponseException({'status':'failed','msg':"wish sync proudct failed"})
+
+    async def incrementSync(self,db:AsyncSession,store:Models.Store)->Any:
         async for productSummarys in self.getProductList(db,store):
             needsync = {productSummary["id"]:productSummary['updated_at'] for productSummary in productSummarys}
             needupdate={}
@@ -173,7 +198,7 @@ class WishService(Market):
                 if tmstamp!=parse(needsync[model.wish_id]).timestamp():
                     needupdate[model.wishproduct_id]=model.wish_id #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
                 del needsync[model.wish_id]
-            sem = asyncio.Semaphore(30)#30并发量 wish有速度限制
+            sem = asyncio.Semaphore(20)#35并发量 wish有速度限制
             newproducts_task=[self.getProductDetail(db,store,product_id,sem) for product_id in needsync]#:#add new product
 
             result=await asyncio.gather(*newproducts_task)
@@ -181,20 +206,14 @@ class WishService(Market):
 
             for ourdbid,product_id in needupdate.items():
                 print('needupdate',product_id)
-            #    wishProduct=await self.getProductDetail(db,store,product_id)
-            #    await wishutil.addorupdateproduct(db,wishProduct,ourdbid)#type: ignore
 
+    async def syncProduct(self,db:AsyncSession,store:Models.Store)->Any:
+        hassyncbefore=await Service.wishproductService.findOne(db,{"store_id":store.store_id})
+        if not hassyncbefore:
+            await self.fullsyncProduct(db,store)
+        else:
+            await self.incrementSync(db,store)
 
-
-
-
-
-    # async def getProductDetailwithRatesLimit(self,db:AsyncSession,product_ids:List[str])->Any:
-    #     size=100
-    #     for i in range(math.ceil(len(product_ids)/size)):
-    #         tmpids=product_ids[i*size:(i+1)*size]
-    #         tasks=[self.getProductDetail(id) for id in tmpids]
-    #         results=
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
         datas=await self.getProductList(db,store)#type: ignore
         for data in datas:
@@ -239,7 +258,7 @@ if __name__ == '__main__':
         wishService = WishService()
         async with getdbsession() as db:
             store = await Service.storeService.findByPk(db, 1)
-            await Service.wishService.syncProduct(db, store)
+            await Service.wishService.backgroundsyncProduct(db, store)
         # await wishService.getCurrencyList()
         # await wishService.getBrandList()
         # await wishService.getOrders()

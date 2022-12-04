@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, List
 
 class WishProduct(Base):
     __tablename__ = 'wishproduct'
-    name=Column(XTVARCHAR(64))
+    name=Column(XTVARCHAR(128))
     wishproduct_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId, comment="primary key")
     wish_id=Column(XTVARCHAR(32),unique=True,index=True)
     subcategory_id=Column(XTVARCHAR(32),default='')
@@ -19,15 +19,17 @@ class WishProduct(Base):
     category=Column(XTVARCHAR(250))
     is_promoted=Column(BOOLEAN,default=False)
     status=Column(XTVARCHAR(32))
-    description=Column(XTVARCHAR(1024))
+    description=Column(TEXT)
     tags=Column(XTVARCHAR(255))
     num_saves=Column(INTEGER)
     is_csp_enabled=Column(BOOLEAN,default=False)
     extra_images=Column(XTVARCHAR(512))
     category_experience_eligibility=Column(BOOLEAN,default=False)
-    parent_sku=Column(XTVARCHAR(32))
+    parent_sku=Column(XTVARCHAR(80))
     california_prop65_chemical_names=Column(XTVARCHAR(128))
     main_image=Column(XTVARCHAR(512))
+    merchant_id=Column(INTEGER,index=True)
+    store_id=Column(INTEGER,index=True)
 
 
 
@@ -36,7 +38,7 @@ class WishVariant(Base):
     wishvariant_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId, comment="primary key")
     wishproduct_id=Column(BIGINT,index=True)
     status=Column(XTVARCHAR(32))
-    sku=Column(XTVARCHAR(32))
+    sku=Column(XTVARCHAR(80))
     product_id=Column(XTVARCHAR(32))
     price=Column(DECIMAL(10,4))
     currency_code=Column(XTVARCHAR(12))
@@ -44,4 +46,6 @@ class WishVariant(Base):
     cost_currency_code = Column(XTVARCHAR(12))
     gtin=Column(XTVARCHAR(32))
     wish_id=Column(XTVARCHAR(32),unique=True,index=True)
-    #updated_at=Column(DATETIME)
+    merchant_id=Column(INTEGER,index=True)
+    store_id=Column(INTEGER,index=True)
+
