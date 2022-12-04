@@ -1,3 +1,4 @@
+import settings
 import asyncio
 import datetime
 from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast, Optional
@@ -13,7 +14,7 @@ from sqlalchemy.orm import Load
 import math
 import Models
 import Service
-import settings
+
 import aiohttp
 from component.cache import cache
 from Service.thirdpartmarket import Market
