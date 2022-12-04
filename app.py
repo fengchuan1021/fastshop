@@ -15,7 +15,7 @@ import fastapi.exceptions
 import asyncio
 import os
 
-os.environ['TZ'] = 'Europe/London'
+os.environ['TZ'] = 'UTC'
 if os.name!='nt':
     time.tzset()#type: ignore
 from sqlalchemy.exc import IntegrityError,OperationalError

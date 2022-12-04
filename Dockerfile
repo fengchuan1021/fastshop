@@ -6,7 +6,7 @@ WORKDIR /app
 ENV DEBIAN_FRONTEND noninteractive
 ENV MODE ${MODE}
 COPY requirements/requirements_${MODE}.txt /etc/requirements_${MODE}.txt
-RUN /bin/cp /usr/share/zoneinfo/Europe/London /etc/localtime && echo 'Europe/London' >/etc/timezone
+RUN /bin/cp /usr/share/zoneinfo/UTC /etc/localtime && echo 'UTC' >/etc/timezone
 RUN pip3 install -r /etc/requirements_${MODE}.txt
 RUN if test -z "$USE_TUNA" ; then pip3 install -r /etc/requirements_${MODE}.txt ; else pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r /etc/requirements_${MODE}.txt ; fi
 COPY . /app
