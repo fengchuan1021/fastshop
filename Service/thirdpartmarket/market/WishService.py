@@ -129,7 +129,7 @@ class WishService(Market):
 
     async def getProductList(self, db: AsyncSession, store: Models.Store) ->Any:
         url = '/api/v3/products'
-        LIMIT=50
+        LIMIT=500
         updated_at_max=None
         params={'limit': LIMIT}
         while 1:
@@ -142,6 +142,20 @@ class WishService(Market):
             yield data
             if len(result['data']) < LIMIT:#type: ignore
                 break
+    async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str,sem:Any=None)->Any:
+        url=f'/api/v3/products/{product_id}'
+        while 1:
+            if sem:
+                async with sem:
+                    data=await self.get(url,store)
+                    await asyncio.sleep(0.5)
+            else:
+                data = await self.get(url, store)
+            if data['code']==1056:#频率限制
+                print('overload')
+                await asyncio.sleep(1)
+            else:
+                return data['data']
     async def syncProduct(self,db:AsyncSession,store:Models.Store)->Any:
         async for productSummarys in self.getProductList(db,store):
             needsync = {productSummary["id"]:productSummary['updated_at'] for productSummary in productSummarys}
@@ -158,8 +172,8 @@ class WishService(Market):
                 if tmstamp!=parse(needsync[model.wish_id]).timestamp():
                     needupdate[model.wishproduct_id]=model.wish_id #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
                 del needsync[model.wish_id]
-
-            newproducts_task=[self.getProductDetail(db,store,product_id) for product_id in needsync]#:#add new product
+            sem = asyncio.Semaphore(30)#30并发量 wish有速度限制
+            newproducts_task=[self.getProductDetail(db,store,product_id,sem) for product_id in needsync]#:#add new product
 
             result=await asyncio.gather(*newproducts_task)
             await wishutil.addproducts(db,result)
@@ -173,14 +187,7 @@ class WishService(Market):
 
 
 
-    async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str)->Any:
-        url=f'/api/v3/products/{product_id}'
-        while 1:
-            data=await self.get(url,store)
-            if data['code']==1056:#频率限制
-                await asyncio.sleep(0.5)
-            else:
-                return data['data']
+
     # async def getProductDetailwithRatesLimit(self,db:AsyncSession,product_ids:List[str])->Any:
     #     size=100
     #     for i in range(math.ceil(len(product_ids)/size)):

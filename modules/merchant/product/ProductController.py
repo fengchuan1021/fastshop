@@ -44,6 +44,29 @@ async def onlineproduct(
 
 # </editor-fold>
 
+# <editor-fold desc="syncProduct get: /merchant/syncProduct/{store_id}">
+@router.get(
+    "/merchant/syncProduct/{store_id}",
+    response_class=XTJsonResponse,
+    #response_model=MerchantOnlineproductStoreIdGetResponse,
+)
+async def syncProduct(
+    store_id: int,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    onlineproduct
+    """
+    await Service.thirdmarketService.syncProduct(
+        db, token.merchant_id, store_id
+    )
+
+    return {'status':'success'}
+
+
+# </editor-fold>
+
 
 
 
