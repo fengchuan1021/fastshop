@@ -21,7 +21,7 @@ class ThirdMarketService():
                 marketname=f[0:-10].lower()
                 self.markets[marketname]=getattr(Service,marketname+'Service')
     async def init(self,db:AsyncSession)->None:
-        marketmodels=await Service.marketService.getList(db)
+        marketmodels=await Service.marketService.find(db)
         for model in marketmodels:
             if model.market_name in self.markets:
                 self.markets[model.market_id]=self.markets[model.market_name]#type: ignore

@@ -121,7 +121,7 @@ async def getrolelist(
     getrolelist
     """
     roles=[{'role_name':r.name,'role_id':r.value} for r in UserRole.UserRole]
-    #roles=await Service.roleService.getList(db)
+
     return CommonResponse(status='success',data=roles)
 
 

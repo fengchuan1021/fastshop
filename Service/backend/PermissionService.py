@@ -46,7 +46,7 @@ class PermissionService(CRUDBase[Models.Permission]):
 
     async def setUserRolePermission(self,db:AsyncSession,roleid:int,apis:List[str])->None:
 
-        oldpermissions=await self.getList(db,filters={'roleid':roleid})
+        oldpermissions=await self.find(db,filter={'roleid':roleid})
         for oldpermission in oldpermissions:
             if oldpermission.api_name not in apis:
                 await db.delete(oldpermission)

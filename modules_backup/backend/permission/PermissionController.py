@@ -104,7 +104,7 @@ async def setrolepermission(
     """
     setrolepermission
     """
-    allroles=await Service.roleService.getList(db)
+    allroles=await Service.roleService.find(db)
     if body.role_id not in [role.role_id for role in allroles]:
         return {'status':'falied','msg':"user role not exists"}
     await Service.permissionService.setUserRolePermission(db,body.role_id,body.apis)

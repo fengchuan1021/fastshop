@@ -38,21 +38,28 @@ class CRUDBase(Generic[ModelType]):
             results = await dbSession.execute(select(self.model).where(self.model.id == id))
         return results.scalar_one_or_none()
 
-    async def find(self, db: AsyncSession, filter: Any = None, option: Any = None) -> List[ModelType]:
+    async def find(self, db: AsyncSession, filter: Optional[BaseModel | Dict] = None, option: Any = None,
+                   offset:int=None,
+                   limit:int=None,
+                   order_by: Any = '',
+                   **kwargs: Dict) -> List[ModelType]:
         where, params = filterbuilder(filter)
-        if option:
-            if not isinstance(option,list):
-                option=[option]
-            stament = select(self.model).options(*option).where(text(where))
-        else:
-            stament = select(self.model).where(text(where))
+        if not option:
+            option=[]
+        elif not isinstance(option,list):
+            option = [option]
+
+        stament = select(self.model).options(*option).where(text(where)).order_by(text(order_by) if isinstance(order_by, str) else order_by)
+        if offset!=None:
+            stament = stament.offset(offset)
+        if limit!=None:
+            stament = stament.limit(limit)
         return (await db.execute(stament, params)).scalars().all()
 
-    async def findOne(self, dbSession: AsyncSession, filter: Optional[BaseModel | Dict] = None) -> Optional[ModelType]:
-        where, params = filterbuilder(filter)
-        statment = select(self.model).where(text(where))
-        results = await dbSession.execute(statment, params)
-        return results.scalar_one_or_none()
+    async def findOne(self, db: AsyncSession, filter: Optional[BaseModel | Dict] = None,option: Any = None) -> Optional[ModelType]:
+        results=await self.find(db,filter,option,offset=0,limit=1)
+        return results[0] if results else None
+
 
     async def create(self, dbSession: AsyncSession, shema_in: BaseModel | Dict) -> ModelType:
         if isinstance(shema_in, dict):
@@ -63,43 +70,21 @@ class CRUDBase(Generic[ModelType]):
 
         return db_model
 
-    async def getList(self, dbSession: AsyncSession, filter: Optional[BaseModel | Dict] = None, offset: int = 0,
-                      limit: int = 0, order_by: Any = '', options: list = [], **kwargs: Dict) -> List[ModelType]:
-        print('getlist:::::')
-        if not order_by:
-            order_by = self.model.id.desc()
-        where, params = filterbuilder(filter)
-        txtwhere = text(where)
-        stament = select(self.model).options(*options).where(txtwhere).order_by(
-            text(order_by) if isinstance(order_by, str) else order_by)
-        if offset:
-            stament = stament.offset(offset)
-        if limit:
-            stament = stament.limit(limit)
-        results = await dbSession.execute(stament, params)
 
-        return results.scalars().all()
-
-    async def pagination(self, dbSession: AsyncSession, pagenum: int = 1, pagesize: int = 20,
-                         filter: Optional[BaseModel | Dict] = None, order_by: str = '', calcTotalNum: bool = False,
-                         options: list = [], **kwargs: Dict) -> Tuple[List[ModelType], int]:
-        where, params = filterbuilder(filter)
-        txtwhere = text(where)
-        if not order_by:
-            txtorderby = text(f"{self.model.__tablename__}.{self.model.__tablename__}_id desc")  # type: ignore
-        else:
-            txtorderby = text(order_by)
+    async def pagination(self, db: AsyncSession,filter: Optional[BaseModel | Dict] = None ,option:Any=None,pagenum: int = 1, pagesize: int = 20,
+                         order_by: str = '', calcTotalNum: bool = False,
+                          **kwargs: Dict) -> Tuple[List[ModelType], int]:
+        totalNum=0
         if calcTotalNum:
-            totalstatment = select(func.count('*')).select_from(self.model).where(txtwhere)
-            result = await dbSession.execute(totalstatment, params)
+            where, params = filterbuilder(filter)
+            totalstatment = select(func.count('*')).select_from(self.model).where(text(where))
+            result = await db.execute(totalstatment, params)
             totalNum = result.scalar_one()
         else:
             totalNum = 0
 
-        stament = select(self.model).options(*options).where(txtwhere).offset((pagenum - 1) * pagesize).limit(
-            pagesize).order_by(txtorderby)
-        results = await dbSession.execute(stament, params)
-        return results.scalars().all(), totalNum
+        results=await self.find(db,filter,option,(pagenum-1)*pagesize,pagesize,order_by)
+        return results,totalNum
 
     async def delete(self, dbSession: AsyncSession, model: ModelType) -> None:
         await dbSession.delete(model)

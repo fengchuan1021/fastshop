@@ -39,7 +39,7 @@ async def warehouselist(
     """
     warehouselist
     """
-    results=await Service.warehouseService.getList(db)
+    results=await Service.warehouseService.find(db)
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendSiteWarehouselistPostResponse(status='success', msg='', data=results)
 
@@ -84,7 +84,7 @@ async def delwarehouse(
     """
     delwarehouse
     """
-    await Service.warehouseService.deleteByPk(db,body.warehouse_id)
+    await Service.warehouseService.deleteByPk(db,body.warehouse_id)#type: ignore
 
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendSiteDelwarehouseDeleteResponse(status='success')

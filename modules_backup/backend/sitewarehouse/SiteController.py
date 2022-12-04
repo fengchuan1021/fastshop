@@ -62,7 +62,7 @@ async def sitelist(
     """
     sitelist
     """
-    results=await Service.siteService.getList(db,**body.dict())
+    results=await Service.siteService.find(db,**body.dict())
     # install pydantic plugin,press alt+enter auto complete the args.
     return BackendSiteSitelistPostResponse(status='success', msg='', data=results)
 

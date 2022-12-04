@@ -11,7 +11,8 @@ from urllib.parse import urlencode
 #from Service.thirdpartmarket import Market
 class OnBuyService():#Market
     def __init__(self)->None:
-        self.session = aiohttp.ClientSession(base_url=settings.ONBUY_APIURL)
+        pass
+        #self.session = aiohttp.ClientSession(base_url=settings.ONBUY_APIURL)
 
     async def getStore(self,db:AsyncSession,store_id:str)->Models.Store:
         store = await Service.storeService.findByPk(db,store_id)
@@ -30,7 +31,7 @@ class OnBuyService():#Market
         form.add_field('secret_key',store.appsecret )
         form.add_field('consumer_key',store.appkey)
         print('key:',form.__dict__)
-        async with self.session.post('/v2/auth/request-token',data=form) as resp:
+        async with self.session.post('/v2/auth/request-token',data=form) as resp:#type: ignore
             t=await resp.text()
             print('baseurl:',settings.ONBUY_APIURL)
             print('t:',t)
@@ -42,7 +43,7 @@ class OnBuyService():#Market
         if TYPE_CHECKING:
             store=cast(Models.Store,store)
         token=await self.getToken(store)
-        self.session.headers.update({'Authorization':token})
+        self.session.headers.update({'Authorization':token})#type: ignore
         return f'{url}?{urlencode(params)}'#type: ignore
 
     async def getBrands(self,db:AsyncSession,store_id:str)->Any:
@@ -50,7 +51,7 @@ class OnBuyService():#Market
         params={'filter[name]':'life','sort[name]':'desc','limit':5,'offset':0}
         store= await self.getStore(db,store_id)
         url=await self.buildurl(url,params,store)
-        async with self.session.get(url) as resp:
+        async with self.session.get(url) as resp:#type: ignore
             data=await resp.json()
             print('brands:',data)
 
@@ -76,7 +77,7 @@ class OnBuyService():#Market
         #
         skus=[1,2,3]
         url = await self.buildurl(url, {},store)
-        async with self.session.delete(url,json={"site_id":2000,"skus":skus}) as resp:
+        async with self.session.delete(url,json={"site_id":2000,"skus":skus}) as resp:#type: ignore
             result=await resp.json()
             print(result)
 
@@ -87,7 +88,7 @@ class OnBuyService():#Market
         store= await self.getStore(db,store_id)
         params={"site_id":2000}
         url=await self.buildurl(url,params,store)
-        async with self.session.get(url) as resp:
+        async with self.session.get(url) as resp:#type: ignore
             json=await resp.json()
             print('josn:',json)
 
@@ -97,7 +98,7 @@ class OnBuyService():#Market
         params={'site_id':2000,'filter[status]':'open','limit':20,'offset':0,'sort[created]':'desc'}
         store = await self.getStore(db, store_id)
         url=await self.buildurl(url,params,store)
-        async with self.session.get(url) as resp:
+        async with self.session.get(url) as resp:#type: ignore
             data=await resp.json()
             print(data)
             return data
