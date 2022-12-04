@@ -74,16 +74,25 @@ class CRUDBase(Generic[ModelType]):
     async def pagination(self, db: AsyncSession,filter: Optional[BaseModel | Dict] = None ,option:Any=None,pagenum: int = 1, pagesize: int = 20,
                          order_by: str = '', calcTotalNum: bool = False,
                           **kwargs: Dict) -> Tuple[List[ModelType], int]:
+        where, params = filterbuilder(filter)
+
         totalNum=0
         if calcTotalNum:
-            where, params = filterbuilder(filter)
             totalstatment = select(func.count('*')).select_from(self.model).where(text(where))
             result = await db.execute(totalstatment, params)
             totalNum = result.scalar_one()
         else:
             totalNum = 0
 
-        results=await self.find(db,filter,option,(pagenum-1)*pagesize,pagesize,order_by)
+        if not option:
+            option=[]
+        elif not isinstance(option,list):
+            option = [option]
+
+        stament = select(self.model).options(*option).where(text(where))\
+            .offset((pagenum - 1) * pagesize).limit(pagesize)\
+            .order_by(text(order_by) if isinstance(order_by, str) else order_by)
+        results=(await db.execute(stament, params)).scalars().all()
         return results,totalNum
 
     async def delete(self, dbSession: AsyncSession, model: ModelType) -> None:
