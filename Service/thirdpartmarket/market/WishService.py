@@ -162,7 +162,7 @@ class WishService(Market):
                 await asyncio.sleep(1)
             else:
                 return data['data']
-    async def fullsyncProduct(self,db:AsyncSession,store:Models.Store)->Any:
+    async def fullsyncProduct(self,db:AsyncSession,store:Models.Store,merchant_id:int)->Any:
         url='/api/v3/products/bulk_get'
         data=await self.post(url,store)
         if data['code']==0:
@@ -176,13 +176,13 @@ class WishService(Market):
                             async with session.get(url) as resp:
                                 txt=await resp.text()
                                 results=[orjson.loads(l) for l in txt.split('\n') if l]
-                                await wishutil.addproducts(db,results)
+                                await wishutil.addproducts(db,results,store.store_id,merchant_id)
 
                     break
                 elif statusdata['data']['status']=="EXCEPTION":
                     raise ResponseException({'status':'failed','msg':"wish sync proudct failed"})
 
-    async def incrementSync(self,db:AsyncSession,store:Models.Store)->Any:
+    async def incrementSync(self,db:AsyncSession,store:Models.Store,merchant_id:int)->Any:
         async for productSummarys in self.getProductList(db,store):
             needsync = {productSummary["id"]:productSummary['updated_at'] for productSummary in productSummarys}
             needupdate={}
@@ -202,17 +202,17 @@ class WishService(Market):
             newproducts_task=[self.getProductDetail(db,store,product_id,sem) for product_id in needsync]#:#add new product
 
             result=await asyncio.gather(*newproducts_task)
-            await wishutil.addproducts(db,result)
+            await wishutil.addproducts(db,result,store.store_id,merchant_id)
 
             for ourdbid,product_id in needupdate.items():
                 print('needupdate',product_id)
 
-    async def syncProduct(self,db:AsyncSession,store:Models.Store)->Any:
+    async def syncProduct(self,db:AsyncSession,store:Models.Store,merchant_id:int)->Any:
         hassyncbefore=await Service.wishproductService.findOne(db,{"store_id":store.store_id})
         if not hassyncbefore:
-            await self.fullsyncProduct(db,store)
+            await self.fullsyncProduct(db,store,merchant_id)
         else:
-            await self.incrementSync(db,store)
+            await self.incrementSync(db,store,merchant_id)
 
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
         datas=await self.getProductList(db,store)#type: ignore

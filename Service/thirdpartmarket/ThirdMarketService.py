@@ -66,7 +66,7 @@ class ThirdMarketService():
         data=await marketservice.syncOrder(db,store,starttime,endtime)
     async def syncProduct(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
-        await marketservice.syncProduct(db,store)
+        await marketservice.syncProduct(db,store,merchant_id)
     async def getSelfAuthrizeUrl(self,db:AsyncSession,merchant_id:int,store_id:int)->str:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         return await marketservice.getSelfAuthrizeUrl(db,store)
