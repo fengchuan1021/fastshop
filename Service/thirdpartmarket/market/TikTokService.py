@@ -108,7 +108,7 @@ class TikTokService(Market):
                 if ourdborder.market_updatetime==needsync[ourdborder.market_order_number]:
                     del needsync[ourdborder.market_order_number]
 
-            orders=await self.getOrderDetail(db,store,[titikorder_id for titikorder_id in needsync])
+            orders=await self.getOrderDetail2(db,store,[titikorder_id for titikorder_id in needsync])
             arr:List[Any]=[]
             for tiktok_order in orders:
                 order=Order()
@@ -148,7 +148,7 @@ class TikTokService(Market):
 
 
 
-    async def getOrderDetail(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
+    async def getOrderDetail2(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
         url='/api/orders/detail/query'
         ret=await self.post(url,{},{},store)#order_ids
 
