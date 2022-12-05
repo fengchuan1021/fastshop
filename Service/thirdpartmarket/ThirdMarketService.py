@@ -51,7 +51,9 @@ class ThirdMarketService():
         #     db, store_id, {"merchant_id": merchant_id}
         # )
         store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
-        return await marketservice.getProductList(db,store)
+        tmp=marketservice.getProductList(db,store)
+        return await tmp. __anext__()
+
     async def getStoreOnlineOrders(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
 
         store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)

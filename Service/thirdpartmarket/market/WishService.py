@@ -1,6 +1,6 @@
 import settings
 import asyncio
-import datetime
+import datetime,time
 from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast, Optional
 import orjson
 import pytz,os #type: ignore
@@ -111,27 +111,68 @@ class WishService(Market):
         #     ret = await resp.json()
         #     print(ret)
 
-    async def getOrderList(self, db:AsyncSession,store:Models.Store) -> List:  # type: ignore
-        url = '/api/v3/orders'
-        params = {'states': 'REQUIRE_REVIEW'}
-        data=await self.get(url,store,params)
-        print("order:",data)
-
-        return data['data']
+    # async def getOrderList(self, db:AsyncSession,store:Models.Store) -> List:  # type: ignore
+    #     url = '/api/v3/orders'
+    #     params = {'states': 'REQUIRE_REVIEW'}
+    #     data=await self.get(url,store,params)
+    #     print("order:",data)
+    #
+    #     return data['data']
 
     async def createProduct(self):  # type: ignore
         url = '/api/v3/products'
         async with self.session.post(url) as resp:
             ret = await resp.json()
 
-    async def getOrderDetail(self, db: AsyncSession, store:Models.Store, order_id: str) -> Any:
+    async def getOrderDetail(self, db: AsyncSession, store:Models.Store, order_id: str,sem:Any) -> Any:
         url = f'/api/v3/orders/{order_id}'
         data=await self.get(url,None)
         # async with self.session.get(url) as resp:
         #     ret = await resp.json()
         #     return ret
+    async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int)->Any:
+        url='/api/v3/orders'
+        update_at_max=None
+        params={'limit':500}
+        while 1:
+            if update_at_max:
+                params['updated_at_max']=update_at_max
+        #endstr=str(datetime.datetime.fromtimestamp(endtime, tz=datetime.timezone.utc))
+        #endstr=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(starttime))
+            #print('endstr',endstr)
+            ret=await self.get(url,store,params)
+            if ret['data']:
+                update_at_max=ret['data'][-1]["updated_at"]
+            else:
+                break
+            yield ret['data']
+            if datetime.datetime.fromisoformat(update_at_max).timestamp()<=starttime:
+                break
+    async def syncOrder(self,db:AsyncSession,store:Models.Store,starttime:int,merchant_id:int)->Any:
+        async for remoteOrders in self.getOrderList(db,store,starttime):
+            #for remoteOrder in remoteOrders:
+            needsync = {remoteOrder["id"]:remoteOrder['updated_at'] for remoteOrder in remoteOrders}
+            needupdate={}
+            ourdbmodels=await Service.orderService.find(db,{"market_order_number__in":needsync.keys()},Load(Models.Order).load_only(Models.Order.market_order_number,Models.Order.market_updatetime))
+            for model in ourdbmodels:
+                if os.name=='nt':#for timezone bug in windows
+                    if isinstance(model.updated_at,str):
+                        tmstamp=parse(model.updated_at).replace(tzinfo=pytz.UTC).timestamp()
+                    else:
+                        tmstamp=model.updated_at.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
+                else:
+                    tmstamp=model.updated_at.timestamp() if not isinstance(model.updated_at,str) else parse(model.updated_at).timestamp()#type: ignore
+                if tmstamp!=parse(needsync[model.market_order_number]).timestamp():
+                    needupdate[model.order_id]=model.market_order_number #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
+                del needsync[model.market_order_number]
+            sem = asyncio.Semaphore(20)#35并发量 wish有速度限制
+            new_task=[self.getOrderDetail(db,store,market_order_id,sem) for market_order_id in needsync]#:#add new product
 
+            result=await asyncio.gather(*new_task)
+            await wishutil.addOrders(db,result,store.store_id,merchant_id)
 
+            for ourdbid,market_order_id in needupdate.items():
+                print('needupdate',market_order_id)
 
     async def getProductList(self, db: AsyncSession, store: Models.Store) ->Any:
         url = '/api/v3/products'
@@ -258,7 +299,8 @@ if __name__ == '__main__':
         wishService = WishService()
         async with getdbsession() as db:
             store = await Service.storeService.findByPk(db, 1)
-            await Service.wishService.backgroundsyncProduct(db, store)
+            await Service.wishService.syncOrder(db,store,int(time.time())-3600*24*31)
+            #await Service.wishService.backgroundsyncProduct(db, store)
         # await wishService.getCurrencyList()
         # await wishService.getBrandList()
         # await wishService.getOrders()

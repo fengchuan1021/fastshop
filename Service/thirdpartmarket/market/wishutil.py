@@ -89,13 +89,13 @@ async def addproducts(db:AsyncSession,products:List[Dict],store_id:int,merchant_
     productarr=[]
     variantarr=[]
     for json_data in products:
-        product=Models.WishProduct(wishproduct_id = snowFlack.getId())
+        product=Models.WishProduct()
         product.store_id=store_id
         product.merchant_id=merchant_id
         filloutProduct(product,json_data)
         productarr.append(product)
         for variant_json in json_data['variations']:
-            variant=Models.WishVariant(wishvariant_id=snowFlack.getId())
+            variant=Models.WishVariant()
             variant.store_id=store_id
             variant.merchant_id=merchant_id
             filloutVariant(variant,variant_json,product)

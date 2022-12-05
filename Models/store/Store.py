@@ -2,7 +2,7 @@
 
 import settings
 from sqlalchemy import Column
-from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER,DATETIME
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER,DATETIME,TIMESTAMP
 from sqlalchemy.orm import relationship
 from Models.stock.Warehouse import Warehouse
 from Models.ModelBase import Base,XTVARCHAR
@@ -15,7 +15,7 @@ class Store(Base):
     __tablename__ = 'store'
 
     store_id = Column(INTEGER, primary_key=True, autoincrement=True)
-    store_name = Column(XTVARCHAR(32),unique=True)
+    store_name = Column(XTVARCHAR(32))
     appid=Column(XTVARCHAR(512),default='')
 
     appkey=Column(XTVARCHAR(512),default='')
@@ -23,9 +23,9 @@ class Store(Base):
     appsecret=Column(XTVARCHAR(512),default='')
     token=Column(XTVARCHAR(512),default='')
     refreshtoken=Column(XTVARCHAR(512),default='')
-    token_expiration=Column(DATETIME(fsp=3))
-    refreshtoken_expiration = Column(DATETIME(fsp=3))
-    lang=Column(ENUM(*[i.value for i in settings.SupportLang]),server_default='en',default='en')
+    token_expiration=Column(INTEGER)
+    refreshtoken_expiration = Column(INTEGER)
+    #lang=Column(ENUM(*[i.value for i in settings.SupportLang]),server_default='en',default='en')
     shop_id=Column(XTVARCHAR(32),default='',server_default='')
     #warehouse_id=Column(BIGINT,index=True)
     #user_id=Column(BIGINT,index=True)
