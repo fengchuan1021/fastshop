@@ -206,21 +206,21 @@ class Variant(Base):
     #                                                        )
 
 
-class WishProduct(Base):
-    __tablename__ = 'wish_product'
-    wish_product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
-    status = Column(
-        ENUM("PENDING_REVIEW", "APPROVED", "REJECTED", "REMOVED_BY_WISH", "REMOVED_BY_MERCHANT"),
-        server_default='PENDING_REVIEW', default='PENDING_REVIEW',
-        comment="待审查 / 通过 / 拒绝 / 被wish移除 / 被商家移除")
-    created_at = Column(DATETIME)
-    updated_at = Column(DATETIME)
-    description = Column(TEXT)
-    tags = Column(XTVARCHAR(512), nullable=True, comment="")
-    subcategory_id = Column(INTEGER, default=0, comment="")
-    num_saves = Column(INTEGER, default=0, comment="")
-    category_experience_eligibility = Column(ENUM("TURE", "FALSE"))
-    num_sold = Column(INTEGER, default=0, comment="")
-    parent_sku = Column(XTVARCHAR(512), nullable=True, comment="")
-    wish_id = Column(XTVARCHAR(256), nullable=True, comment="")
-    name = Column(XTVARCHAR(512), nullable=True, comment="")
+# class WishProduct(Base):
+#     __tablename__ = 'wish_product'
+#     wish_product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+#     status = Column(
+#         ENUM("PENDING_REVIEW", "APPROVED", "REJECTED", "REMOVED_BY_WISH", "REMOVED_BY_MERCHANT"),
+#         server_default='PENDING_REVIEW', default='PENDING_REVIEW',
+#         comment="待审查 / 通过 / 拒绝 / 被wish移除 / 被商家移除")
+#     created_at = Column(DATETIME)
+#     updated_at = Column(DATETIME)
+#     description = Column(TEXT)
+#     tags = Column(XTVARCHAR(512), nullable=True, comment="")
+#     subcategory_id = Column(INTEGER, default=0, comment="")
+#     num_saves = Column(INTEGER, default=0, comment="")
+#     category_experience_eligibility = Column(ENUM("TURE", "FALSE"))
+#     num_sold = Column(INTEGER, default=0, comment="")
+#     parent_sku = Column(XTVARCHAR(512), nullable=True, comment="")
+#     wish_id = Column(XTVARCHAR(256), nullable=True, comment="")
+#     name = Column(XTVARCHAR(512), nullable=True, comment="")
