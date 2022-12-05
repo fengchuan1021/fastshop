@@ -13,6 +13,9 @@ import sqlalchemy.types as types
 import os
 from decimal import Decimal
 from XTTOOLS import obj2dict
+
+from component.snowFlakeId import snowFlack
+
 if os.getenv('migratedb',''):
     from sqlalchemy.dialects.mysql import VARCHAR as XTVARCHAR#type: ignore
 else:
@@ -63,4 +66,13 @@ class MyBase(object):
     def json(self)->str:
         return orjson.dumps(self.dict(),default=obj2dict).decode()
 
-Base = declarative_base(cls=MyBase)
+def xt_constructor(instance, **kwds)->None:#type: ignore
+    print('kwy:',kwds)
+    primaryname=getattr(instance,"__tablename__")+'_id'
+    pkcolumn = getattr(type(instance), primaryname)
+    if pkcolumn.default:
+        setattr(instance,primaryname,snowFlack.getId())
+    for attr, value in kwds.items():
+        setattr(instance, attr, value)
+
+Base = declarative_base(cls=MyBase,constructor=xt_constructor)

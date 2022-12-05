@@ -20,7 +20,7 @@ import aiohttp
 from common.CommonError import ResponseException
 from component.cache import cache
 from Service.thirdpartmarket import Market
-from component.dbsession import getdbsession
+
 if __name__=='__main__':
     import wishutil
 else:
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     import asyncio
 
     import time,os
-
+    from component.dbsession import getdbsession
     os.environ['TZ'] = 'Europe/London'
     #time.tzset()
     from ctypes import cdll

@@ -2,7 +2,7 @@
 
 import settings
 from sqlalchemy import Column
-from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER,DATETIME
 from sqlalchemy.orm import relationship
 from Models.stock.Warehouse import Warehouse
 from Models.ModelBase import Base,XTVARCHAR
@@ -22,6 +22,9 @@ class Store(Base):
 
     appsecret=Column(XTVARCHAR(512),default='')
     token=Column(XTVARCHAR(512),default='')
+    refreshtoken=Column(XTVARCHAR(512),default='')
+    token_expiration=Column(DATETIME(fsp=3))
+    refreshtoken_expiration = Column(DATETIME(fsp=3))
     lang=Column(ENUM(*[i.value for i in settings.SupportLang]),server_default='en',default='en')
     shop_id=Column(XTVARCHAR(32),default='',server_default='')
     #warehouse_id=Column(BIGINT,index=True)
