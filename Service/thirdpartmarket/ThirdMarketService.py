@@ -61,11 +61,14 @@ class ThirdMarketService():
     async def getStoreOnlineProductDetail(self,db:AsyncSession,merchant_id:int,store_id:int,product_id:str)->Any:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         return await marketservice.getProductDetail(db,store,product_id)
-    async def syncOrder(self,db:AsyncSession,merchant_id:int,store_id:int,nmonth:int=1)->Any:
+    async def getStoreOnlineOrderDetail(self,db:AsyncSession,merchant_id:int,store_id:int,order_id:str)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getOrderDetail(db,store,order_id)
+    async def syncOrder(self,db:AsyncSession,merchant_id:int,store_id:int,ndays:int=1)->Any:
         store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
         endtime = int(time.time())
-        starttime=endtime-nmonth*31*3600*24
-        data=await marketservice.syncOrder(db,store,starttime,endtime)
+        starttime=endtime-ndays*3600*24
+        data=await marketservice.syncOrder(db,merchant_id,store,starttime)
     async def syncProduct(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         await marketservice.syncProduct(db,store,merchant_id)

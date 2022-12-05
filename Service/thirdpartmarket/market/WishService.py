@@ -124,9 +124,10 @@ class WishService(Market):
         async with self.session.post(url) as resp:
             ret = await resp.json()
 
-    async def getOrderDetail(self, db: AsyncSession, store:Models.Store, order_id: str,sem:Any) -> Any:
+    async def getOrderDetail(self, db: AsyncSession, store:Models.Store, order_id: str) -> Any:
         url = f'/api/v3/orders/{order_id}'
-        data=await self.get(url,None)
+        data=await self.get(url,store)
+        return data
         # async with self.session.get(url) as resp:
         #     ret = await resp.json()
         #     return ret
@@ -148,10 +149,10 @@ class WishService(Market):
             yield ret['data']
             if datetime.datetime.fromisoformat(update_at_max).timestamp()<=starttime:
                 break
-    async def syncOrder(self,db:AsyncSession,store:Models.Store,starttime:int,merchant_id:int)->Any:
+    async def syncOrder(self,db:AsyncSession,merchant_id:int,store:Models.Store,starttime:int)->Any:
         async for remoteOrders in self.getOrderList(db,store,starttime):
             #for remoteOrder in remoteOrders:
-            needsync = {remoteOrder["id"]:remoteOrder['updated_at'] for remoteOrder in remoteOrders}
+            needsync = {remoteOrder["id"]:remoteOrder for remoteOrder in remoteOrders}
             needupdate={}
             ourdbmodels=await Service.orderService.find(db,{"market_order_number__in":needsync.keys()},Load(Models.Order).load_only(Models.Order.market_order_number,Models.Order.market_updatetime))
             for model in ourdbmodels:
@@ -163,16 +164,16 @@ class WishService(Market):
                 else:
                     tmstamp=model.updated_at.timestamp() if not isinstance(model.updated_at,str) else parse(model.updated_at).timestamp()#type: ignore
                 if tmstamp!=parse(needsync[model.market_order_number]).timestamp():
-                    needupdate[model.order_id]=model.market_order_number #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
+                    needupdate[model.order_id]=needsync[model.market_order_number] #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
                 del needsync[model.market_order_number]
-            sem = asyncio.Semaphore(20)#35并发量 wish有速度限制
-            new_task=[self.getOrderDetail(db,store,market_order_id,sem) for market_order_id in needsync]#:#add new product
+            #sem = asyncio.Semaphore(100)#100并发量 wish有速度限制
+            #new_task=[self.getOrderDetail(db,store,market_order_id,sem) for market_order_id in needsync]#:#add new product
 
-            result=await asyncio.gather(*new_task)
-            await wishutil.addOrders(db,result,store.store_id,merchant_id)
+            #result=await asyncio.gather(*new_task)
+            await wishutil.addOrders(db,needsync.values(),store.store_id,merchant_id)
 
-            for ourdbid,market_order_id in needupdate.items():
-                print('needupdate',market_order_id)
+            for ourdbid,market_order in needupdate.items():
+                print('needupdate',market_order)
 
     async def getProductList(self, db: AsyncSession, store: Models.Store) ->Any:
         url = '/api/v3/products'

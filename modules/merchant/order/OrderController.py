@@ -48,13 +48,13 @@ async def onlineorders(
 
 # <editor-fold desc="asynchalfyearorder get: /merchant/asynchalfyearorder/{store_id}">
 @router.get(
-    "/merchant/syncorder/{store_id}/{nmonth}",
+    "/merchant/syncorder/{store_id}/{ndays}",
     response_class=XTJsonResponse,
     #response_model=MerchantOnlineproductStoreIdGetResponse,
 )
 async def asynchalfyearorder(
     store_id: int,
-    nmonth:int=1,
+    ndays:int=1,
     db: AsyncSession = Depends(get_webdbsession),
     token: settings.UserTokenData = Depends(get_token),
 ) -> Any:
@@ -62,10 +62,35 @@ async def asynchalfyearorder(
     onlineorders
     """
     data=await Service.thirdmarketService.syncOrder(
-        db, token.merchant_id, store_id,nmonth
+        db, token.merchant_id, store_id,ndays
     )
 
     return {'status':'success','data':'success'}
+
+
+# </editor-fold>
+
+
+# <editor-fold desc="onlineorderdetail get: /merchant/onlineorderdetail/{store_id}/order_id">
+@router.get(
+    "/merchant/onlineorderdetail/{store_id}/{order_id}",
+    response_class=XTJsonResponse,
+    #response_model=MerchantOnlineproductStoreIdGetResponse,
+)
+async def onlineorderdetail(
+    store_id:int,
+    order_id: str,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    wishonlineproductdetail
+    """
+    data=await Service.thirdmarketService.getStoreOnlineOrderDetail(
+        db, token.merchant_id, store_id,order_id
+    )
+
+    return {'status':'success','data':data}
 
 
 # </editor-fold>
