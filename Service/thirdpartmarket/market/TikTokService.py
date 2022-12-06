@@ -98,7 +98,7 @@ class TikTokService(Market):
         while 1:
             if sem:
                 async with sem:
-                    data=await self.get(url,{},store)
+                    data=await self.get(url,{"product_id":product_id},store)
                     await asyncio.sleep(1)
             else:
                 data = await self.get(url, {"product_id":product_id},store)
