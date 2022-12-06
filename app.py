@@ -84,6 +84,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
     except  ConnectionError as e:
         jsonout = Common500Response(status='cacheerror',msg='cache server error',data=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
+
     except ResponseException as e:
         response=XTJsonResponse(e.response)
     except Exception as e:
