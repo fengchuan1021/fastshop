@@ -1,7 +1,8 @@
+import os
 import time
 import random
 from typing import Dict, List, TYPE_CHECKING, cast, Any
-
+import asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +20,11 @@ from urllib.parse import urlencode
 from Service.thirdpartmarket import Market
 from common.CommonError import ResponseException
 from component.fastQL import fastQuery
+if __name__ == '__main__':
+    import tiktokutil
 
+else:
+    from . import tiktokutil
 
 class TikTokService(Market):
     def __init__(self)->None:
@@ -76,7 +81,7 @@ class TikTokService(Market):
     async def get(self,url:str,params:Dict,store:Models.Store)->Any:
         url=self.buildurl(url,params,store)
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
+            async with session.get(settings.TIKTOK_APIURL+url) as resp:
                 return await  resp.json()
     async def post(self,url:str,params:Dict,body:Dict,store:Models.Store)->Any:
         if not params:
@@ -88,13 +93,58 @@ class TikTokService(Market):
             async with session.post(settings.TIKTOK_APIURL+url,json=body) as resp:
 
                 return await resp.json()
+    async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str,sem:Any=None)->Any:
+        url=f'/api/products/details'
+        while 1:
+            if sem:
+                async with sem:
+                    data=await self.get(url,{},store)
+                    await asyncio.sleep(1)
+            else:
+                data = await self.get(url, {"product_id":product_id},store)
 
-    async def getProductList(self,db:AsyncSession,store:Models.Store)->List:#type ignore
+            return data['data']
+    async def getProductList(self,db:AsyncSession,store:Models.Store)->Any:#type ignore
         url = "/api/products/search"
+        page_number = 1
+        params = {'page_size':100}
+        while 1:
+            params['page_number']=page_number
+            result=await self.post(url,{},params,store)
+            data = result['data']
+            page_number+=1
+            yield data
+            if len(result['data']) < 100:#type: ignore
+                break
 
-        data=await self.post(url,{},{'page_number':1,'page_size':100},store)
+    async def syncProduct(self,db:AsyncSession,store:Models.Store,merchant_id:int)->Any:
+        async for tmp in self.getProductList(db,store):
+            productSummarys=tmp['products']
 
-        return data
+            needsync = {productSummary["id"]:productSummary["update_time"] for productSummary in productSummarys}
+            needupdate={}
+            ourdbmodels=await Service.tiktokproductService.find(db,{"market_product_id__in":needsync.keys()},Load(Models.TiktokProduct).load_only(Models.TiktokProduct.market_product_id,Models.TiktokProduct.market_updated_at))
+            for model in ourdbmodels:
+                if os.name=='nt':#for timezone bug in windows
+                    if isinstance(model.updated_at,int):
+                        tmstamp=model.updated_at
+                    else:
+                        tmstamp=model.updated_at.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
+                else:
+                    tmstamp=model.updated_at.timestamp() if not isinstance(model.updated_at,int) else model.updated_at#type: ignore
+                if tmstamp!=needsync[model.market_product_id]:
+                    needupdate[model.tiktokproduct_id]=model.market_product_id #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
+                del needsync[model.market_product_id]
+            #sem = asyncio.Semaphore(20)#35并发量 wish有速度限制
+            newproducts_task=[self.getProductDetail(db,store,product_id) for product_id in needsync]#:#add new product
+
+            result=await asyncio.gather(*newproducts_task)
+
+            await tiktokutil.addproducts(db,result,store.store_id,merchant_id)
+
+            for ourdbid,product_id in needupdate.items():
+                print('needupdate',product_id)
+
     async def syncOrder(self,db:AsyncSession,store:Models.Store,starttime:int,endtime:int)->Any:
         #orderssummory=await self.getOrderList(db,store,starttime,endtime)
 

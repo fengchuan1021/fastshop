@@ -88,3 +88,5 @@ thirdmarketService : ThirdMarketService
 onbuyService : OnBuyService
 tiktokService : TikTokService
 wishService : WishService
+tiktokproductService: CRUDBase[Models.TiktokProduct]
+tiktokvariantService: CRUDBase[Models.TiktokVariant]

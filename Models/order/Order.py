@@ -98,6 +98,7 @@ class OrderItem(Base):
     variant_id = Column(BIGINT, default=0)
     sku = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
     name = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
+    image=Column(XTVARCHAR(255), nullable=False,default='', server_default='')
     qty_ordered = Column(INTEGER, default=0)
     qty_invoiced = Column(INTEGER, default=0)
     qty_refunded = Column(INTEGER, default=0)

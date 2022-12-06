@@ -13,6 +13,7 @@ from .product.Product import Product,Variant
 from .product.VariantImage import VariantImage
 from .product.VariantStore import VariantStore
 from .product.WishProduct import WishProduct,WishVariant
+from .product.TiktokProduct import TiktokProduct,TiktokVariant
 from .stock.PurchaseReceipt import PurchaseReceipt,PurchaseReceiptItems
 from .stock.Supplier import Supplier,SupplierVariant
 from .stock.VariantWarehouse import VariantWarehouse
