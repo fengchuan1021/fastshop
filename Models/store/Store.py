@@ -31,6 +31,7 @@ class Store(Base):
     #user_id=Column(BIGINT,index=True)
     merchant_id=Column(INTEGER,index=True)
     merchant_name=Column(XTVARCHAR(32),default='',server_default='')
+    status=Column(INTEGER,default='1',server_default='1',index=True)#可用为1 token过期 商户未续费等原因为0 不可用
     #warehouse_name=Column(XTVARCHAR(32))
     #Warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Store.warehouse_id) == Warehouse.warehouse_id',back_populates='Store',cascade='')
 
