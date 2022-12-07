@@ -133,7 +133,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order_item.market_product_id=json_data["product_information"]['id']
         order_item.market_variant_id=json_data["product_information"]["variation_id"]
         order_item.sku=json_data["product_information"]["sku"]
-        order_item.name=json_data["product_information"]["name"]
+        order_item.variant_name=json_data["product_information"]["name"]
         order_item.image=json_data["product_information"]["variation_image_url"]
         orderitem_arr.append(order_item)
 
