@@ -96,6 +96,8 @@ class OrderItem(Base):
     order_id = Column(BIGINT, default=0,index=True)
     product_id = Column(BIGINT, default=0)
     variant_id = Column(BIGINT, default=0)
+    market_product_id=Column(XTVARCHAR(32),default='')
+    market_variant_id=Column(XTVARCHAR(32), default='')
     sku = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
     name = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
     image=Column(XTVARCHAR(255), nullable=False,default='', server_default='')

@@ -145,11 +145,11 @@ class TikTokService(Market):
             for ourdbid,product_id in needupdate.items():
                 print('needupdate',product_id)
 
-    async def syncOrder(self,db:AsyncSession,store:Models.Store,starttime:int,endtime:int)->Any:
+    async def syncOrder(self,db:AsyncSession,merchant_id:int,store:Models.Store,starttime:int)->Any:
         #orderssummory=await self.getOrderList(db,store,starttime,endtime)
 
 
-        async for ordersummory in self.getOrderList(db,store,starttime,endtime):#有分页限制一页最多50个
+        async for ordersummory in self.getOrderList(db,store,starttime):#有分页限制一页最多50个
             needsync={order["order_id"]:order["update_time"] for order in ordersummory} #假设这些订单都需要同步
             #从数据库中查找 如果找到并且update_time 相同则不需要同步
             filter={'market_id':self.market_id,'market_order_number__in':[order["order_id"] for order in ordersummory]}
@@ -158,19 +158,8 @@ class TikTokService(Market):
                 if ourdborder.market_updatetime==needsync[ourdborder.market_order_number]:
                     del needsync[ourdborder.market_order_number]
 
-            orders=await self.getOrderDetail2(db,store,[titikorder_id for titikorder_id in needsync])
-            arr:List[Any]=[]
-            for tiktok_order in orders:
-                order=Order()
-                order.market_id=self.market_id
-                order.market_name=self.market_name
-                order.market_id=store.merchant_id
-                order.merchant_name=''
-                order.status="PENDING" #tode
-                order.order_currency_code=tiktok_order['payment_info']['currentcy'].strip()
-                order.market_order_number=tiktok_order['order_id']
-                db.add(order)
-                await db.commit()
+            orders=await self.getOrderDetail(db,store,[titikorder_id for titikorder_id in needsync])
+            tiktokutil.addOrders(db, orders, store, merchant_id)
 
 
 
@@ -178,16 +167,18 @@ class TikTokService(Market):
 
             #await Service.orderService.find(db,{'market_order_number__in',[order["order_id"] for order in ordersummory],'market_id':})
 
-    async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int=None,endtime:int=None)->Any:
+    async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int=None)->Any:
         url = "/api/orders/search"
 
         data:List[Any]=[]
         cursor=None
-        body={'page_size':50,'create_time_from':starttime,'create_time_to':endtime}
+        body={'page_size':40,'create_time_from':starttime}
         while 1:
             if cursor:
                 body['cursor']=cursor
+            print('body:',body)
             ret=await self.post(url,{},body,store)
+            print('ret:',ret)
             if ret['code']==0:
                 yield ret['data']["order_list"]
                 cursor=ret['data']["next_cursor"]
@@ -198,9 +189,11 @@ class TikTokService(Market):
 
 
 
-    async def getOrderDetail2(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
+    async def getOrderDetail(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
         url='/api/orders/detail/query'
-        ret=await self.post(url,{},{},store)#order_ids
+        if not isinstance(order_ids,list):
+            order_ids=[order_ids]
+        ret=await self.post(url,{},{"order_id_list":order_ids},store)#order_ids
 
         if ret['code']!=0:
             raise ResponseException({'status':'failed','msg':ret['message']})

@@ -30,6 +30,7 @@ class Store(Base):
     #warehouse_id=Column(BIGINT,index=True)
     #user_id=Column(BIGINT,index=True)
     merchant_id=Column(INTEGER,index=True)
+    merchant_name=Column(XTVARCHAR(32),default='',server_default='')
     #warehouse_name=Column(XTVARCHAR(32))
     #Warehouse:'Warehouse'=relationship("Warehouse",uselist=False,primaryjoin='foreign(Store.warehouse_id) == Warehouse.warehouse_id',back_populates='Store',cascade='')
 

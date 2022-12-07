@@ -68,37 +68,43 @@ async def addproducts(db:AsyncSession,products:List[Dict],store_id:int,merchant_
     db.add_all(variantarr)
     await db.commit()
 
-async def addOrders(db:AsyncSession,orders:List[Dict],store_id:int,merchant_id:int)->Any:
+async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchant_id:int)->Any:
+
     order_arr=[]
     orderitem_arr=[]
-    status_dic={"SHIPPED":"SHIPPED"}
+    status_dic={111:"AWAITING_SHIPMENT",100:'UNPAID',112:'AWAITING_COLLECTION',114:'PARTIALLY_SHIPPING',121:'IN_TRANSIT',122:'DELIVERED',130:'COMPLETED',140:'CANCELLED'}
     for json_data in orders:
         order=Models.Order()
         order.market_id=(await Service.thirdmarketService.getMarket('tiktok')).market_id
         order.market_name=(await Service.thirdmarketService.getMarket('tiktok')).market_name
         order.merchant_id=merchant_id
-        order.merchant_name=(await Service.merchantService.findByPk(merchant_id)).merchant_name
-        order.status=status_dic[json_data["state"]]
+        order.merchant_name=store.merchant_name
+
+        order.status=status_dic[json_data["order_status"]]
         order.order_currency_code=json_data["general_payment_details"]["payment_total"]["currency_code"]
 
-        order.market_order_number=json_data["id"]
+        order.market_order_number = json_data["order_id"]
         try:
-            order.shipping_method=json_data["tracking_information"][0]["shipping_provider"]["name"]
+            #order.shipping_method=json_data["tracking_information"][0]["shipping_provider"]["name"]
+            pass
         except Exception as e:
             print(e)
-        order.base_grand_total=json_data["general_payment_details"]["payment_total"]['amount']
+        order.base_grand_total=json_data["payment_info"]["total_amount"]
         order.total_item_count=1
-        order.market_updatetime=json_data["updated_at"]
+        #order.market_updatetime=json_data["updated_at"]
 
         order_arr.append(order)
-        order_item=Models.OrderItem()
-        order_item.order_id=order.order_id
-        order_item.product_id=json_data["product_information"]['id']
-        order_item.variant_id=json_data["product_information"]["variation_id"]
-        order_item.sku=json_data["product_information"]["sku"]
-        order_item.name=json_data["product_information"]["name"]
-        order_item.image=json_data["product_information"]["name"]
-        orderitem_arr.append(order_item)
+        for item in json_data["item_list"]:
+            order_item=Models.OrderItem()
+            order_item.order_id=order.order_id
+            order_item.market_variant_id=item["sku_id"]
+            order_item.market_product_id=item["product_id"]
+            order_item.sku=item["seller_sku"]
+            order_item.name=item["product_name"]
+            order_item.qty_ordered=item["quantity"]
+            order_item.image=item["sku_image"]
+
+            orderitem_arr.append(order_item)
 
     db.add_all(order_arr)
     db.add_all(orderitem_arr)
