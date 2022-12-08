@@ -66,7 +66,7 @@ cache_models:List[str]=['Merchant']#findbypk 缓存放入redis 的model
 SECRET_KEY = "11a60e557ae59d6a4674bb5aeddcbc963bed0a4d44694f62c3be578d4155471d"
 ACCESS_TOKEN_EXPIRE_SECONDS = 3600*3 if MODE!='DEV' else 3600*24*90
 REFRESH_TOKEN_EXPIRE_SECONDS= 3600*24*15
-
+FIXERTOKEN=os.getenv('FIXERTOKEN','')
 ALGORITHM = "HS256"
 AZCONTAINER_NAMES=Literal['productimage','categoryimg','deitalimage','commonfile']
 AZCONTAINER_CONFIG={

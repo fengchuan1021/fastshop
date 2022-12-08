@@ -4,59 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import Models
 import Service
+from common.CurrencyRate import CurrencyRate
 from component.snowFlakeId import snowFlack
 
-
-async def addorupdateproduct(db:AsyncSession,wishProduct:Dict,ourid:int=0)->Any:
-    if ourid:
-        product=await Service.wishproductService.findByPk(ourid)
-    else:
-        product = Models.WishProduct()
-        product.wishproduct_id = snowFlack.getId()
-
-    product.subcategory_id = wishProduct['subcategory_id']
-    product.updated_at = wishProduct['updated_at']
-    product.num_sold = wishProduct['num_sold']
-    product.wish_id = wishProduct['id']
-    product.category = wishProduct['category']
-    product.is_promoted = wishProduct['is_promoted']
-    product.status = wishProduct['status']
-    product.description = wishProduct['description']
-    product.tags = ','.join(wishProduct['tags'])
-    product.num_saves = wishProduct['num_saves']
-    product.is_csp_enabled = wishProduct['is_csp_enabled']
-    product.extra_images = ','.join(wishProduct['extra_images'])
-    product.category_experience_eligibility = wishProduct['category_experience_eligibility']
-    product.main_image = wishProduct['main_image']['url']
-    product.name = wishProduct['name']
-    product.created_at = wishProduct['created_at']
-    for wishVariant in wishProduct['variations']:
-
-        if not ourid:
-            variant = Models.WishVariant()
-        else:
-            variant = await Service.wishvariantService.findOne(Models.WishVariant.wish_id==wishVariant['id'])#type: ignore
-            if not variant:
-                variant = Models.WishVariant()
-
-        variant.wishproduct_id = product.wishproduct_id
-        variant.status = wishVariant['status']
-        variant.sku = wishVariant['sku']
-        variant.product_id = wishProduct['id']
-        variant.price = wishVariant['price']['amount']
-        variant.currency_code = wishVariant['price']['currency_code']
-        variant.cost_price = wishVariant['cost']['amount']
-        variant.cost_currency_code = wishVariant['cost']['currency_code']
-        variant.gtin = wishVariant['gtin']
-        variant.wish_id = wishVariant['id']
-        db.add(variant)
-    if ourid:
-        #remove this
-        #todo delete not used variant
-        pass
-    db.add(product)
-    await db.flush()
-    await db.commit()
 def filloutProduct(product:Models.WishProduct,json_data:Dict)->Any:
     product.subcategory_id = json_data['subcategory_id']
     product.updated_at = json_data['updated_at']
@@ -109,6 +59,8 @@ async def addproducts(db:AsyncSession,products:List[Dict],store_id:int,merchant_
 async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchant_id:int)->Any:
     order_arr=[]
     orderitem_arr=[]
+    address_arr=[]#type: ignore
+
     status_dic={"SHIPPED":"SHIPPED","REFUNDED":"REFUNDED"}
     for json_data in orders:
         order=Models.Order()
@@ -117,15 +69,19 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order.merchant_id=merchant_id
         order.merchant_name=store.merchant_name
         order.status=status_dic[json_data["state"]]
-        order.order_currency_code=json_data["order_payment"]["general_payment_details"]["payment_total"]["currency_code"]
 
+        order.order_currency_code=json_data["order_payment"]["general_payment_details"]["payment_total"]["currency_code"]
+        order.grand_total = json_data["order_payment"]["general_payment_details"]["payment_total"]['amount']
+        order.base_grand_total=order.grand_total*(await CurrencyRate(order.order_currency_code))
         order.market_order_number=json_data["id"]
+        order.discount_amount=json_data["order_payment"]["general_payment_details"]["product_price"]["amount"]-json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]["amount"]
+        order.base_discount_amount=order.discount_amount*(await CurrencyRate(order.order_currency_code))
         try:
             order.shipping_method=json_data["tracking_information"][0]["shipping_provider"]["name"]
         except Exception as e:
             print(e)
-        order.base_grand_total=json_data["order_payment"]["general_payment_details"]["payment_total"]['amount']
-        order.total_item_count=1
+
+        order.total_item_count=json_data["order_payment"]["general_payment_details"]["product_quantity"]
         order.market_updatetime=json_data["updated_at"]
 
         order_arr.append(order)
@@ -136,6 +92,16 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order_item.sku=json_data["product_information"]["sku"]
         order_item.variant_name=json_data["product_information"]["name"]
         order_item.image=json_data["product_information"]["variation_image_url"]
+        order_item.qty_ordered=order.total_item_count
+        order_item.price=json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']/order_item.qty_ordered
+        order_item.base_price=order_item.price*(await CurrencyRate(order.order_currency_code))
+        order_item.original_price=json_data["order_payment"]["general_payment_details"]["product_price"]['amount']
+        order_item.base_original_price=order_item.original_price*(await CurrencyRate(order.order_currency_code))
+        order_item.discount_amount=order_item.original_price-order_item.price#type: ignore
+        order_item.base_discount_amount=order_item.discount_amount*(await CurrencyRate(order.order_currency_code))
+        order_item.row_total=json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']
+        order_item.base_row_total=order_item.row_total*(await CurrencyRate(order.order_currency_code))
+
         orderitem_arr.append(order_item)
 
     db.add_all(order_arr)

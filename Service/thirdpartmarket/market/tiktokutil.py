@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import datetime
 import Models
 import Service
+from common.CurrencyRate import CurrencyRate
 from component.snowFlakeId import snowFlack
 
 
@@ -95,10 +96,13 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order.market_order_number = json_data["order_id"]
 
         #payment info
-        order.base_grand_total=json_data['payment_info']["total_amount"]
+        order.grand_total=json_data['payment_info']["total_amount"]
         order.order_currency_code = json_data["payment_info"]["currency"]
-        order.base_discount_amount=json_data["payment_info"]["seller_discount"]
+        order.base_grand_total =order.grand_total*(await CurrencyRate(order.order_currency_code))
+        order.discount_amount=json_data["payment_info"]["seller_discount"]
+        order.base_discount_amount = json_data["payment_info"]["seller_discount"]*(await CurrencyRate(order.order_currency_code))
         order.tax_amount=json_data["payment_info"]["taxes"]
+        order.base_tax_amount = order.tax_amount*(await CurrencyRate(order.order_currency_code))
         order.paied_time=datetime.datetime.fromtimestamp(json_data['paid_time']/1000,tz=datetime.timezone.utc)
         order.payment_method=json_data['payment_method']
 
@@ -108,7 +112,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             pass
         except Exception as e:
             print(e)
-        order.base_grand_total=json_data["payment_info"]["total_amount"]
+
         order.total_item_count=1
         order.market_updatetime=datetime.datetime.fromtimestamp(json_data["update_time"],tz=datetime.timezone.utc)
         order_arr.append(order)
@@ -145,12 +149,12 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             order_item.variant_name=item['sku_name']
             order_item.price=item["sku_sale_price"]
             order_item.original_price = item["sku_original_price"]
-            order_item.base_original_price=item["sku_original_price"]*1
-            order_item.base_price=item["sku_sale_price"]*1
+            order_item.base_original_price=item["sku_original_price"]*(await CurrencyRate(order.order_currency_code))
+            order_item.base_price=item["sku_sale_price"]*(await CurrencyRate(order.order_currency_code))
             order_item.discount_amount=item["sku_seller_discount"]
-            order_item.base_discount_amount=item["sku_seller_discount"]*1
+            order_item.base_discount_amount=item["sku_seller_discount"]*(await CurrencyRate(order.order_currency_code))
             order_item.row_total=item["sku_sale_price"]*item["quantity"]
-            order_item.base_row_total=item["sku_sale_price"]*item["quantity"]*1
+            order_item.base_row_total=item["sku_sale_price"]*item["quantity"]*(await CurrencyRate(order.order_currency_code))
 
             orderitem_arr.append(order_item)
 

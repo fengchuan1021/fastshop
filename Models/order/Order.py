@@ -19,10 +19,11 @@ class Order(Base):
     market_name = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
     merchant_id = Column(INTEGER, default=0,index=True)
     merchant_name = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
-    status = Column(
-        ENUM("PENDING", "PROCESSING", "SHIPPED", "COMPLETE", "REFUNDED", "PART_REFUNDED", "PART_SHIPPED", "HOLDED"),
-        server_default='PENDING', default='PENDING',
-        comment="待付款 / 待处理 / 已发货 / 完成 / 退款 / 部分退款 / 部分发货 / 暂停")
+    # status = Column(
+    #     ENUM("PENDING", "PROCESSING", "SHIPPED", "COMPLETE", "REFUNDED", "PART_REFUNDED", "PART_SHIPPED", "HOLDED"),
+    #     server_default='PENDING', default='PENDING',
+    #     comment="待付款 / 待处理 / 已发货 / 完成 / 退款 / 部分退款 / 部分发货 / 暂停")
+    status=Column(XTVARCHAR(16),default='',server_default='')
     order_currency_code = Column(XTVARCHAR(20), nullable=False, default='', server_default='')
     global_currency_code = Column(XTVARCHAR(20), nullable=False, default='', server_default='')
     currency_rate = Column(DECIMAL(10, 4))
