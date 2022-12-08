@@ -31,5 +31,5 @@ async def syncOrder(db:AsyncSession)->None:
 def setup_periodic_tasks(sender, **kwargs)->None:  # type: ignore
     sender.add_periodic_task(5*60, syncOrder.s(), name='active_banneduser')#5分钟同步一次订单
 
-if __name__=='__main__':
-    syncOrder()
+# if __name__=='__main__':
+#     syncOrder()

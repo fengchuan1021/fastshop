@@ -90,7 +90,7 @@ class OrderAddress(Base):
     country_id = Column(INTEGER, default=0)
     country_code=Column(XTVARCHAR(3), default='',server_default='')
     country = Column(XTVARCHAR(32), default='', server_default='')
-    address_type = Column(ENUM("BILLING", "SHIPPING"),default='SHIPPED',server_default='SHIPPED', comment="账单地址 / 收货地址")
+    address_type = Column(ENUM("BILLING", "SHIPPING"),default='SHIPPING',server_default='SHIPPING', comment="账单地址 / 收货地址")
     company = Column(XTVARCHAR(255), default='', server_default='')
     full_address=Column(XTVARCHAR(255),default='',server_default='')
     #updated_at = Column(DATETIME)
