@@ -51,6 +51,7 @@ async def addorupdateproduct(db:AsyncSession,wishProduct:Dict,ourid:int=0)->Any:
         variant.wish_id = wishVariant['id']
         db.add(variant)
     if ourid:
+        #remove this
         #todo delete not used variant
         pass
     db.add(product)
