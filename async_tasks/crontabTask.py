@@ -20,7 +20,7 @@ from component.dbsession import getdbsession
 @cmdlineApp
 async def syncOrder()->None:
     async with getdbsession() as db:
-        stores=await Service.StoreService.find(db,{'status':1})
+        stores=await Service.storeService.find(db,{'status':1})
         for store in stores:
             await Service.thirdmarketService.syncOrder(db,store.merchant_id,store.store_id,1)
 
