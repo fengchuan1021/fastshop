@@ -27,9 +27,9 @@ async def deleteAztmpfile():#type: ignore
         container_client.delete_blobs(*(dl[container_name]),delete_snapshots='include')
 
 
-@celery_app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs)->None:  # type: ignore
-    sender.add_periodic_task(10, deleteAztmpfile.s(), name='deleteAztmpfile')
+# @celery_app.on_after_configure.connect
+# def setup_periodic_tasks(sender, **kwargs)->None:  # type: ignore
+#     sender.add_periodic_task(10, deleteAztmpfile.s(), name='deleteAztmpfile')
 
 # async def test():
 

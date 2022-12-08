@@ -159,7 +159,8 @@ class TikTokService(Market):
                     del needsync[ourdborder.market_order_number]
 
             orders=await self.getOrderDetail(db,store,[titikorder_id for titikorder_id in needsync])
-            tiktokutil.addOrders(db, orders, store, merchant_id)
+            #print('addorder:',orders)
+            await tiktokutil.addOrders(db, orders, store, merchant_id)
 
 
 
