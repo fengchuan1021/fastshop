@@ -64,6 +64,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     status_dic={"SHIPPED":"SHIPPED","REFUNDED":"REFUNDED"}
     for json_data in orders:
         order=Models.Order()
+        RATE = await CurrencyRate(order.order_currency_code)
         order.market_id=(await Service.thirdmarketService.getMarket('wish')).market_id
         order.market_name=(await Service.thirdmarketService.getMarket('wish')).market_name
         order.merchant_id=merchant_id
@@ -72,10 +73,20 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
 
         order.order_currency_code=json_data["order_payment"]["general_payment_details"]["payment_total"]["currency_code"]
         order.grand_total = json_data["order_payment"]["general_payment_details"]["payment_total"]['amount']
-        order.base_grand_total=order.grand_total*(await CurrencyRate(order.order_currency_code))
+        order.base_shipping_amount=json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"]['amount']*RATE
+        order.shipping_amount = json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"][
+                                         'amount']
+        order.base_grand_total=order.grand_total*RATE
+        order.currency_rate=RATE
+
+        try:
+            order.customer_firstname=json_data["full_address"]["shipping_detail"]["name"]
+        except Exception as e:
+            print(e)
         order.market_order_number=json_data["id"]
         order.discount_amount=json_data["order_payment"]["general_payment_details"]["product_price"]["amount"]-json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]["amount"]
-        order.base_discount_amount=order.discount_amount*(await CurrencyRate(order.order_currency_code))
+        order.base_discount_amount=order.discount_amount*RATE
+        #order.tax_amount=json_data["tax_information"]["transaction_tax"]
         try:
             order.shipping_method=json_data["tracking_information"][0]["shipping_provider"]["name"]
         except Exception as e:
@@ -94,13 +105,13 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order_item.image=json_data["product_information"]["variation_image_url"]
         order_item.qty_ordered=order.total_item_count
         order_item.price=json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']/order_item.qty_ordered
-        order_item.base_price=order_item.price*(await CurrencyRate(order.order_currency_code))
+        order_item.base_price=order_item.price*RATE
         order_item.original_price=json_data["order_payment"]["general_payment_details"]["product_price"]['amount']
-        order_item.base_original_price=order_item.original_price*(await CurrencyRate(order.order_currency_code))
+        order_item.base_original_price=order_item.original_price*RATE
         order_item.discount_amount=order_item.original_price-order_item.price#type: ignore
-        order_item.base_discount_amount=order_item.discount_amount*(await CurrencyRate(order.order_currency_code))
+        order_item.base_discount_amount=order_item.discount_amount*RATE
         order_item.row_total=json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']
-        order_item.base_row_total=order_item.row_total*(await CurrencyRate(order.order_currency_code))
+        order_item.base_row_total=order_item.row_total*RATE
 
         orderitem_arr.append(order_item)
 

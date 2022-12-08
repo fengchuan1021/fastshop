@@ -77,12 +77,14 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     status_dic={111:"AWAITING_SHIPMENT",100:'UNPAID',112:'AWAITING_COLLECTION',114:'PARTIALLY_SHIPPING',121:'IN_TRANSIT',122:'DELIVERED',130:'COMPLETED',140:'CANCELLED'}
     for json_data in orders:
         order=Models.Order()
+        RATE=await CurrencyRate(order.order_currency_code)
         order.market_id=(await Service.thirdmarketService.getMarket('tiktok')).market_id
         order.market_name=(await Service.thirdmarketService.getMarket('tiktok')).market_name
         order.merchant_id=merchant_id
         order.merchant_name=store.merchant_name
         order.customer_note=json_data['"buyer_message"']
         order.customer_id=json_data["buyer_uid"]
+        order.currency_rate=RATE
         #"cancel_order_sla"
         order.market_createtime=datetime.datetime.fromtimestamp(json_data["create_time"],tz=datetime.timezone.utc)
         #"delivery_option": "SEND_BY_SELLER",
@@ -98,11 +100,11 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         #payment info
         order.grand_total=json_data['payment_info']["total_amount"]
         order.order_currency_code = json_data["payment_info"]["currency"]
-        order.base_grand_total =order.grand_total*(await CurrencyRate(order.order_currency_code))
+        order.base_grand_total =order.grand_total*RATE
         order.discount_amount=json_data["payment_info"]["seller_discount"]
-        order.base_discount_amount = json_data["payment_info"]["seller_discount"]*(await CurrencyRate(order.order_currency_code))
+        order.base_discount_amount = json_data["payment_info"]["seller_discount"]*RATE
         order.tax_amount=json_data["payment_info"]["taxes"]
-        order.base_tax_amount = order.tax_amount*(await CurrencyRate(order.order_currency_code))
+        order.base_tax_amount = order.tax_amount*RATE
         order.paied_time=datetime.datetime.fromtimestamp(json_data['paid_time']/1000,tz=datetime.timezone.utc)
         order.payment_method=json_data['payment_method']
 
@@ -149,12 +151,12 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             order_item.variant_name=item['sku_name']
             order_item.price=item["sku_sale_price"]
             order_item.original_price = item["sku_original_price"]
-            order_item.base_original_price=item["sku_original_price"]*(await CurrencyRate(order.order_currency_code))
-            order_item.base_price=item["sku_sale_price"]*(await CurrencyRate(order.order_currency_code))
+            order_item.base_original_price=item["sku_original_price"]*RATE
+            order_item.base_price=item["sku_sale_price"]*RATE
             order_item.discount_amount=item["sku_seller_discount"]
-            order_item.base_discount_amount=item["sku_seller_discount"]*(await CurrencyRate(order.order_currency_code))
+            order_item.base_discount_amount=item["sku_seller_discount"]*RATE
             order_item.row_total=item["sku_sale_price"]*item["quantity"]
-            order_item.base_row_total=item["sku_sale_price"]*item["quantity"]*(await CurrencyRate(order.order_currency_code))
+            order_item.base_row_total=item["sku_sale_price"]*item["quantity"]*RATE
 
             orderitem_arr.append(order_item)
 
