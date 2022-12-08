@@ -157,20 +157,20 @@ class WishService(Market):
             ourdbmodels=await Service.orderService.find(db,{"market_order_number__in":needsync.keys()},Load(Models.Order).load_only(Models.Order.market_order_number,Models.Order.market_updatetime))
             for model in ourdbmodels:
                 if os.name=='nt':#for timezone bug in windows
-                    if isinstance(model.updated_at,str):
-                        tmstamp=parse(model.updated_at).replace(tzinfo=pytz.UTC).timestamp()
+                    if isinstance(model.market_updatetime,str):
+                        tmstamp=parse(model.market_updatetime).replace(tzinfo=pytz.UTC).timestamp()
                     else:
-                        tmstamp=model.updated_at.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
+                        tmstamp=model.market_updatetime.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
                 else:
-                    tmstamp=model.updated_at.timestamp() if not isinstance(model.updated_at,str) else parse(model.updated_at).timestamp()#type: ignore
-                if tmstamp!=parse(needsync[model.market_order_number]).timestamp():
+                    tmstamp=model.market_updatetime.timestamp() if not isinstance(model.market_updatetime,str) else parse(model.market_updatetime).timestamp()#type: ignore
+                if tmstamp!=parse(needsync[model.market_order_number]["updated_at"]).timestamp():
                     needupdate[model.order_id]=needsync[model.market_order_number] #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
                 del needsync[model.market_order_number]
             #sem = asyncio.Semaphore(100)#100并发量 wish有速度限制
             #new_task=[self.getOrderDetail(db,store,market_order_id,sem) for market_order_id in needsync]#:#add new product
 
             #result=await asyncio.gather(*new_task)
-            await wishutil.addOrders(db,needsync.values(),store.store_id,merchant_id)
+            await wishutil.addOrders(db,needsync.values(),store,merchant_id)
 
             for ourdbid,market_order in needupdate.items():
                 print('needupdate',market_order)
@@ -228,15 +228,15 @@ class WishService(Market):
         async for productSummarys in self.getProductList(db,store):
             needsync = {productSummary["id"]:productSummary['updated_at'] for productSummary in productSummarys}
             needupdate={}
-            ourdbmodels=await Service.wishproductService.find(db,{"wish_id__in":needsync.keys()},Load(Models.WishProduct).load_only(Models.WishProduct.wish_id,Models.WishProduct.updated_at))
+            ourdbmodels=await Service.wishproductService.find(db,{"wish_id__in":needsync.keys()},Load(Models.WishProduct).load_only(Models.WishProduct.wish_id,Models.WishProduct.market_updatetime))
             for model in ourdbmodels:
                 if os.name=='nt':#for timezone bug in windows
-                    if isinstance(model.updated_at,str):
-                        tmstamp=parse(model.updated_at).replace(tzinfo=pytz.UTC).timestamp()
+                    if isinstance(model.market_updatetime,str):
+                        tmstamp=parse(model.market_updatetime).replace(tzinfo=pytz.UTC).timestamp()
                     else:
-                        tmstamp=model.updated_at.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
+                        tmstamp=model.market_updatetime.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
                 else:
-                    tmstamp=model.updated_at.timestamp() if not isinstance(model.updated_at,str) else parse(model.updated_at).timestamp()#type: ignore
+                    tmstamp=model.market_updatetime.timestamp() if not isinstance(model.market_updatetime,str) else parse(model.market_updatetime).timestamp()#type: ignore
                 if tmstamp!=parse(needsync[model.wish_id]).timestamp():
                     needupdate[model.wishproduct_id]=model.wish_id #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
                 del needsync[model.wish_id]

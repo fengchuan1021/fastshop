@@ -13,7 +13,7 @@ class WishProduct(Base):
     wishproduct_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId, comment="primary key")
     wish_id=Column(XTVARCHAR(32),unique=True,index=True)
     subcategory_id=Column(XTVARCHAR(32),default='')
-    updated_at=Column(DATETIME(fsp=3))
+    market_updatetime=Column(DATETIME(fsp=3))
     created_at=Column(DATETIME(fsp=3))
     num_sold=Column(INTEGER)
     category=Column(XTVARCHAR(250))

@@ -57,7 +57,7 @@ AZ_BLOB_CONNSTR=os.getenv('az_blob_connstr','')
 FILE_STORETYPE=os.getenv('FILE_STORETYPE','LOCAL')
 ENABLE_CACHE=True
 
-CACHE_PREFIX='xtcache'
+CACHE_PREFIX=MODE
 DEFAULT_CACHE_EXPIRE=3600*12
 
 TIKTOK_APIURL=os.getenv('TIKTOK_APIURL','https://open-api.tiktokglobalshop.com')

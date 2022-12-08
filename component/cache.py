@@ -121,7 +121,7 @@ class _Cache:
                 func_args=funcsig.bind(*args,**kwargs)
                 func_args.apply_defaults()
                 classinstance=func_args.arguments.get('self',False)
-                usecache=False
+                usecache=True
                 _key=key
                 db=None
                 if classinstance:
