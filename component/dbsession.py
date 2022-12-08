@@ -70,8 +70,8 @@ class getdbsession:
                 self.session._deletedArr += list(self.session.deleted)  # type: ignore
 
     def __await__(self):#type: ignore
-        if settings.MODE!='DEV':
-            raise Exception("this method is only usable in dev environment for testing porpose. in product mode it will not trigger broadcast")
+        # if settings.MODE!='DEV':
+        #     raise Exception("this method is only usable in dev environment for testing porpose. in product mode it will not trigger broadcast")
         self.__init__()
         return self.__aenter__().__await__()
     async def __aenter__(self)->AsyncSession:
