@@ -40,19 +40,23 @@ class _Cache:
         writeurl:str='',
         readurl:str='',
         ignore_arg_types:List=[],
+        loop:Any=None
     )->None:#type: ignore
 
         self._prefix = prefix
         self._expire = expire
         self._enable = enable
         self.ignore_arg_types+=ignore_arg_types
-        try:
-            loop=asyncio.get_running_loop()
-            self._loop = loop
-        except Exception as e:
-            loop=asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        #try:
+        if loop:
             self._loop=loop
+        # else:
+        #     loop=asyncio.get_running_loop()
+        #     self._loop = loop
+        #except Exception as e:
+            # loop=asyncio.new_event_loop()
+            # asyncio.set_event_loop(loop)
+            # self._loop=loop
         if not writeurl:
             writeurl=os.getenv('REDISURL','')
 

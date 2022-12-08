@@ -50,12 +50,13 @@ def cmdlineApp(func:Callable[...,Any])->Callable[...,Any]:
     @wraps(func)
     def decorator(*args:Any,**kwargs:Any)->Any:
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         cache.init(prefix=settings.CACHE_PREFIX, expire=settings.DEFAULT_CACHE_EXPIRE, enable=settings.ENABLE_CACHE,
                    writeurl=settings.REDISURL,
                    readurl=settings.SLAVEREDISURL,
                    ignore_arg_types=[settings.UserTokenData],
+                   loop=loop
                    )
         snowFlack.init(settings.NODEID)
 
