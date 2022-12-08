@@ -1,7 +1,6 @@
 import settings
 from fastapi import Request
 from jose import  jwt
-
 from component.snowFlakeId import snowFlack
 import asyncio
 import datetime
@@ -62,7 +61,12 @@ def cmdlineApp(func:Callable[...,Any])->Callable[...,Any]:
 
 
         try:
-            result=loop.run_until_complete(func(*args,**kwargs))
+            from component.dbsession import getdbsession
+            from Service import thirdmarketService
+            db=loop.run_until_complete(getdbsession())
+            loop.run_until_complete(thirdmarketService.init(db))
+            result=loop.run_until_complete(func(db,*args,**kwargs))
+            loop.run_until_complete(db.__aexit__(None,None,None))
             return result
         except Exception as e:
             loop.run_until_complete(writelog(str(e)))

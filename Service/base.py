@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from Models import Base
 from sqlalchemy.future import select
 from sqlalchemy import text, func
-from common import filterbuilder
+from common.filterbuilder import filterbuilder
 
 ModelType = TypeVar("ModelType", bound=Base)
 from sqlalchemy.orm import defer

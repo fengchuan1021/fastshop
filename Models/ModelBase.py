@@ -67,7 +67,7 @@ class MyBase(object):
         return orjson.dumps(self.dict(),default=obj2dict).decode()
 
 def xt_constructor(instance, **kwds)->None:#type: ignore
-    print('kwy:',kwds)
+
     primaryname=getattr(instance,"__tablename__")+'_id'
     pkcolumn = getattr(type(instance), primaryname)
     if pkcolumn.default:

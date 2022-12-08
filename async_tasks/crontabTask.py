@@ -1,3 +1,5 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
 import Service
 from celery_app import celery_app
 import datetime
@@ -18,14 +20,16 @@ from component.dbsession import getdbsession
 
 @celery_app.task
 @cmdlineApp
-async def syncOrder()->None:
-    async with getdbsession() as db:
-        stores=await Service.storeService.find(db,{'status':1})
-        for store in stores:
-            await Service.thirdmarketService.syncOrder(db,store.merchant_id,store.store_id,1)
+async def syncOrder(db:AsyncSession)->None:
+
+    stores=await Service.storeService.find(db,{'status':1})
+    for store in stores:
+        await Service.thirdmarketService.syncOrder(db,store.merchant_id,store.store_id,1)
 
 
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs)->None:  # type: ignore
     sender.add_periodic_task(5*60, syncOrder.s(), name='active_banneduser')#5分钟同步一次订单
 
+if __name__=='__main__':
+    syncOrder()

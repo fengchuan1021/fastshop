@@ -64,6 +64,8 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     status_dic={"SHIPPED":"SHIPPED","REFUNDED":"REFUNDED"}
     for json_data in orders:
         order=Models.Order()
+        order.order_currency_code = json_data["order_payment"]["general_payment_details"]["payment_total"][
+            "currency_code"]
         RATE = await CurrencyRate(order.order_currency_code)
         order.market_id=(await Service.thirdmarketService.getMarket('wish')).market_id
         order.market_name=(await Service.thirdmarketService.getMarket('wish')).market_name
@@ -71,7 +73,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order.merchant_name=store.merchant_name
         order.status=status_dic[json_data["state"]]
 
-        order.order_currency_code=json_data["order_payment"]["general_payment_details"]["payment_total"]["currency_code"]
+
         order.grand_total = json_data["order_payment"]["general_payment_details"]["payment_total"]['amount']
         order.base_shipping_amount=json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"]['amount']*RATE
         order.shipping_amount = json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"][
