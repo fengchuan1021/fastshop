@@ -16,7 +16,7 @@ from XTTOOLS import obj2dict
 
 from component.snowFlakeId import snowFlack
 
-if 1 or os.getenv('migratedb',''):
+if os.getenv('migratedb',''):
     from sqlalchemy.dialects.mysql import VARCHAR as XTVARCHAR#type: ignore
 else:
     class XTVARCHAR(types.TypeDecorator):#type: ignore
@@ -26,6 +26,8 @@ else:
             if settings.AUTO_TRUNCATE_COLUMN:
                 if not value:
                     return value
+                if isinstance(value,int):
+                    return str(value)[:self.impl.length]
                 return value[:self.impl.length]
             else:
                 return value
