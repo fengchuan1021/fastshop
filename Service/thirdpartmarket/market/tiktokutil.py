@@ -32,7 +32,7 @@ def filloutProduct(product:Models.TiktokProduct,json_data:Dict)->Any:
             product.brand_id = json_data['brand']['id']
             product.brand_name = json_data['brand']['name']
         except Exception as e:
-            print(json_data)
+            print(35,json_data)
     # except Exception as e:
     #     print(e)
     #     pass
@@ -97,13 +97,14 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         try:
             order.customer_firstname=json_data["recipient_address"]['name']
         except Exception as e:
-            pass
+            print(100,e)
+
         order.market_order_number = json_data["order_id"]
 
         #payment info
         order.grand_total=json_data['payment_info']["total_amount"]
 
-        order.base_grand_total =order.grand_total*RATE
+        order.base_grand_total = order.grand_total*RATE
         order.discount_amount=json_data["payment_info"]["seller_discount"]
         order.base_discount_amount = json_data["payment_info"]["seller_discount"]*RATE
         order.tax_amount=json_data["payment_info"]["taxes"]
@@ -117,7 +118,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             order.payment_method = json_data['payment_method']
             pass
         except Exception as e:
-            print(e)
+            print(121,e)
 
         order.total_item_count=1
         order.market_updatetime=datetime.datetime.fromtimestamp(json_data["update_time"],tz=datetime.timezone.utc)
@@ -156,7 +157,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
                     shippment.market_package_id=package_detail["package_id"]
                     shippment.package_status=package_detail["package_status"]
                 except Exception as e:
-                    print(e)
+                    print(160,e)
                 shippment.market_updatetime=datetime.datetime.fromtimestamp(package_detail["update_time"],datetime.timezone.utc)
                 shippment_arr.append(shippment)
                 #添加order_shipment_item

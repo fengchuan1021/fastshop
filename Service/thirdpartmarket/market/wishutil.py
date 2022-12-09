@@ -76,24 +76,33 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
 
 
         order.grand_total = json_data["order_payment"]["general_payment_details"]["payment_total"]['amount']
-        order.base_shipping_amount=json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"]['amount']*RATE
+
+        print(json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"]['amount']*RATE)
+        order.base_shipping_amount= json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"]['amount']*RATE
+
         order.shipping_amount = json_data["order_payment"]["general_payment_details"]["shipping_merchant_payment"][
                                          'amount']
-        order.base_grand_total=order.grand_total*RATE
+
+        order.base_grand_total= order.grand_total*RATE
         order.currency_rate=RATE
 
         try:
             order.customer_firstname=json_data["full_address"]["shipping_detail"]["name"]
         except Exception as e:
-            print(e)
+            print(88,e)
         order.market_order_number=json_data["id"]
-        order.discount_amount=json_data["order_payment"]["general_payment_details"]["product_price"]["amount"]-json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]["amount"]
-        order.base_discount_amount=order.discount_amount*RATE
+
+        try:
+            order.discount_amount= json_data["order_payment"]["general_payment_details"]["product_price"]["amount"]-json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]["amount"]
+            order.base_discount_amount= (order.discount_amount*RATE)
+        except Exception as e:
+            print(101,e)
         #order.tax_amount=json_data["tax_information"]["transaction_tax"]
+
         try:
             order.shipping_method=json_data["tracking_information"][0]["shipping_provider"]["name"]
         except Exception as e:
-            print(e)
+            print(96,e)
 
         order.total_item_count=json_data["order_payment"]["general_payment_details"]["product_quantity"]
         order.market_updatetime=json_data["updated_at"]
@@ -105,36 +114,51 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order_item.market_variant_id=json_data["product_information"]["variation_id"]
         order_item.sku=json_data["product_information"]["sku"]
         order_item.variant_name=json_data["product_information"]["name"]
+
         order_item.image=json_data["product_information"]["variation_image_url"]
         order_item.qty_ordered=order.total_item_count
-        order_item.price=json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']/order_item.qty_ordered
-        order_item.base_price=order_item.price*RATE
-        order_item.original_price=json_data["order_payment"]["general_payment_details"]["product_price"]['amount']
-        order_item.base_original_price=order_item.original_price*RATE
-        order_item.discount_amount=order_item.original_price-order_item.price#type: ignore
-        order_item.base_discount_amount=order_item.discount_amount*RATE
-        order_item.row_total=json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']
-        order_item.base_row_total=order_item.row_total*RATE
+        try:
+            order_item.price= json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']/order_item.qty_ordered
+            order_item.base_price =  (order_item.price * RATE)
+        except Exception as e:
+            print(order_item.qty_ordered)
+            print(e)
 
-        orderitem_arr.append(order_item)
-        # 添加地址
-        address=Models.OrderAddress()
-        address.order_id=order.order_id
-        address.is_tmp = 'Y'
-        tmpdata=json_data["full_address"]["shipping_detail"]
-        address.country_code = tmpdata["country_code"]
-        country=await Service.countryService.findOne(db,{"country_code2":address.country_code})
-        address.country=country.country_name#type: ignore
-        address.country_id=country.country_id#type: ignore
+        print(455555555)
+        try:
+            order_item.original_price=json_data["order_payment"]["general_payment_details"]["product_price"]['amount']
+            order_item.base_original_price= order_item.original_price*RATE
+            order_item.discount_amount=order_item.original_price-order_item.price#type: ignore
+            order_item.base_discount_amount= order_item.discount_amount*RATE
+
+            order_item.row_total=json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]['amount']
+            order_item.base_row_total= order_item.row_total*RATE
+
+            orderitem_arr.append(order_item)
+        except Exception as e:
+            print(141, e)
+            # 添加地址
+        try:
+            address=Models.OrderAddress()
+            address.order_id=order.order_id
+            address.is_tmp = 'Y'
+            tmpdata=json_data["full_address"]["shipping_detail"]
+            address.country_code = tmpdata["country_code"]
+            country=await Service.countryService.findOne(db,{"country_code2":address.country_code})
+            address.country=country.country_name#type: ignore
+            address.country_id=country.country_id#type: ignore
 
 
-        address.region=tmpdata["state"]
-        address.city=tmpdata["city"]
-        address.street=tmpdata["street_address1"]
-        address.postcode=tmpdata["zipcode"]
-        address.firstname=tmpdata["name"]
-        address.telephone=tmpdata["phone_number"]['number']
-        address_arr.append(address)
+            address.region=tmpdata["state"]
+            address.city=tmpdata["city"]
+            address.street=tmpdata["street_address1"]
+            address.postcode=tmpdata["zipcode"]
+            address.firstname=tmpdata["name"]
+            address.telephone=tmpdata["phone_number"]['number']
+
+            address_arr.append(address)
+        except Exception as e:
+            print(163,e)
         #添加包裹
         if json_data["tracking_information"]:
             for json_shippment in json_data["tracking_information"]:
@@ -151,7 +175,11 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     db.add_all(address_arr)
     db.add_all(shippment_arr)
     #db.add_all(shipmentitem_arr)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception as e:
+        print(184,e)
 
 
 

@@ -28,7 +28,7 @@ class Order(Base):
     global_currency_code = Column(XTVARCHAR(20), nullable=False, default='', server_default='')
     currency_rate = Column(DECIMAL(10, 4))
     customer_email = Column(XTVARCHAR(32), nullable=False, default='', server_default='')
-    customer_firstname = Column(XTVARCHAR(32), default='', server_default='')
+    customer_firstname = Column(XTVARCHAR(64), default='', server_default='')
     customer_lastname = Column(XTVARCHAR(32), default='', server_default='')
     customer_middlename = Column(XTVARCHAR(32), default='', server_default='')
     #order_number = Column(BIGINT(20), autoincrement=True)
@@ -79,7 +79,7 @@ class OrderAddress(Base):
     region_id = Column(INTEGER, default=0)
     postcode = Column(XTVARCHAR(64), nullable=False)
 
-    firstname = Column(XTVARCHAR(32), default='', server_default='')
+    firstname = Column(XTVARCHAR(64), default='', server_default='')
     lastname = Column(XTVARCHAR(32), default='', server_default='')
     middlename = Column(XTVARCHAR(32), default='', server_default='')
 
