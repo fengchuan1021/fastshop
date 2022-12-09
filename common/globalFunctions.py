@@ -1,12 +1,14 @@
 import settings
 from fastapi import Request
 from jose import  jwt
+
+
 from component.snowFlakeId import snowFlack
 import asyncio
 import datetime
 from functools import wraps
 from typing import Callable,Any
-from elasticsearchclient import es
+import elasticsearchclient
 from component.cache import cache
 
 async def getorgeneratetoken(request:Request)-> settings.UserTokenData:
@@ -37,13 +39,13 @@ async def get_token(request:Request)->settings.UserTokenData:
 
 
 async def writelog(logstr:str,request:str='')->None:
-    if es:
+    if elasticsearchclient.es:
         doc = {
             'text': logstr,
             'request': request,
             'timestamp': datetime.datetime.now(),
         }
-        await es.index(index=f"xtlog-{settings.MODE.lower()}", document=doc)
+        await elasticsearchclient.es.index(index=f"xtlog-{settings.MODE.lower()}", document=doc)
 
 def cmdlineApp(func:Callable[...,Any])->Callable[...,Any]:
     @wraps(func)
@@ -51,20 +53,11 @@ def cmdlineApp(func:Callable[...,Any])->Callable[...,Any]:
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        cache.init(prefix=settings.CACHE_PREFIX, expire=settings.DEFAULT_CACHE_EXPIRE, enable=settings.ENABLE_CACHE,
-                   writeurl=settings.REDISURL,
-                   readurl=settings.SLAVEREDISURL,
-                   ignore_arg_types=[settings.UserTokenData],
-                   loop=loop
-                   )
-        snowFlack.init(settings.NODEID)
-
-
         try:
+            from common.after_start import after_start
             from component.dbsession import getdbsession
-            from Service import thirdmarketService
             db=loop.run_until_complete(getdbsession())
-            loop.run_until_complete(thirdmarketService.init(db))
+            loop.run_until_complete(after_start(db))
             result=loop.run_until_complete(func(db,*args,**kwargs))
             loop.run_until_complete(db.__aexit__(None,None,None))
             return result

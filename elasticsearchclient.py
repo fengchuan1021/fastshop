@@ -2,11 +2,8 @@ from typing import Optional
 import settings
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
-es:Optional[AsyncElasticsearch]
-if settings.ELASTICSEARCHURL:
-    es = AsyncElasticsearch([settings.ELASTICSEARCHURL])
-else:
-    es=None
+import os
+es:Optional[AsyncElasticsearch]=None
 
 if __name__ == '__main__':
     import datetime

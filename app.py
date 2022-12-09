@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import settings
 from common.CommonError import ResponseException
+from common.after_start import after_start
 from component.dbsession import getdbsession
 
 if settings.MODE=='DEV':
@@ -104,16 +105,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
 
 @app.on_event("startup")
 async def startup()->None:
-    loop=asyncio.get_event_loop()
-    cache.init(prefix=settings.CACHE_PREFIX,expire=settings.DEFAULT_CACHE_EXPIRE,enable=settings.ENABLE_CACHE,
-               writeurl=settings.REDISURL,
-               readurl=settings.SLAVEREDISURL,
-               ignore_arg_types=[settings.UserTokenData],
-               loop=loop
-               )
-    snowFlack.init(settings.NODEID)
-    async with getdbsession() as db:
-        await thirdmarketService.init(db)
+    await after_start()
 
 
 for f in Path(settings.BASE_DIR).joinpath('modules').rglob('*.py'):

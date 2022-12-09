@@ -9,7 +9,7 @@ from fastapi import Request
 from common.globalFunctions import get_token
 import Broadcast
 from sqlalchemy.util.concurrency import await_only
-from elasticsearchclient import es
+import elasticsearchclient
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -89,8 +89,8 @@ class getdbsession:
         if self.session._updateArr or self.session._createdArr or self.session._deletedArr:
             await self.session.commit()
         await self.session.close()
-        if not self.request:
-            await es.close()
+        if not self.request and elasticsearchclient.es:
+            await elasticsearchclient.es.close()
             #[await engine.dispose() for engine in engines.values()]
 
 
