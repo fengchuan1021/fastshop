@@ -21,7 +21,7 @@ if [ "$CMD" = "APP" ] ; then
     mkdir -p /app/img
     python manage.py upgrade
     migratedb=1 python manage.py resetdb
-    uvicorn app:app --reload --port 8000 --host=0.0.0.0
+    migratedb=0 uvicorn app:app --reload --port 8000 --host=0.0.0.0
   fi
 elif [ "$CMD" = "CELERY" ] ; then
     #celery -A celery_mainworker beat -S redbeat.RedBeatScheduler -l info >/dev/null &
