@@ -98,7 +98,7 @@ async def onlineorderdetail(
 
 # <editor-fold desc="onlineorderdetail get: /merchant/onlinepackagedeital/{store_id}/package_id">
 @router.get(
-    "/merchant/onlinepackagedeital/{store_id}/{package_id}",
+    "/merchant/onlinepackagedetail/{store_id}/{package_id}",
     response_class=XTJsonResponse,
     #response_model=MerchantOnlineproductStoreIdGetResponse,
 )
