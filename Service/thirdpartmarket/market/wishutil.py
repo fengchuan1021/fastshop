@@ -61,6 +61,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     orderitem_arr=[]
     address_arr=[]#type: ignore
     shippment_arr=[]#type: ignore
+    #shipmentitem_arr=[]
     status_dic={"SHIPPED":"SHIPPED","REFUNDED":"REFUNDED"}
     for json_data in orders:
         order=Models.Order()
@@ -149,6 +150,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     db.add_all(orderitem_arr)
     db.add_all(address_arr)
     db.add_all(shippment_arr)
+    #db.add_all(shipmentitem_arr)
     await db.commit()
 
 
