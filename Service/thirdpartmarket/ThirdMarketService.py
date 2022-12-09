@@ -78,6 +78,10 @@ class ThirdMarketService():
     async def getSelfAuthrizeUrl(self,db:AsyncSession,merchant_id:int,store_id:int)->str:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         return await marketservice.getSelfAuthrizeUrl(db,store)
+
+    async def getStoreOnlinePackageDetail(self,db:AsyncSession,merchant_id:int,store_id:int,package_id:str)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getPackageDetail(db,store,package_id)
 if __name__ == "__main__":
     from component.dbsession import getdbsession
     from common import cmdlineApp

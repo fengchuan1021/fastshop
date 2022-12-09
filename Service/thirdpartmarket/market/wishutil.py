@@ -119,6 +119,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         # 添加地址
         address=Models.OrderAddress()
         address.order_id=order.order_id
+        address.is_tmp = 'Y'
         tmpdata=json_data["full_address"]["shipping_detail"]
         address.country_code = tmpdata["country_code"]
         country=await Service.countryService.findOne(db,{"country_code":address.country_code})

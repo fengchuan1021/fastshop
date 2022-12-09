@@ -94,3 +94,28 @@ async def onlineorderdetail(
 
 
 # </editor-fold>
+
+
+# <editor-fold desc="onlineorderdetail get: /merchant/onlinepackagedeital/{store_id}/package_id">
+@router.get(
+    "/merchant/onlinepackagedeital/{store_id}/{package_id}",
+    response_class=XTJsonResponse,
+    #response_model=MerchantOnlineproductStoreIdGetResponse,
+)
+async def onlinepackagedeital(
+    store_id:int,
+    package_id: str,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    wishonlineproductdetail
+    """
+    data=await Service.thirdmarketService.getStoreOnlinePackageDetail(
+        db, token.merchant_id, store_id,package_id
+    )
+
+    return {'status':'success','data':data}
+
+
+# </editor-fold>

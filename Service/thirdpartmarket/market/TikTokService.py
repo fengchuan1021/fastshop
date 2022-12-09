@@ -199,7 +199,10 @@ class TikTokService(Market):
         if ret['code']!=0:
             raise ResponseException({'status':'failed','msg':ret['message']})
         return ret['data']["order_list"]
-
+    async def getPackageDetail(self, db: AsyncSession, store:Models.Store,package_id:str)->Any:
+        url='/api/fulfillment/detail'
+        ret=await self.get(url,{'package_id':package_id},store)
+        return ret['data']
 if __name__=='__main__':
     import asyncio
 

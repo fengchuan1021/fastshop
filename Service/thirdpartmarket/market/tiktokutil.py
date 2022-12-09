@@ -74,6 +74,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     order_arr=[]
     orderitem_arr=[]
     address_arr=[]
+    shippment_arr=[]#type: ignore
     status_dic={111:"AWAITING_SHIPMENT",100:'UNPAID',112:'AWAITING_COLLECTION',114:'PARTIALLY_SHIPPING',121:'IN_TRANSIT',122:'DELIVERED',130:'COMPLETED',140:'CANCELLED'}
     for json_data in orders:
         order=Models.Order()
