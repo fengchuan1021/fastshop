@@ -1,5 +1,3 @@
-from openapi_schema_validator._validators import nullable
-
 from component.snowFlakeId import snowFlack
 from sqlalchemy import Column, text
 from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, DECIMAL
