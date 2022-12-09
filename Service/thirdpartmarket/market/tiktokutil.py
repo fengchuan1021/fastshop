@@ -150,10 +150,13 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
                 shippment.total_qty=sum([int(item["quantity"]) for order in package_detail["order_info_list"] for item in order["sku_list"]])
                 shippment.shipping_address_id=address.order_address_id
                 shippment.shipment_number=package_detail["tracking_number"]
-                shippment.carrier_name=package_detail["shipping_provider"]
-                shippment.track_number=package_detail["tracking_number"]
-                shippment.market_package_id=package_detail["package_id"]
-                shippment.package_status=package_detail["package_status"]
+                try:
+                    shippment.carrier_name=package_detail["shipping_provider"]
+                    shippment.track_number=package_detail["tracking_number"]
+                    shippment.market_package_id=package_detail["package_id"]
+                    shippment.package_status=package_detail["package_status"]
+                except Exception as e:
+                    print(e)
                 shippment.market_updatetime=datetime.datetime.fromtimestamp(package_detail["update_time"],datetime.timezone.utc)
                 shippment_arr.append(shippment)
                 #添加order_shipment_item
