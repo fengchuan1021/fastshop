@@ -83,16 +83,33 @@ class TikTokService(Market):
         async with aiohttp.ClientSession() as session:
             async with session.get(settings.TIKTOK_APIURL+url) as resp:
                 return await  resp.json()
+    async def refreshtoken(self,store:Models.Store)->Models.Store:
+        async with aiohttp.ClientSession() as session:
+            url=f'https://auth.tiktok-shops.com/api/token/refreshToken?app_key={store.appkey}&app_secret={store.appsecret}&refresh_token={store.refreshtoken}&grant_type=refresh_token'
+            async with session.get(url) as resp:
+                ret=await resp.json()
+                if ret['code']==0:
+                    store.refreshtoken=ret['data'][ "refresh_token"]
+                    store.token=ret['data'][ "access_token"]
+                    store.token_expiration=ret['data']["access_token_expire_in"]
+                    store.refreshtoken_expiration=ret['data']["refresh_token_expire_in"]
+                    return store
+                else:
+                    raise ResponseException({'status':-1,'msg':"token expired"})
     async def post(self,url:str,params:Dict,body:Dict,store:Models.Store)->Any:
         if not params:
             params={}
 
-        url=self.buildurl(url,params,store)
+        finalurl=self.buildurl(url,params,store)
 
         async with aiohttp.ClientSession() as session:
-            async with session.post(settings.TIKTOK_APIURL+url,json=body) as resp:
+            async with session.post(settings.TIKTOK_APIURL+finalurl,json=body) as resp:
 
-                return await resp.json()
+                ret=await resp.json()
+                if ret['code'] == 105002:  # token expired
+                    store=await self.refreshtoken(store)
+                    return await self.post(url,params,body,store)
+                return ret
     async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str,sem:Any=None)->Any:
         url=f'/api/products/details'
         while 1:
@@ -180,6 +197,7 @@ class TikTokService(Market):
             print('body:',body)
             ret=await self.post(url,{},body,store)
             print('ret:',ret)
+
             if ret['code']==0:
                 yield ret['data']["order_list"]
                 cursor=ret['data']["next_cursor"]
