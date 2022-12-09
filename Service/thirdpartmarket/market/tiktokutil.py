@@ -75,6 +75,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     orderitem_arr=[]
     address_arr=[]
     shippment_arr=[]#type: ignore
+    shippmentItem_arr=[]#type: ignore
     status_dic={111:"AWAITING_SHIPMENT",100:'UNPAID',112:'AWAITING_COLLECTION',114:'PARTIALLY_SHIPPING',121:'IN_TRANSIT',122:'DELIVERED',130:'COMPLETED',140:'CANCELLED'}
     for json_data in orders:
         order=Models.Order()
@@ -140,6 +141,35 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             address.region=json_data['recipient_address']['state']
             address_arr.append(address)
 
+        #添加发货
+        if "package_list" in json_data:
+            for package_data in json_data["package_list"]:
+                package_detail=await Service.tiktokService.getPackageDetail(db,store,package_data["package_id"])
+                shippment=Models.OrderShipment()
+                shippment.order_id=order.order_id
+                shippment.total_qty=sum([int(item["quantity"]) for order in package_detail["order_info_list"] for item in order["sku_list"]])
+                shippment.shipping_address_id=address.order_address_id
+                shippment.shipment_number=package_detail["tracking_number"]
+                shippment.carrier_name=package_detail["shipping_provider"]
+                shippment.track_number=package_detail["tracking_number"]
+                shippment.market_package_id=package_detail["package_id"]
+                shippment.package_status=package_detail["package_status"]
+                shippment.market_updatetime=datetime.datetime.fromtimestamp(package_detail["update_time"],datetime.timezone.utc)
+                shippment_arr.append(shippment)
+                #添加order_shipment_item
+                for order_sku_info in package_detail["order_info_list"]:
+                    for sku_info in order_sku_info["sku_list"]:
+                        shipmentItem=Models.OrderShipmentItem()
+                        shipmentItem.order_shipment_id=shippment.order_shipment_id
+                        shipmentItem.market_order_id=order_sku_info["order_id"]
+                        shipmentItem.order_id=order.order_id
+                        shipmentItem.qty=sku_info["quantity"]
+                        shipmentItem.name=sku_info["sku_name"]
+                        shipmentItem.market_sku_id=sku_info["sku_id"]
+                        shippmentItem_arr.append(shipmentItem)
+
+
+
 
 
         #添加order item
@@ -168,6 +198,9 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     db.add_all(order_arr)
     db.add_all(orderitem_arr)
     db.add_all(address_arr)
+    db.add_all(shippment_arr)
+    db.add_all(shippmentItem_arr)
+
     await db.commit()
 
 
