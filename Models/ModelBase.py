@@ -16,7 +16,7 @@ from XTTOOLS import obj2dict
 
 from component.snowFlakeId import snowFlack
 
-if os.getenv('migratedb',''):
+if 1 or os.getenv('migratedb',''):
     from sqlalchemy.dialects.mysql import VARCHAR as XTVARCHAR#type: ignore
 else:
     class XTVARCHAR(types.TypeDecorator):#type: ignore
