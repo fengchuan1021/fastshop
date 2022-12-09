@@ -51,6 +51,7 @@ graphpermissionService : CRUDBase[Models.Graphpermission]
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
 appService : CRUDBase[Models.App]
+countryService : CRUDBase[Models.Country]
 orderService : CRUDBase[Models.Order]
 orderaddressService : CRUDBase[Models.OrderAddress]
 orderitemService : CRUDBase[Models.OrderItem]
@@ -65,6 +66,8 @@ categoryService : CategoryService
 productcategoryService : CRUDBase[Models.ProductCategory]
 productService : CRUDBase[Models.Product]
 variantService : CRUDBase[Models.Variant]
+tiktokproductService : CRUDBase[Models.TiktokProduct]
+tiktokvariantService : CRUDBase[Models.TiktokVariant]
 variantimageService : CRUDBase[Models.VariantImage]
 variantstoreService : CRUDBase[Models.VariantStore]
 wishproductService : CRUDBase[Models.WishProduct]
@@ -88,5 +91,3 @@ thirdmarketService : ThirdMarketService
 onbuyService : OnBuyService
 tiktokService : TikTokService
 wishService : WishService
-tiktokproductService: CRUDBase[Models.TiktokProduct]
-tiktokvariantService: CRUDBase[Models.TiktokVariant]

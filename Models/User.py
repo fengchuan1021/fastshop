@@ -4,10 +4,10 @@ from sqlalchemy.dialects.mysql import BIGINT, ENUM, INTEGER, DECIMAL
 from sqlalchemy.orm import relationship
 
 from .ModelBase import Base,XTVARCHAR
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from Models import Merchant
 
-import typing
-if typing.TYPE_CHECKING:
-    from .store.Merchant import Merchant
 
 
 class User(Base):

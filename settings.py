@@ -62,7 +62,7 @@ DEFAULT_CACHE_EXPIRE=3600*12
 
 TIKTOK_APIURL=os.getenv('TIKTOK_APIURL','https://open-api.tiktokglobalshop.com')
 ONBUY_APIURL=os.getenv('ONBUY_APIURL','https://api.onbuy.com/v2')
-cache_models:List[str]=['Merchant']#findbypk 缓存放入redis 的model
+cache_models:List[str]=['Merchant','Country']#findbypk 缓存放入redis 的model
 SECRET_KEY = "11a60e557ae59d6a4674bb5aeddcbc963bed0a4d44694f62c3be578d4155471d"
 ACCESS_TOKEN_EXPIRE_SECONDS = 3600*3 if MODE!='DEV' else 3600*24*90
 REFRESH_TOKEN_EXPIRE_SECONDS= 3600*24*15

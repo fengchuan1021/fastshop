@@ -60,7 +60,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     order_arr=[]
     orderitem_arr=[]
     address_arr=[]#type: ignore
-
+    shippment_arr=[]#type: ignore
     status_dic={"SHIPPED":"SHIPPED","REFUNDED":"REFUNDED"}
     for json_data in orders:
         order=Models.Order()
@@ -116,9 +116,38 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         order_item.base_row_total=order_item.row_total*RATE
 
         orderitem_arr.append(order_item)
+        # 添加地址
+        address=Models.OrderAddress()
+        address.order_id=order.order_id
+        tmpdata=json_data["full_address"]["shipping_detail"]
+        address.country_code = tmpdata["country_code"]
+        country=await Service.countryService.findOne(db,{"country_code":address.country_code})
+        address.country=country.country_name#type: ignore
+        address.country_id=country.country_id#type: ignore
+
+
+        address.region=tmpdata["state"]
+        address.city=tmpdata["city"]
+        address.street=tmpdata["street_address1"]
+        address.postcode=tmpdata["zipcode"]
+        address.firstname=tmpdata["name"]
+        address.telephone=tmpdata["phone_number"]['number']
+        address_arr.append(address)
+        #添加包裹
+        if json_data["tracking_information"]:
+            for json_shippment in json_data["tracking_information"]:
+                shippment=Models.OrderShipment()
+                shippment.order_id=order.order_id
+                shippment.shipping_address_id=address.order_address_id
+                shippment.shipment_number=json_shippment["tracking_number"]
+                shippment.carrier_name=json_shippment["shipping_provider"]['name']
+                shippment_arr.append(shippment)
+
 
     db.add_all(order_arr)
     db.add_all(orderitem_arr)
+    db.add_all(address_arr)
+    db.add_all(shippment_arr)
     await db.commit()
 
 

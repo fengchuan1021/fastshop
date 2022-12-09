@@ -29,7 +29,7 @@ class CRUDBase(Generic[ModelType]):
         # associated listener validredisListerer.py .dont change.
         return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"  # type: ignore
 
-    #@cache(key_builder='getpkcachename', expire=3600 * 48)  # type: ignore
+    @cache(key_builder='getpkcachename', expire=3600 * 48)  # type: ignore
     async def findByPk(self, dbSession: AsyncSession, id: int, condition: Dict = None) -> Optional[ModelType]:
         if condition:
             w, p = filterbuilder(condition)
