@@ -122,7 +122,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
         address.is_tmp = 'Y'
         tmpdata=json_data["full_address"]["shipping_detail"]
         address.country_code = tmpdata["country_code"]
-        country=await Service.countryService.findOne(db,{"country_code":address.country_code})
+        country=await Service.countryService.findOne(db,{"country_code2":address.country_code})
         address.country=country.country_name#type: ignore
         address.country_id=country.country_id#type: ignore
 
