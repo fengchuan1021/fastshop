@@ -52,3 +52,21 @@ class Warehouse(Base):
     PurchaseReceipt: List['PurchaseReceipt'] = relationship('PurchaseReceipt', uselist=True,
                                                             primaryjoin='foreign(PurchaseReceipt.warehouse_id)==Warehouse.warehouse_id',
                                                             back_populates='Warehouse', cascade='')
+
+    WarehouseShelve:List['WarehouseShelve']=relationship('WarehouseShelve', uselist=True,
+                                                            primaryjoin='foreign(WarehouseShelve.warehouse_id)==Warehouse.warehouse_id',
+                                                            back_populates='Warehouse', cascade='')
+class WarehouseShelve(Base):
+    __tablename__ = 'warehouse_shelve'
+    warehouse_shelve_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    warehouse_id=Column(BIGINT,index=True)
+    shelve_code=Column(XTVARCHAR(32),default='',server_default='')
+
+    note = Column(XTVARCHAR(32), default='', server_default='')
+    Warehouse:'Warehouse'=relationship('Warehouse', uselist=False,
+                                                            primaryjoin='foreign(WarehouseShelve.warehouse_id)==Warehouse.warehouse_id',
+                                                            back_populates='WarehouseShelve', cascade='')
+
+    VariantWarehouse:'VariantWarehouse'=relationship('VariantWarehouse', uselist=True,
+                                                            primaryjoin='foreign(VariantWarehouse.warehouse_shelve_id)==WarehouseShelve.warehouse_shelve_id',
+                                                            back_populates='WarehouseShelve', cascade='')

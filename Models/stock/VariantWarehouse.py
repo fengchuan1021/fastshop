@@ -7,13 +7,14 @@ from Models.ModelBase import Base, XTVARCHAR
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from Models import Variant, Warehouse
+    from Models import Variant, Warehouse,WarehouseShelve
 
 
 class VariantWarehouse(Base):
     __tablename__ = 'variant_warehouse'
     variant_warehouse_id = Column(BIGINT, primary_key=True, default=snowFlack.getId, comment="primary key")
     warehouse_id = Column(BIGINT, index=True)
+    warehouse_shelve_id= Column(BIGINT, index=True)
     variant_id = Column(BIGINT, index=True)
     qty = Column(INTEGER, default=0, server_default='0', index=True)
     merchant_id = Column(INTEGER, index=True)
@@ -22,6 +23,14 @@ class VariantWarehouse(Base):
                                         uselist=False, back_populates='VariantWarehouse',
                                         cascade=''
                                         )
+
+    WarehouseShelve: 'WarehouseShelve' = relationship('WarehouseShelve',
+                                        primaryjoin='foreign(VariantWarehouse.warehouse_shelve_id)==WarehouseShelve.warehouse_shelve_id',
+                                        uselist=False, back_populates='VariantWarehouse',
+                                        cascade=''
+                                        )
+
     # Variant:'Variant'=relationship('VariantWarehouse',uselist=False,primaryjoin='foreign(VariantWarehouse.variant_id)==Variant.variant_id',back_populates='VariantWarehouse',cascade='')
 
     warehouse_name = Column(XTVARCHAR(32))
+

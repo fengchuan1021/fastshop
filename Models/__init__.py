@@ -18,7 +18,7 @@ from .product.WishProduct import WishProduct,WishVariant
 from .stock.PurchaseReceipt import PurchaseReceipt,PurchaseReceiptItems
 from .stock.Supplier import Supplier,SupplierVariant
 from .stock.VariantWarehouse import VariantWarehouse
-from .stock.Warehouse import Warehouse
+from .stock.Warehouse import Warehouse,WarehouseShelve
 from .store.Market import Market
 from .store.Merchant import Merchant
 from .store.Store import Store
