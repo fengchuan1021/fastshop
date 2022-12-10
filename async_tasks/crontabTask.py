@@ -47,8 +47,9 @@ async def refreshtoken(db:AsyncSession)->None:
     for store in stores:
         if (store.token_expiration-tmnow)<3600*24:#24小时内要到期得toKen 刷新下
             try:
-                await Service.thirdmarketService.refreshtoken(db,store.merchant_id,store.store_id)
-                await db.commit()
+                #await Service.thirdmarketService.refreshtoken(db,store.merchant_id,store.store_id)
+                #await db.commit()
+                pass #先不启用
             except Exception as e:
                 await db.rollback() #可能有token过期异常 或其他异常必须rollback 才能继续
 
