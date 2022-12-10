@@ -18,7 +18,7 @@ import settings
 import aiohttp
 from urllib.parse import urlencode
 from Service.thirdpartmarket import Market
-from common.CommonError import ResponseException
+from common.CommonError import ResponseException, TokenException
 from component.fastQL import fastQuery
 if __name__ == '__main__':
     import tiktokutil
@@ -84,10 +84,13 @@ class TikTokService(Market):
             async with session.get(settings.TIKTOK_APIURL+url) as resp:
                 return await  resp.json()
     async def refreshtoken(self,store:Models.Store)->Models.Store:
+        print('refresktoken')
         async with aiohttp.ClientSession() as session:
-            url=f'https://auth.tiktok-shops.com/api/token/refreshToken?app_key={store.appkey}&app_secret={store.appsecret}&refresh_token={store.refreshtoken}&grant_type=refresh_token'
+            url=f'https://auth.tiktok-shops.com/api/v2/token/refresh?app_key={store.appkey}&app_secret={store.appsecret}&refresh_token={store.refreshtoken}&grant_type=refresh_token'
+            print("url",url)
             async with session.get(url) as resp:
                 ret=await resp.json()
+                print('ret:refresh',ret)
                 if ret['code']==0:
                     store.refreshtoken=ret['data'][ "refresh_token"]
                     store.token=ret['data'][ "access_token"]
@@ -95,7 +98,9 @@ class TikTokService(Market):
                     store.refreshtoken_expiration=ret['data']["refresh_token_expire_in"]
                     return store
                 else:
-                    raise ResponseException({'status':-1,'msg':"token expired"})
+                    store.status=0
+                    store.status_msg=ret["message"]
+                    raise TokenException(ret["message"])
     async def post(self,url:str,params:Dict,body:Dict,store:Models.Store)->Any:
         if not params:
             params={}
@@ -107,8 +112,8 @@ class TikTokService(Market):
 
                 ret=await resp.json()
                 if ret['code'] == 105002:  # token expired
-                    store=await self.refreshtoken(store)
-                    return await self.post(url,params,body,store)
+                    raise TokenException("token expired")
+
                 return ret
     async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str,sem:Any=None)->Any:
         url=f'/api/products/details'
@@ -177,7 +182,12 @@ class TikTokService(Market):
 
             orders=await self.getOrderDetail(db,store,[titikorder_id for titikorder_id in needsync])
             #print('addorder:',orders)
-            await tiktokutil.addOrders(db, orders, store, merchant_id)
+            try:
+                await tiktokutil.addOrders(db, orders, store, merchant_id)
+            except TokenException as e:
+                await db.rollback()
+                store.status=0
+                store.status_msg='token expired'
 
 
 

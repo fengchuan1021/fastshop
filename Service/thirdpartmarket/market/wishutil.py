@@ -176,10 +176,6 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     db.add_all(shippment_arr)
     #db.add_all(shipmentitem_arr)
 
-    try:
-        await db.commit()
-    except Exception as e:
-        print(184,e)
 
 
 

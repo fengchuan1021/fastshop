@@ -1,3 +1,5 @@
+import time
+
 if __name__=='__main__':
     import sys
     from pathlib import Path
@@ -29,12 +31,30 @@ async def syncOrder(db:AsyncSession)->None:
 
     stores=await Service.storeService.find(db,{'status':1})
     for store in stores:
-        await Service.thirdmarketService.syncOrder(db,store.merchant_id,store.store_id,1)
+        try:
+            await Service.thirdmarketService.syncOrder(db,store.merchant_id,store.store_id,1)
+            await db.commit()
+        except Exception as e:
+            await db.rollback() #可能有token过期异常 或其他异常必须rollback 才能继续
 
+
+@celery_app.task
+@cmdlineApp
+async def refreshtoken(db:AsyncSession)->None:
+
+    stores=await Service.storeService.find(db)
+    tmnow=time.time()
+    for store in stores:
+        if (store.token_expiration-tmnow)<3600*24:#24小时内要到期得toKen 刷新下
+            try:
+                await Service.thirdmarketService.refreshtoken(db,store.merchant_id,store.store_id)
+                await db.commit()
+            except Exception as e:
+                await db.rollback() #可能有token过期异常 或其他异常必须rollback 才能继续
 
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs)->None:  # type: ignore
-    sender.add_periodic_task(5*60, syncOrder.s(), name='active_banneduser')#5分钟同步一次订单
-
+    sender.add_periodic_task(5*60, syncOrder.s(), name='syncOrder')#5分钟同步一次订单
+    sender.add_periodic_task(12 * 3600, refreshtoken.s(), name='refreshtoken')  # 12小时检查一次快要到期的token 更新token
 if __name__=='__main__':
     syncOrder()

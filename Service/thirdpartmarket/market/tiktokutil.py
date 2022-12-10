@@ -205,7 +205,6 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     db.add_all(shippment_arr)
     db.add_all(shippmentItem_arr)
 
-    await db.commit()
 
 
 

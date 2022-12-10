@@ -5,7 +5,7 @@ from sqlalchemy import select
 import Models
 import Service
 import os
-from common.CommonError import ResponseException
+from common.CommonError import ResponseException, TokenException
 from component.fastQL import fastQuery
 from .__init__ import Market
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -82,6 +82,17 @@ class ThirdMarketService():
     async def getStoreOnlinePackageDetail(self,db:AsyncSession,merchant_id:int,store_id:int,package_id:str)->Any:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         return await marketservice.getPackageDetail(db,store,package_id)
+    async def refreshtoken(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
+        store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
+        try:
+            ret=await marketservice.refreshtoken(db,store)
+            return ret
+        except TokenException as e:
+            store.status = 0
+            store.status_msg =e.msg
+            return ResponseException({'status':'failed','msg':e.msg})
+
+
 if __name__ == "__main__":
     from component.dbsession import getdbsession
     from common import cmdlineApp

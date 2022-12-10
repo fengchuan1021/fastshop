@@ -1,3 +1,5 @@
+
+
 import settings
 import asyncio
 import datetime,time
@@ -17,7 +19,7 @@ import Service
 
 import aiohttp
 
-from common.CommonError import ResponseException
+from common.CommonError import ResponseException, TokenException
 from component.cache import cache
 from Service.thirdpartmarket import Market
 
@@ -45,7 +47,8 @@ class WishService(Market):
             pass
         # https://example.redirect.uri.com?code={authorization_code}
         pass
-
+    async def refreshtoken(self,db:AsyncSession,store:Models.Store)->Any:
+        pass
     # async def init(self)->'WishService':
     #     self.baseurl = settings.WISH_BASEURL
     #     self.access_token = (await cache.get("wishtoken")).decode()
@@ -170,7 +173,13 @@ class WishService(Market):
             #new_task=[self.getOrderDetail(db,store,market_order_id,sem) for market_order_id in needsync]#:#add new product
 
             #result=await asyncio.gather(*new_task)
-            await wishutil.addOrders(db,needsync.values(),store,merchant_id)
+            try:
+                await wishutil.addOrders(db,needsync.values(),store,merchant_id)
+            except TokenException as e:
+                await db.rollback()
+                store.status=0
+                store.status_msg='token expired'
+
 
             for ourdbid,market_order in needupdate.items():
                 print('needupdate',market_order)
