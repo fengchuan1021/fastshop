@@ -82,6 +82,18 @@ class ThirdMarketService():
     async def getStoreOnlinePackageDetail(self,db:AsyncSession,merchant_id:int,store_id:int,package_id:str)->Any:
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         return await marketservice.getPackageDetail(db,store,package_id)
+    async def getTickets(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getTickets(db,store)
+    async def getTicketDetail(self,db:AsyncSession,merchant_id:int,store_id:int,ticket_id:str)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.getTicketDetail(db,store,ticket_id)
+    async def closeTicket(self,db:AsyncSession,merchant_id:int,store_id:int,ticket_id:str)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.closeTicket(db,store,ticket_id)
+    async def replyTicket(self,db:AsyncSession,merchant_id:int,store_id:int,ticket_id:str,content:str)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.replyTicket(db,store,ticket_id,content)
     async def refreshtoken(self,db:AsyncSession,merchant_id:int,store_id:int)->Any:
         store,marketservice=await self.getStoreandMarketService(db,merchant_id,store_id)
         try:

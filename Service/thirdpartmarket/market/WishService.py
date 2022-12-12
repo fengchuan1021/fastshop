@@ -64,6 +64,11 @@ class WishService(Market):
         async with aiohttp.ClientSession() as session:
             async with session.post(settings.WISH_BASEURL+url,json=body,headers=tokenheader) as resp:
                 return await resp.json()
+    async def put(self,url:str,store:Models.Store,body:Dict=None)->Any:
+        tokenheader = {'authorization': f'Bearer {store.token}'}
+        async with aiohttp.ClientSession() as session:
+            async with session.put(settings.WISH_BASEURL+url,json=body,headers=tokenheader) as resp:
+                return await resp.json()
     async def get(self,url: str, store: Optional[Models.Store], params: Dict = None) -> Any:
         store=cast(Models.Store,store)
         if not params:
@@ -264,7 +269,26 @@ class WishService(Market):
             await self.fullsyncProduct(db,store,merchant_id)
         else:
             await self.incrementSync(db,store,merchant_id)
+    async def getTickets(self,db:AsyncSession,store:Models.Store)->Any:
+        url='/api/v3/tickets'
+        ret=await self.get(url,store,{})
+        return ret['data']
+    async def getTicketDetail(self,db:AsyncSession,store:Models.Store,ticket_id:str)->Any:
+        url=f'/api/v3/tickets/{ticket_id}'
+        ret=await self.get(url,store,{})
+        return ret['data']
+    async def closeTicket(self,db:AsyncSession,store:Models.Store,ticket_id:str)->Any:
+        url=f'/api/v3/tickets/{ticket_id}'
+        print("????")
+        ret=await self.put(url,store,{"state": "CLOSED"})
+        return ret['data']
+    async def replyTicket(self,db:AsyncSession,store:Models.Store,ticket_id:str,content:str)->Any:
+        url=f'/api/v3/tickets/{ticket_id}/replies'
 
+        ret=await self.post(url,store,{"message": content})
+        if ret['code']!=0:
+            raise ResponseException({'status':'failed','msg':ret['message']})
+        return ret['data']
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
         datas=await self.getProductList(db,store)#type: ignore
         for data in datas:
