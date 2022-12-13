@@ -198,7 +198,7 @@ class TikTokService(Market):
     async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int=None)->Any:
         url = "/api/orders/search"
 
-        data:List[Any]=[]
+
         cursor=None
         body={'page_size':40,'create_time_from':starttime}
         while 1:

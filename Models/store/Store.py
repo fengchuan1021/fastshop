@@ -17,7 +17,7 @@ class Store(Base):
     store_id = Column(INTEGER, primary_key=True, autoincrement=True)
     store_name = Column(XTVARCHAR(32))
     appid=Column(XTVARCHAR(512),default='')
-
+    client_id=Column(XTVARCHAR(512),default='',server_default='')
     appkey=Column(XTVARCHAR(512),default='')
 
     appsecret=Column(XTVARCHAR(512),default='')

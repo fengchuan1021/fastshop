@@ -100,9 +100,7 @@ class Product(Base):
     hasbettory = Column(ENUM("N", "Y"), default='N', comment="含有电池")
     hasmetal = Column(ENUM("N", "Y"), default='N', comment="含有金属")
 
-    # 变体 优化常用的颜色尺寸为固定列
-    specificationcolours = Column(XTVARCHAR(128), default='', comment="拥有的变体的颜色。如:红色,蓝色,绿色")
-    specificationsizes = Column(XTVARCHAR(128), default='', comment="拥有的变体的颜色。如:X,XL,XXL")
+
     specification = Column(XTVARCHAR(255), default='', comment="除颜色尺寸外剩余的规格")
     # 多语言
     language = Column(ENUM('en', "cn"), default='en', comment="语言，XT内部使用")

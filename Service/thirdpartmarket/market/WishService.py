@@ -48,15 +48,16 @@ class WishService(Market):
         # https://example.redirect.uri.com?code={authorization_code}
         pass
     async def refreshtoken(self,db:AsyncSession,store:Models.Store)->Any:
-        pass
-    # async def init(self)->'WishService':
-    #     self.baseurl = settings.WISH_BASEURL
-    #     self.access_token = (await cache.get("wishtoken")).decode()
-    #     if not self.access_token:
-    #         self.session = aiohttp.ClientSession(base_url=self.baseurl)
-    #         await self.getAccessToken()
-    #     self.session = aiohttp.ClientSession(base_url=self.baseurl,headers={'authorization': f'Bearer {self.access_token}'})
-    #     return self
+        url='/api/v3/oauth/refresh_token'
+        params={"client_id": store.client_id, "client_secret": store.appsecret, "refresh_token": store.refreshtoken,
+         "grant_type": "refresh_token"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(settings.WISH_BASEURL + url,params=params) as response:
+                ret=await response.json()
+                store.token=ret['data']['access_token']
+                store.token_expiration=int(parse(ret['data']['expiry_time']).timestamp())
+                store.refreshtoken=ret['data']['refresh_token']
+
     async def post(self,url:str,store:Models.Store,body:Dict=None,headers:Dict=None)->Any:
         tokenheader={'authorization': f'Bearer {store.token}'}
         if headers:
