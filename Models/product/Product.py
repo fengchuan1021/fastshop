@@ -152,8 +152,12 @@ class Variant(Base):
 
     product_id = Column(BIGINT, server_default="0", index=True)
     # price = Column(DECIMAL(10,2), server_default="0",default=0)
-
+    #
     qty = Column(INTEGER, default=0, server_default='0', index=True)
+
+    # 可分配库存：qty - 所有 variantstore.qtyshare is YES的 qty的最终库存
+
+    available_qty = Column(INTEGER, default=0, index=True)
 
     specification = Column(XTVARCHAR(12), server_default='')
 

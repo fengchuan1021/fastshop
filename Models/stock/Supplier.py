@@ -2,7 +2,7 @@ from sqlalchemy.orm import relationship
 
 from component.snowFlakeId import snowFlack
 from sqlalchemy import Column, UniqueConstraint
-from sqlalchemy.dialects.mysql import BIGINT, ENUM, FLOAT, INTEGER
+from sqlalchemy.dialects.mysql import BIGINT, ENUM, FLOAT, INTEGER, DATETIME
 from Models.ModelBase import Base, XTVARCHAR
 from typing import TYPE_CHECKING, List
 
@@ -27,6 +27,16 @@ class Supplier(Base):
     bankaccount = Column(XTVARCHAR(32), nullable=True, comment="Supplier's bank account")
     paymethod = Column(ENUM("bank transfer", 'cash'), nullable=True, comment="Payment method: Bank transfer / Cash")
     merchant_id = Column(INTEGER, index=True)
+
+    # 采购次数
+    purchase_number = Column(INTEGER, index=True)
+    # 延时率
+    delay_rate = Column(FLOAT, index=True)
+    # 次品率
+    defective_rate = Column(FLOAT, index=True)
+    # 最近交易时间
+    recent_deal_time =Column(DATETIME)
+
     PurchaseReceipt: List['PurchaseReceipt'] = relationship('PurchaseReceipt', uselist=True,
                                                             primaryjoin='foreign(PurchaseReceipt.supplier_id)==Supplier.supplier_id',
                                                             back_populates='Supplier', cascade=''
