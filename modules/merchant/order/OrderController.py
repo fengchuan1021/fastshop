@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import Service
 import settings
+from Service.thirdpartmarket.Shema import Shipinfo
 from common import CommonResponse, XTJsonResponse, get_token
 from component.cache import cache
 from component.dbsession import get_webdbsession
@@ -114,6 +115,54 @@ async def onlinepackagedeital(
     data=await Service.thirdmarketService.getStoreOnlinePackageDetail(
         db, token.merchant_id, store_id,package_id
     )
+
+    return {'status':'success','data':data}
+
+
+# </editor-fold>
+
+
+
+# <editor-fold desc="shippackage post: /merchant/order/shippackage">
+@router.post(
+    "/merchant/order/shippackage",
+    response_class=XTJsonResponse,
+    #response_model=MerchantOnlineproductStoreIdGetResponse,
+)
+async def shippackage(
+    store_id:int,
+    shipinfo:Shipinfo,
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    wishonlineproductdetail
+    """
+    data=await Service.thirdmarketService.shiPackage(
+        db, token.merchant_id, store_id,shipinfo
+    )
+
+    return {'status':'success','data':data}
+
+
+# </editor-fold>
+
+
+
+# <editor-fold desc="revieworderrules">
+@router.get(
+    "/merchant/order/revieworderrules",
+    response_class=XTJsonResponse,
+    #response_model=MerchantOnlineproductStoreIdGetResponse,
+)
+async def revieworderrules(
+    db: AsyncSession = Depends(get_webdbsession),
+    token: settings.UserTokenData = Depends(get_token),
+) -> Any:
+    """
+    wishonlineproductdetail
+    """
+    data=await Service.revieworderService.getRules()
 
     return {'status':'success','data':data}
 

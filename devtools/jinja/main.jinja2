@@ -21,7 +21,7 @@ router = APIRouter(
 
 
 {% for operation in operations %}
-# <editor-fold desc="{{operation.summary}} {{operation.type}}: {{operation.snake_case_path}}">
+# <editor-fold desc="{{operation.summary}}">
 @router.{{operation.type}}('{{operation.snake_case_path}}',response_class=XTJsonResponse, response_model={{operation.response}},
 
     {% if operation.additional_responses %}

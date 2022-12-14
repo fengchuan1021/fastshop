@@ -12,7 +12,7 @@ import hmac
 from sqlalchemy.orm.strategy_options import load_only, Load
 
 import Models
-from Models import Order
+from Models import Order, Store
 import Service
 import settings
 import aiohttp
@@ -21,11 +21,14 @@ from Service.thirdpartmarket import Market
 from common import cmdlineApp
 from common.CommonError import ResponseException, TokenException
 from component.fastQL import fastQuery
-class AmazonService(Market):
-    async def get(self,url:str,params:Dict,store:Models.Store)->Any:
-        async with aiohttp.ClientSession() as sesssion:
-            async with sesssion.get('https://sellingpartnerapi-eu.amazon.com'+url) as resp:
-                return resp.json()
+class MagentoService(Market):
+    async def get(self,url:str,params:Dict,store:Store)->Any:
+        url=f'{store.apiendpoint}{url}'
+        if params:
+            url=f'{url}?{urlencode(params)}'
+        async with aiohttp.ClientSession(headers={'Authorization':f'Bearer {store.token}'}) as session:
+            async with session.get(url) as resp:
+                return await resp.json()
     async def getOrderList(self, db: AsyncSession, store: Models.Store, starttime: int = None) -> Any:
         url='/orders/v0/orders'
         cursor=None
@@ -39,14 +42,20 @@ class AmazonService(Market):
                 cursor=ret['NextToken']
             else:
                 break
-    async def getOrderDetail(self,db:AsyncSession,store:Models.Store,order_id:str)->Any:
-        url=f'/orders/v0/orders/{order_id}'
 
+    async def getProductList(self,db:AsyncSession,store:Models.Store)->Any:
+        url='/V1/products-render-info'
+        ret=await self.get(url,{'storeId':store.shop_id,'currencyCode':store.currency_code,'searchCriteria[currentPage]':1,'searchCriteria[pageSize]':50},store)
+        print(ret)
+    async def getCategories(self,db:AsyncSession,store:Store)->Any:
+        url='/V1/categories'
+        ret=await self.get(url,{},store)
+        print(ret)
 if __name__ == '__main__':
     async def test(db):#type: ignore
-        store=await Service.storeService.findByPk(db,3)
-        service=Service.amazonService
-        gen=service.getOrderList(db,store)
-        ret=await gen.__anext__()
-        print(ret)
+        store=await Service.storeService.findByPk(db,4)
+
+        await Service.magentoService.getProductList(db,store)
+
     cmdlineApp(test)()
+

@@ -5,6 +5,8 @@ from sqlalchemy import select
 import Models
 import Service
 import os
+
+from Service.thirdpartmarket.Shema import Shipinfo
 from common.CommonError import ResponseException, TokenException
 from component.fastQL import fastQuery
 from .__init__ import Market
@@ -103,7 +105,10 @@ class ThirdMarketService():
             store.status = 0
             store.status_msg =e.msg
             return ResponseException({'status':'failed','msg':e.msg})
+    async def shiPackage(self,db:AsyncSession,merchant_id:int,store_id:int,shipInfo:Shipinfo)->Any:
 
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.shiPackage(db,store,shipInfo)
 
 if __name__ == "__main__":
     from component.dbsession import getdbsession

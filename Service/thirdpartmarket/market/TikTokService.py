@@ -18,6 +18,7 @@ import settings
 import aiohttp
 from urllib.parse import urlencode
 from Service.thirdpartmarket import Market
+from Service.thirdpartmarket.Shema import Shipinfo
 from common.CommonError import ResponseException, TokenException
 from component.fastQL import fastQuery
 if __name__ == '__main__':
@@ -216,7 +217,14 @@ class TikTokService(Market):
             else:
                 raise Exception(f"tiktok error {ret['message']}")
 
-
+    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
+        '''发货'''
+        url='/api/fulfillment/rts'
+        body={'package_id':Shipinfo.package_id,'pick_up_type':1,'pick_up':{'pick_up_start_time':int(time.time())},
+              'self_shipment':{'tracking_number':Shipinfo.track_number,'shipping_provider_id':Shipinfo.shipping_provider_id}
+              }
+        ret=await self.post(url,{},body,store)
+        return ret['data']
 
     async def getOrderDetail(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
         url='/api/orders/detail/query'

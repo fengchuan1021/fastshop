@@ -13,6 +13,7 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 
 from .UploadService import UploadService
 from .backend.PermissionService import PermissionService
+from .order.ReviewOrderService import ReviewOrderService
 from .payment.PaymentService import PaymentService
 from .payment.paymethods.AdyenService import AdyenService
 from .payment.paymethods.OnerwayService import OnerwayService
@@ -21,6 +22,8 @@ from .product.CategoryService import CategoryService
 from .search.ProductSearchService import ProductSearchService
 from .store.StoreService import StoreService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
+from .thirdpartmarket.market.AmazonService import AmazonService
+from .thirdpartmarket.market.MagentoService import MagentoService
 from .thirdpartmarket.market.OnBuyService import OnBuyService
 from .thirdpartmarket.market.TikTokService import TikTokService
 from .thirdpartmarket.market.WishService import WishService
@@ -56,6 +59,7 @@ orderService : CRUDBase[Models.Order]
 orderaddressService : CRUDBase[Models.OrderAddress]
 orderitemService : CRUDBase[Models.OrderItem]
 orderstatushistoryService : CRUDBase[Models.OrderStatusHistory]
+revieworderruleService : CRUDBase[Models.ReviewOrderRule]
 ordershipmentService : CRUDBase[Models.OrderShipment]
 ordershipmentitemService : CRUDBase[Models.OrderShipmentItem]
 preattrspecificationService : CRUDBase[Models.PreAttrSpecification]
@@ -77,17 +81,24 @@ purchasereceiptitemsService : CRUDBase[Models.PurchaseReceiptItems]
 supplierService : CRUDBase[Models.Supplier]
 suppliervariantService : CRUDBase[Models.SupplierVariant]
 variantwarehouseService : CRUDBase[Models.VariantWarehouse]
+variantwarehouseredeployService : CRUDBase[Models.VariantWarehouseRedeploy]
+variantwarehouseredeployitemService : CRUDBase[Models.VariantWarehouseRedeployItem]
+packageService : CRUDBase[Models.Package]
 warehouseService : CRUDBase[Models.Warehouse]
+warehouseshelveService : CRUDBase[Models.WarehouseShelve]
 marketService : CRUDBase[Models.Market]
 merchantService : CRUDBase[Models.Merchant]
 storeService : StoreService
 uploadService : UploadService
+revieworderService : ReviewOrderService
 paymentService : PaymentService
 adyenService : AdyenService
 onerwayService : OnerwayService
 paypalService : PaypalService
 productsearchService : ProductSearchService
 thirdmarketService : ThirdMarketService
+amazonService : AmazonService
+magentoService : MagentoService
 onbuyService : OnBuyService
 tiktokService : TikTokService
 wishService : WishService

@@ -19,6 +19,7 @@ import Service
 
 import aiohttp
 
+from Service.thirdpartmarket.Shema import Shipinfo
 from common.CommonError import ResponseException, TokenException
 from component.cache import cache
 from Service.thirdpartmarket import Market
@@ -82,6 +83,18 @@ class WishService(Market):
             async with session.get(finalurl, headers={'authorization': f'Bearer {store.token}'}) as response:
 
                 return await response.json()
+
+    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
+        '''发货'''
+        url=f'/api/v3/orders/{shipinfo.order_id}/tracking'
+        body={'origin_country':shipinfo.origin_country,
+              'shipping_provider':shipinfo.shipping_provider,
+              'tracking_number':shipinfo.track_number,
+              'ship_note':shipinfo.ship_note
+              }
+        ret=await self.put(url,store,body)
+        return ret['data']
+
     async def getAccessToken(self, code: str) -> None:
         url = "/api/v3/oauth/access_token"
 

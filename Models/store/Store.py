@@ -19,7 +19,8 @@ class Store(Base):
     appid=Column(XTVARCHAR(512),default='')
     client_id=Column(XTVARCHAR(512),default='',server_default='')
     appkey=Column(XTVARCHAR(512),default='')
-
+    apiendpoint=Column(XTVARCHAR(512),default='',server_default='',comment='')#自建商城的api 网址，比如magento的api地址
+    currency_code=Column(XTVARCHAR(3),default='',comment='',server_default='')
     appsecret=Column(XTVARCHAR(512),default='')
     token=Column(XTVARCHAR(512),default='')
     refreshtoken=Column(XTVARCHAR(512),default='')
