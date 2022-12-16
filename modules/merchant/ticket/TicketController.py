@@ -22,7 +22,7 @@ from .__init__ import dependencies
 router = APIRouter(dependencies=dependencies)
 
 
-# <editor-fold desc="listtickets get: /merchant/tickets/{store_id}">
+# <editor-fold desc="listtickets">
 @router.get(
     "/merchant/tickets/{store_id}",
     response_class=XTJsonResponse,
@@ -46,7 +46,7 @@ async def listtickets(
 # </editor-fold>
 
 
-# <editor-fold desc="ticketdetail get: /merchant/tickets/{store_id}/{ticket_id}">
+# <editor-fold desc="ticketdetail">
 @router.get(
     "/merchant/tickets/{store_id}/{ticket_id}",
     response_class=XTJsonResponse,
@@ -71,7 +71,7 @@ async def ticketdetail(
 # </editor-fold>
 
 
-# <editor-fold desc="closeticket get: /merchant/tickets/{store_id}/{ticket_id}">
+# <editor-fold desc="closeticket">
 class State(BaseModel):
     state:Literal["CLOSED","AWAITING_MERCHANT","AWAITING_WISH"]
 @router.put(
@@ -102,7 +102,7 @@ async def closeticket(
 # </editor-fold>
 
 
-# <editor-fold desc="closeticket get: /merchant/tickets/{store_id}/{ticket_id}">
+# <editor-fold desc="closeticket">
 class Reply(BaseModel):
     content:str
 @router.post(

@@ -19,7 +19,7 @@ from .__init__ import dependencies
 router = APIRouter(dependencies=dependencies)
 
 
-# <editor-fold desc="allmodel get: /permission/allmodel">
+# <editor-fold desc="allmodel">
 @router.get(
     '/permission/allmodel',
     response_class=XTJsonResponse,
@@ -48,7 +48,7 @@ async def allmodel(
 # </editor-fold>
 
 
-# <editor-fold desc="modelcolumns get: /permission/modelcolumns">
+# <editor-fold desc="modelcolumns">
 @router.get(
     '/permission/modelcolumns/{modelname}',
     response_class=XTJsonResponse,
@@ -71,7 +71,7 @@ async def modelcolumns(
 
 # </editor-fold>
 
-# <editor-fold desc="setrolemodelpermission post: /permission/setrolemodelpermission">
+# <editor-fold desc="setrolemodelpermission">
 from .PermissionShema import PermissionSetrolemodelpermissionPostRequest
 @router.post(
     '/permission/setrolemodelpermission',
@@ -107,7 +107,7 @@ async def setrolemodelpermission(
 # </editor-fold>
 
 
-# <editor-fold desc="getrolelist get: /backend/permission/role/">
+# <editor-fold desc="getrolelist">
 @router.get(
     '/permission/rolelist',
     response_class=XTJsonResponse,
@@ -128,7 +128,7 @@ async def getrolelist(
 
 # </editor-fold>
 
-# <editor-fold desc="createrole post: /backend/permission/role/">
+# <editor-fold desc="createrole">
 @router.post(
     '/permission/createrole',
     response_class=XTJsonResponse,
@@ -162,7 +162,7 @@ async def createrole(
 # </editor-fold>
 
 
-# <editor-fold desc="getroutelist get: /permission/routes">
+# <editor-fold desc="getroutelist">
 @router.get(
     '/permission/routes',
     response_class=XTJsonResponse,
@@ -191,7 +191,7 @@ async def getroutelist(
 
 
 
-# <editor-fold desc="setrolepermission post: /backend/permission/setrolepermission">
+# <editor-fold desc="setrolepermission">
 @router.post(
     '/permission/setrolepermission',
     response_class=XTJsonResponse,
@@ -220,7 +220,7 @@ async def setrolepermission(
 # </editor-fold>
 
 
-# <editor-fold desc="deleterole delete: /backend/permission/role/{id}">
+# <editor-fold desc="deleterole">
 @router.delete(
     '/permission/role/{id}',
     response_class=XTJsonResponse,
@@ -258,7 +258,7 @@ async def deleterole(
 # </editor-fold>
 
 
-# <editor-fold desc="admingetroledisplayedmenu get: /backend/permission/admingetroledisplayedmenu">
+# <editor-fold desc="admingetroledisplayedmenu">
 @router.get(
     '/backend/permission/admingetroledisplayedmenu',
     response_class=XTJsonResponse,
@@ -279,7 +279,7 @@ async def admingetroledisplayedmenu(
 # </editor-fold>
 
 
-# <editor-fold desc="setroledisplayedmenu post: /backend/permission/setdisplayedmenu">
+# <editor-fold desc="setroledisplayedmenu">
 class BackendPermissionSetdisplayedmenuPostRequest(BaseModel):
     role_id: int
     menus: List[str]
@@ -303,7 +303,7 @@ async def setroledisplayedmenu(
 # </editor-fold>
 
 
-# <editor-fold desc="delerolepermission delete: /backend/permission/delrolepermission/{permission_id}">
+# <editor-fold desc="delerolepermission">
 # @router.post(
 #     '/backend/permission/delrolepermission/{permission_id}',
 #     response_class=XTJsonResponse,

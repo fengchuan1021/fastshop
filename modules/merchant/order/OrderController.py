@@ -23,7 +23,7 @@ from .__init__ import dependencies
 router = APIRouter(dependencies=dependencies)
 
 
-# <editor-fold desc="onlineproduct get: /merchant/onlineorders/{store_id}">
+# <editor-fold desc="onlineproduct">
 @router.get(
     "/merchant/onlineorders/{store_id}",
     response_class=XTJsonResponse,
@@ -47,7 +47,7 @@ async def onlineorders(
 # </editor-fold>
 
 
-# <editor-fold desc="asynchalfyearorder get: /merchant/asynchalfyearorder/{store_id}">
+# <editor-fold desc="asynchalfyearorder">
 @router.get(
     "/merchant/syncorder/{store_id}/{ndays}",
     response_class=XTJsonResponse,
@@ -72,7 +72,7 @@ async def asynchalfyearorder(
 # </editor-fold>
 
 
-# <editor-fold desc="onlineorderdetail get: /merchant/onlineorderdetail/{store_id}/order_id">
+# <editor-fold desc="onlineorderdetail">
 @router.get(
     "/merchant/onlineorderdetail/{store_id}/{order_id}",
     response_class=XTJsonResponse,
@@ -97,7 +97,7 @@ async def onlineorderdetail(
 # </editor-fold>
 
 
-# <editor-fold desc="onlineorderdetail get: /merchant/onlinepackagedeital/{store_id}/package_id">
+# <editor-fold desc="onlineorderdetail">
 @router.get(
     "/merchant/onlinepackagedetail/{store_id}/{package_id}",
     response_class=XTJsonResponse,
@@ -123,7 +123,7 @@ async def onlinepackagedeital(
 
 
 
-# <editor-fold desc="shippackage post: /merchant/order/shippackage">
+# <editor-fold desc="shippackage">
 @router.post(
     "/merchant/order/shippackage",
     response_class=XTJsonResponse,

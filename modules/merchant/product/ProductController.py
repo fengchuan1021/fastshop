@@ -21,7 +21,7 @@ from .__init__ import dependencies
 router = APIRouter(dependencies=dependencies)
 
 
-# <editor-fold desc="onlineproduct get: /merchant/onlineproduct/{store_id}">
+# <editor-fold desc="onlineproduct">
 @router.get(
     "/merchant/onlineproducts/{store_id}",
     response_class=XTJsonResponse,
@@ -44,7 +44,7 @@ async def onlineproduct(
 
 # </editor-fold>
 
-# <editor-fold desc="syncProduct get: /merchant/syncProduct/{store_id}">
+# <editor-fold desc="syncProduct">
 @router.get(
     "/merchant/syncProduct/{store_id}",
     response_class=XTJsonResponse,
@@ -71,7 +71,7 @@ async def syncProduct(
 
 
 
-# <editor-fold desc="onlineproductdetail get: /merchant/onlineproductdetail/{store_id}/product_id">
+# <editor-fold desc="onlineproductdetail">
 @router.get(
     "/merchant/onlineproductdetail/{store_id}/{product_id}",
     response_class=XTJsonResponse,

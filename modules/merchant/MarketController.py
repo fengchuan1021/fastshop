@@ -12,7 +12,7 @@ from .__init__ import dependencies
 
 
 router = APIRouter(dependencies=dependencies)
-# <editor-fold desc="onlineproductdetail get: /merchant/onlineproductdetail/{store_id}/product_id">
+# <editor-fold desc="onlineproductdetail">
 
 
 

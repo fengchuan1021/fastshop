@@ -26,7 +26,7 @@ from .UserShema import (
 router = APIRouter(dependencies=dependencies)
 
 
-# <editor-fold desc="register post: /frontend/user/register">
+# <editor-fold desc="register">
 @router.post(
     '/user/register',
     response_class=XTJsonResponse,
@@ -61,7 +61,7 @@ async def register(
 # </editor-fold>
 
 
-# <editor-fold desc="login post: /frontend/user/login">
+# <editor-fold desc="login">
 @router.post(
     '/user/login',
     response_class=XTJsonResponse,
