@@ -141,10 +141,10 @@ class WishService(Market):
     #
     #     return data['data']
 
-    async def createProduct(self):  # type: ignore
+    async def createProduct(self,db:AsyncSession,store:Models.Store,body:WishCreateProduct):  # type: ignore
         url = '/api/v3/products'
-        async with self.session.post(url) as resp:
-            ret = await resp.json()
+        ret=await self.post(url,store,body.dict(exclude_unset=True))
+        return ret
 
     async def getOrderDetail(self, db: AsyncSession, store:Models.Store, order_id: str) -> Any:
         url = f'/api/v3/orders/{order_id}'
