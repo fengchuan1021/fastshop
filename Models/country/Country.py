@@ -12,9 +12,13 @@ class Country(Base):
     __tablename__ ='country'
     country_id=Column(INTEGER,autoincrement=True,primary_key=True)
 
-    country_name=Column(XTVARCHAR(80))
-    country_code2 = Column(CHAR(2), index=True)
-    country_code3=Column(CHAR(3), index=True)
-    currency_name=Column(XTVARCHAR(20))
+    name_en=Column(XTVARCHAR(80))
+    name_cn=Column(XTVARCHAR(80))
+
+    country_code2 = Column(CHAR(3), index=True)
+    country_code3=Column(CHAR(3), index=True,default='',server_default='')
+    continent=Column(ENUM('Europe','North America','South America','Asia','Oceania','Africa','Other'))
     currency_code=Column(XTVARCHAR(8),index=True)
     currency_symbol=Column(XTVARCHAR(4))
+    smt_code=Column(CHAR(3))
+    is_hot=Column(ENUM("Y","N"),default='N',server_default='N')

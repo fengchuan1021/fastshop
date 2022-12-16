@@ -1,3 +1,8 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
+import settings
+from common import PermissionException, get_token
+from component.dbsession import get_webdbsession
 from .. import dependencies as praentdependencies
 # async def checkpermission(db: AsyncSession,request: Request,token: settings.UserTokenData)->None:
 #     api_name=f"{request.scope['endpoint'].__module__.replace('modules.','')}.{request.scope['endpoint'].__name__}"
@@ -36,5 +41,16 @@ from .. import dependencies as praentdependencies
 #     else:
 #         await checkpermission(db,request,token)
 
+#from typing import List,Callable,Any
+#dependencies:List[Callable[...,Any]]=praentdependencies+[]#[Depends(permission_check)]
+
+from fastapi import Depends
+from fastapi import Request
+async def permission_check(request: Request,db: AsyncSession = Depends(get_webdbsession),token: settings.UserTokenData = Depends(get_token))->None:
+    if 1==token.userrole:
+        pass
+    else:
+        raise PermissionException(msg="you dont have permission access this api")
+
 from typing import List,Callable,Any
-dependencies:List[Callable[...,Any]]=praentdependencies+[]#[Depends(permission_check)]
+dependencies:List[Callable[...,Any]]=praentdependencies+[Depends(permission_check)]

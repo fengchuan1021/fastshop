@@ -7,7 +7,7 @@ import Models
 
 
 
-class ReviewOrderService():
+class LogisticsRuleService():
 
 
     async def hasSpecificPhoneNumber(self,item:Dict,order:Models.Order)->bool:
@@ -55,5 +55,5 @@ class ReviewOrderService():
 if __name__ == "__main__":
     from common import cmdlineApp
     async def test(db):#type: ignore
-        (await ReviewOrderService()).getRules()
+        (await LogisticsRuleService()).getRules()
     cmdlineApp(test)()

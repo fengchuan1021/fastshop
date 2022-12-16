@@ -32,7 +32,7 @@ class Permission(Base):
 class Graphpermission(Base):
     __tablename__ = 'graphpermission'
     __table_args__ = (UniqueConstraint('role_id', "model_name", name="rolemodelname"),)
-    Graphpermission_id=Column(INTEGER,autoincrement=True,primary_key=True)
+    graphpermission_id=Column(INTEGER,autoincrement=True,primary_key=True)
     model_name=Column(XTVARCHAR(32),nullable=False)
     read_columns=Column(XTVARCHAR(512),default='')
     write_columns = Column(XTVARCHAR(512), default='')

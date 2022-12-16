@@ -65,7 +65,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         # except:
         #     pass
     except IntegrityError as e:
-        await db_client.session.rollback()
+        await request.state._state.get('db_client').session.rollback()#type: ignore
         jsonout = Common500Response(status='dberror', msg=str(e))
         response=XTJsonResponse(jsonout,status_code=500)
         # try:

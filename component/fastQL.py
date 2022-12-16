@@ -92,11 +92,10 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
 async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict=None)->Any:
 
     extra=[]
-    if context:
+    if context and context.userrole!=1:
         columns,extra=await getAuthorizedColumns(db,modelname,context.userrole,method='delete')
         if columns[0]!='Y':
             return False #no permission
-
     if service := getattr(Service, modelname + 'Service', None):
         tmpdic={i:getattr(context,i) for i in extra}
         if extra_filter:
