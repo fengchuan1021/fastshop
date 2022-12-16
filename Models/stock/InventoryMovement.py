@@ -15,6 +15,7 @@ class InventoryMovement(Base):
     __tablename__ = 'inventorymovement'
     inventorymovement_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     warehouse_id=Column(BIGINT(20), index=True)
+    sku=Column(XTVARCHAR(80),index=True)
     number=Column(INTEGER,default=0,server_default="0")
     order_id=Column(INTEGER,default=0,server_default="0",index=True)
     type=Column(INTEGER,default=0,server_default="0",index=True)
