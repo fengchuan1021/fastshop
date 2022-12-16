@@ -1,3 +1,4 @@
+import base64
 import os
 import time
 import random
@@ -21,6 +22,8 @@ from Service.thirdpartmarket import Market
 from Service.thirdpartmarket.Shema import Shipinfo
 from common.CommonError import ResponseException, TokenException
 from component.fastQL import fastQuery
+from modules.merchant.product.tiktok.ProductShema import TiktokCreateproductShema
+
 if __name__ == '__main__':
     import tiktokutil
 
@@ -57,16 +60,22 @@ class TikTokService(Market):
         url = "/api/seller/global/active_stores"
         return await self.get(url,{},store)
 
+    async def uploadImg(self,db:AsyncSession,store:Models.Store,file:bytes,img_scene:int)->Any:
 
-    async def createProduct(self,db:AsyncSession,store:Models.Store,product_id:str)->Any:
+        encoded_data=base64.encodebytes(file).decode()
+        ret=await self.post('/api/products/upload_imgs',{},{'img_data':encoded_data,'img_scene':img_scene},store)
+        return ret
+
+    async def uploadFile(self,db:AsyncSession,store:Models.Store,file:bytes,file_name:str)->Any:
+        encoded_data=base64.encodebytes(file).decode()
+        ret=await self.post('/api/products/upload_imgs',{},{'img_data':encoded_data,'file_name':file_name},store)
+        return ret
+
+    async def createProduct(self,db:AsyncSession,store:Models.Store,data:TiktokCreateproductShema)->Any:
         url='/api/products'
-        url = self.buildurl(url, {}, store)
+        ret=await self.post(url,{},data.dict(exclude_unset=True),store)
+        return ret
 
-        #data productdata
-        data:Dict={}
-        await self.post(url,{},data,store)
-        # async with self.session.post(url,json=data) as resp:
-        #     ret=await resp.json()
 
     async def deleteProduct(self,db:AsyncSession,store_id:str,product_id:str)->Any:
         url='/api/products'
