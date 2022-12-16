@@ -8,25 +8,25 @@ import re
 from pathlib import Path
 from typing import List
 def generate_model()->List:
-    engine = create_engine(settings.DBURL.replace('mysql+aiomysql','mysql+pymysql'))
-    metadata = MetaData(bind=engine)
-    metadata.reflect()
-    memoryfile = io.StringIO()
-    generator = CodeGenerator(metadata)
-    generator.render(memoryfile)
-
-    memoryfile.seek(0)
-    newcontent=memoryfile.read()
+    # engine = create_engine(settings.DBURL.replace('mysql+aiomysql','mysql+pymysql'))
+    # metadata = MetaData(bind=engine)
+    # metadata.reflect()
+    # memoryfile = io.StringIO()
+    # generator = CodeGenerator(metadata)
+    # generator.render(memoryfile)
+    #
+    # memoryfile.seek(0)
+    #newcontent=memoryfile.read()
     #print('newcontet',newcontent)
-    oldcontent=''
-    if os.path.exists(os.path.join(settings.BASE_DIR,'Models', 'allModels.py.fromdb')):
-
-        with open(os.path.join(settings.BASE_DIR,'Models', 'allModels.py.fromdb'), 'r+', encoding='utf8') as f:
-            oldcontent=f.read()
-
-    if newcontent!=oldcontent:
-        with open(os.path.join(settings.BASE_DIR,'Models', 'allModels.py.fromdb'), 'w', encoding='utf8') as f:
-            f.write(newcontent)
+    # oldcontent=''
+    # if os.path.exists(os.path.join(settings.BASE_DIR,'Models', 'allModels.py.fromdb')):
+    #
+    #     with open(os.path.join(settings.BASE_DIR,'Models', 'allModels.py.fromdb'), 'r+', encoding='utf8') as f:
+    #         oldcontent=f.read()
+    #
+    # if newcontent!=oldcontent:
+    #     with open(os.path.join(settings.BASE_DIR,'Models', 'allModels.py.fromdb'), 'w', encoding='utf8') as f:
+    #         f.write(newcontent)
 
     overwriteclass=["from .ModelBase import Base","from typing import TypeVar",'ModelType = TypeVar("ModelType", bound=Base)']
     allmodelclas=[]
