@@ -28,4 +28,5 @@ class Customer(Base):
     store_id=Column(BIGINT,index=True)
     store_name=Column(XTVARCHAR(32))
     Store:Store=relationship('Store',uselist=False,primaryjoin="foreign(Customer.store_id)==Store.store_id",cascade='')
-
+    #user_id=Column(BIGINT,index=True,default=0,server_default="0")#客户对应的user_id,
+    merchant_id=Column(INTEGER,index=True)
