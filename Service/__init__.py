@@ -53,7 +53,7 @@ permissionService : PermissionService
 graphpermissionService : CRUDBase[Models.Graphpermission]
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
-appService : CRUDBase[Models.App]
+
 countryService : CRUDBase[Models.Country]
 orderService : CRUDBase[Models.Order]
 orderaddressService : CRUDBase[Models.OrderAddress]

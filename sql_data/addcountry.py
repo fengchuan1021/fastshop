@@ -69,6 +69,7 @@ async def addcountry(db):
 
 #cmdlineApp(addcountry)()
 errors=[]
+@cmdlineApp
 async def updatecountry(db):
 	global errors
 	async with aiohttp.ClientSession() as session:
@@ -90,4 +91,4 @@ async def updatecountry(db):
 	print(errors)
 	print('end::')
 	await db.commit()
-cmdlineApp(updatecountry)()
+updatecountry()

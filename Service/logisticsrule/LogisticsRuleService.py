@@ -51,9 +51,12 @@ class LogisticsRuleService():
             {"name_en": "full adress", "name_cn": "收货地址包含", 'options': ['contains'],
              'key': '.full_address', 'value': '新疆','type':'normal'},#新疆不发货
         ]
-
+        return rules
 if __name__ == "__main__":
     from common import cmdlineApp
+    @cmdlineApp
     async def test(db):#type: ignore
-        (await LogisticsRuleService()).getRules()
-    cmdlineApp(test)()
+        tmp=LogisticsRuleService()
+        results=await tmp.getRuleList()
+        print(results)
+    test()

@@ -43,10 +43,11 @@ class AmazonService(Market):
         url=f'/orders/v0/orders/{order_id}'
 
 if __name__ == '__main__':
+    @cmdlineApp
     async def test(db):#type: ignore
         store=await Service.storeService.findByPk(db,3)
         service=Service.amazonService
         gen=service.getOrderList(db,store)
         ret=await gen.__anext__()
         print(ret)
-    cmdlineApp(test)()
+    test()

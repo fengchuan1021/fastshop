@@ -42,12 +42,12 @@ class CategoryService(CRUDBase[Models.Category]):
 if __name__ == "__main__":
     from common.globalFunctions import cmdlineApp
     from component.dbsession import getdbsession
-
+    @cmdlineApp
     async def testgetCategoryTree():
         async with getdbsession() as db:
             await Service.categoryService.findByPk(db,'80194405654332482')
             #tmp=await Service.categoryService.getCategoryTree(db)
             #print('tmp::',tmp)
-    cmdlineApp(testgetCategoryTree)()
+    testgetCategoryTree()
 
 

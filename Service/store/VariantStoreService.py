@@ -67,10 +67,11 @@
 #     from common.globalFunctions import cmdlineApp
 #     from component.dbsession import getdbsession
 #     import Service
+#     @cmdlineApp
 #     async def test():#type: ignore
 #         async with getdbsession() as db:#type: ignore
 #             result=await Service.variantSiteService.getproductsitestockdetail(db,'87305569047680067')#type: ignore
 #             #print(result)
 #
 #
-#     cmdlineApp(test)()
+#     test()

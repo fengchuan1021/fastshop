@@ -113,6 +113,9 @@ class ThirdMarketService():
 if __name__ == "__main__":
     from component.dbsession import getdbsession
     from common import cmdlineApp
+
+
+    @cmdlineApp
     async def test() -> None:
         async with getdbsession() as db:
             t = ThirdMarketService()
@@ -120,4 +123,4 @@ if __name__ == "__main__":
             print(data)
             #tiktok = await t.getMarket("tiktok")
             #r = await tiktok.getProductList()
-    cmdlineApp(test)()
+    test()

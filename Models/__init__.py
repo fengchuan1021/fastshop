@@ -3,7 +3,7 @@ from typing import TypeVar
 ModelType = TypeVar("ModelType", bound=Base)
 from .Permission import Permission,Graphpermission,Roledisplayedmenu
 from .User import User
-from .api.User import App
+
 from .country.Country import Country
 from .order.Order import Order,OrderAddress,OrderItem,OrderStatusHistory
 from .order.ReviewOrderRule import ReviewOrderRule

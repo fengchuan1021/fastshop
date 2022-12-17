@@ -54,6 +54,7 @@ class ReviewOrderService():
 
 if __name__ == "__main__":
     from common import cmdlineApp
+    @cmdlineApp
     async def test(db):#type: ignore
         (await ReviewOrderService()).getRules()
-    cmdlineApp(test)()
+    test()

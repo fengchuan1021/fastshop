@@ -52,10 +52,11 @@ class MagentoService(Market):
         ret=await self.get(url,{},store)
         print(ret)
 if __name__ == '__main__':
+    @cmdlineApp
     async def test(db):#type: ignore
         store=await Service.storeService.findByPk(db,4)
 
         await Service.magentoService.getProductList(db,store)
 
-    cmdlineApp(test)()
+    test()
 

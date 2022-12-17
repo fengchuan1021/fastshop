@@ -10,7 +10,7 @@ from dateutil.parser import parse
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Request
 from urllib.parse import urlencode
-
+from modules.merchant.product.wish.ProductShema import WishCreateProduct
 from sqlalchemy.orm import Load
 #from sqlalchemy.orm.strategy_options import load_only
 import math

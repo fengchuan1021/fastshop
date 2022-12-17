@@ -116,6 +116,9 @@ if __name__=='__main__':
     from component.dbsession import getdbsession
     from common import cmdlineApp
     from settings import UserTokenData
+
+
+    @cmdlineApp
     async def test():#type: ignore
         async with getdbsession() as db:#type: ignore
             print('??')
@@ -137,4 +140,4 @@ if __name__=='__main__':
             }
             await fastAdd(db,'market',data)
             #await fastDel(db,'market{store}')
-    cmdlineApp(test)()
+    test()

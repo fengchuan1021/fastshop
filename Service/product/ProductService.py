@@ -115,10 +115,11 @@
 #     pass
 #     from common.globalFunctions import cmdlineApp
 #     from component.dbsession import getdbsession
+#     @cmdlineApp
 #     async def productdetailbyvariantid()->None:
 #         async with getdbsession() as db:
 #             tmp=await Service.productService.productdetailbyvariantid(db,87318319723451458,'cn')
 #             print(tmp)
-#     cmdlineApp(productdetailbyvariantid)()
+#     productdetailbyvariantid()
 #
 #
