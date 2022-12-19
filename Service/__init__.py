@@ -13,6 +13,8 @@ ModelType = TypeVar("ModelType", bound=Models.Base)
 
 from .UploadService import UploadService
 from .backend.PermissionService import PermissionService
+from .logisticsrule.InventoryRuleService import InventoryRuleService
+from .logisticsrule.LogisticsRuleService import LogisticsRuleService
 from .order.ReviewOrderService import ReviewOrderService
 from .payment.PaymentService import PaymentService
 from .payment.paymethods.AdyenService import AdyenService
@@ -53,8 +55,8 @@ permissionService : PermissionService
 graphpermissionService : CRUDBase[Models.Graphpermission]
 roledisplayedmenuService : CRUDBase[Models.Roledisplayedmenu]
 userService : UserService
-
 countryService : CRUDBase[Models.Country]
+customerService : CRUDBase[Models.Customer]
 orderService : CRUDBase[Models.Order]
 orderaddressService : CRUDBase[Models.OrderAddress]
 orderitemService : CRUDBase[Models.OrderItem]
@@ -76,6 +78,9 @@ variantimageService : CRUDBase[Models.VariantImage]
 variantstoreService : CRUDBase[Models.VariantStore]
 wishproductService : CRUDBase[Models.WishProduct]
 wishvariantService : CRUDBase[Models.WishVariant]
+inventorymovementService : CRUDBase[Models.InventoryMovement]
+logisticsruleService : LogisticsRuleService
+inventoryruleService : InventoryRuleService
 purchasereceiptService : CRUDBase[Models.PurchaseReceipt]
 purchasereceiptitemsService : CRUDBase[Models.PurchaseReceiptItems]
 supplierService : CRUDBase[Models.Supplier]

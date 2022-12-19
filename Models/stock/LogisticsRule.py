@@ -16,3 +16,12 @@ class LogisticsRule(Base):
     status=Column(XTVARCHAR(32),default='')
     name=Column(XTVARCHAR(32),default='')
     items=Column(TEXT)
+
+class InventoryRule(Base):
+    __tablename__ = 'inventoryrule'
+    inventoryrule_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    merchant_id=Column(INTEGER,index=True)
+    priority=Column(INTEGER,default=0)#优先级大的优先执行
+    status=Column(XTVARCHAR(32),default='')
+    name=Column(XTVARCHAR(32),default='')
+    items=Column(TEXT)

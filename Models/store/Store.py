@@ -48,7 +48,7 @@ class Store(Base):
 
     VariantStore:List['VariantStore']= relationship("VariantStore", uselist=True, primaryjoin='foreign(VariantStore.store_id) == Store.store_id',
                                     back_populates='Store',cascade='')
-    Category: List['Category']=relationship("Category", uselist=True, primaryjoin='foreign(Category.store_id) == Store.store_id', back_populates='Store',cascade='')
+    #Category: List['Category']=relationship("Category", uselist=True, primaryjoin='foreign(Category.store_id) == Store.store_id', back_populates='Store',cascade='')
     # Product: List['Product'] = relationship("Product", uselist=True,
     #                                           primaryjoin='foreign(Product.store_id) == Store.store_id',
     #                                           back_populates='Store',cascade='')

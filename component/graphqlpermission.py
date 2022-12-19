@@ -6,7 +6,7 @@ from common import PermissionException
 from component.cache import cache
 @cache
 async def getAuthorizedColumns(db:AsyncSession,modelname:str,role:int,method:str='read')->Any:
-
+    print("modelname:",modelname)
     permission=await Service.graphpermissionService.findOne(db,filter={"model_name":modelname,"role_id":role})
     if not permission:
         if role==1:

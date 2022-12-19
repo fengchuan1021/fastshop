@@ -13,16 +13,16 @@ class Category(Base):
     category_id=Column(BIGINT(20), primary_key=True,default=snowFlack.getId)
     category_name=Column(XTVARCHAR(32))
     parent_id = Column(BIGINT,index=True)
-    parent_name = Column(XTVARCHAR(32),server_default='',default='')
+    #parent_name = Column(XTVARCHAR(32),server_default='',default='')
     category_order=Column(INTEGER,default=0,server_default='0')
-    store_id=Column(INTEGER,server_default="0",index=True)
+
     merchant_id=Column(INTEGER,default=0,index=True)
     description=Column(XTVARCHAR(512))
-    category_image=Column(XTVARCHAR(512),server_default="",default='')
+    #category_image=Column(XTVARCHAR(512),server_default="",default='')
     #use virtual foreign key.
 
-    Children:'Category'=relationship("Category",uselist=True,primaryjoin='foreign(Category.parent_id) == Category.category_id',backref=backref('Parent', remote_side='Category.category_id'),cascade='')
-    Store:'Store'=relationship("Store",uselist=False,primaryjoin='foreign(Category.store_id) == Store.store_id',back_populates="Category",cascade='')
+    Children:'Category'=relationship("Category",uselist=True,primaryjoin='foreign(Category.parent_id) == Category.category_id',backref=backref('Parent', remote_side='Category.category_id'),cascade='save-update, delete')
+    #Store:'Store'=relationship("Store",uselist=False,primaryjoin='foreign(Category.store_id) == Store.store_id',back_populates="Category",cascade='')
     ProductCategory:typing.List['ProductCategory']=relationship("ProductCategory",uselist=True,primaryjoin='foreign(ProductCategory.category_id) == Category.category_id',back_populates="Category",cascade='')
 class ProductCategory(Base):
     '产品和分类的对应关系'
@@ -35,4 +35,4 @@ class ProductCategory(Base):
     Category: 'Category' = relationship("Category", uselist=False,
                                       primaryjoin='foreign(ProductCategory.category_id) == Category.category_id',back_populates='ProductCategory',cascade='')
     merchant_id=Column(INTEGER,default=0)
-    store_id=Column(INTEGER,default=0)
+    #store_id=Column(INTEGER,default=0)

@@ -3,8 +3,8 @@ from typing import TypeVar
 ModelType = TypeVar("ModelType", bound=Base)
 from .Permission import Permission,Graphpermission,Roledisplayedmenu
 from .User import User
-
 from .country.Country import Country
+from .customer.Customer import Customer
 from .order.Order import Order,OrderAddress,OrderItem,OrderStatusHistory
 from .order.ReviewOrderRule import ReviewOrderRule
 from .order.Shipping import OrderShipment,OrderShipmentItem
@@ -16,6 +16,8 @@ from .product.TiktokProduct import TiktokProduct,TiktokVariant
 from .product.VariantImage import VariantImage
 from .product.VariantStore import VariantStore
 from .product.WishProduct import WishProduct,WishVariant
+from .stock.InventoryMovement import InventoryMovement
+from .stock.LogisticsRule import LogisticsRule,InventoryRule
 from .stock.PurchaseReceipt import PurchaseReceipt,PurchaseReceiptItems
 from .stock.Supplier import Supplier,SupplierVariant
 from .stock.VariantWarehouse import VariantWarehouse

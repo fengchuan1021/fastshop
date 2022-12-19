@@ -24,4 +24,4 @@ def findModelByName(name:str)->Type[Models.ModelType]:
             continue
         if tmpname.lower()==name.lower():
             return value
-    raise Exception(f'not found {name}')
+    raise Exception(f'model not found {name}')

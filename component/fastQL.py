@@ -50,7 +50,7 @@ async def fastQuery(db: AsyncSession,
 
 
 
-async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[settings.UserTokenData]=None)->Any:
+async def _fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[settings.UserTokenData]=None)->Any:
     '''context 来指定用什么用户角色来添加数据'''
     '''context 里边userrole为商家 即以商家角色添加数据'''
     '''getAuthorizedColumns去权限表里边查找商家能读取/写入的字段'''
@@ -63,32 +63,38 @@ async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[sett
         allpermission=True
 
     dic={}
-    children=[]
+    modelclass = findModelByName(modelname)
+    children={}
+
     _lowerrelation=[i.lower() for i in columns if 'A'<=i[0]<='Z']
     for key,value in data.items():
         if isinstance(value,(dict,list)):
             if not allpermission and key.lower() not in _lowerrelation:
                 raise PermissionException(f"not permission access {key}")
-            children.append(key)
+            children[key]=modelclass.__annotations__.get(key)
         else:
             if not allpermission and key not in columns:
                 raise PermissionException(f"not permission access {key}")
             dic[key]=value
-    modelclass=findModelByName(modelname)
+
     if context:
         dic.update({i:getattr(context,i) for i in extra})
     model=modelclass(**dic)
-    db.add(model)
-
-    await db.flush()
     for child in children:
         if isinstance(data[child],dict):
             data[child][modelname+"_id"]=model.id
-            await fastAdd(db, child,data[child], context)
+            submodel=await _fastAdd(db, children[child],data[child], context)#type: ignore
+            setattr(model,child,submodel)
         else:
+            attribute=getattr(model,child)
             for tmpdata in data[child]:
-                tmpdata[modelname+"_id"]=model.id
-                await fastAdd(db,child,tmpdata, context)
+                tmpmodel=await _fastAdd(db,children[child],tmpdata, context)#type: ignore
+                attribute.append(tmpmodel)
+    return model
+async def fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[settings.UserTokenData]=None)->Any:
+    model=await _fastAdd(db,modelname,data,context)
+    db.add(model)
+    return model
 async def fastDel(db: AsyncSession,modelname:str,id:int=0,context:Optional[settings.UserTokenData]=None,extra_filter:Dict=None)->Any:
 
     extra=[]
@@ -138,6 +144,6 @@ if __name__=='__main__':
                     }
                 ]
             }
-            await fastAdd(db,'market',data)
+            await _fastAdd(db,'market',data)
             #await fastDel(db,'market{store}')
     test()
