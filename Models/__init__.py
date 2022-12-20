@@ -16,6 +16,7 @@ from .product.TiktokProduct import TiktokProduct,TiktokVariant
 from .product.VariantImage import VariantImage
 from .product.VariantStore import VariantStore
 from .product.WishProduct import WishProduct,WishVariant
+from .statistics.SaleReport import SaleReport
 from .stock.InventoryMovement import InventoryMovement
 from .stock.LogisticsRule import LogisticsRule,InventoryRule
 from .stock.PurchaseReceipt import PurchaseReceipt,PurchaseReceiptItems

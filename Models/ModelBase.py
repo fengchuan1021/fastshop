@@ -52,15 +52,17 @@ class MyBase(object):
         return Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
 
-    def dict(self,resolved:List['MyBase']=[])->Dict[str,Any]:
+    def dict(self,resolved:List['MyBase']=None)->Dict[str,Any]:#type: ignore
+        if resolved==None:
+            resolved=[]
         dic={}
-        if self not in resolved:
-            resolved.append(self)
+        if self not in resolved:#type: ignore
+            resolved.append(self)#type: ignore
         for key, value in self.__dict__.items():
             if key.startswith('_'):
                 continue
             if isinstance(value,Base):
-                if value not in resolved:
+                if value not in resolved:#type: ignore
                     dic[key]=value.dict()
             else:
                 dic[key] = value

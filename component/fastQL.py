@@ -40,7 +40,7 @@ async def fastQuery(db: AsyncSession,
         statment=statment.order_by(text(orderby))
 
     results=await db.execute(statment,params)
-    data=results.scalars().all()
+    data=results.scalars().unique().all()
 
     if returnsingleobj:
         return data[0] if data else None
@@ -122,28 +122,16 @@ if __name__=='__main__':
     from component.dbsession import getdbsession
     from common import cmdlineApp
     from settings import UserTokenData
-
-
+    from sqlalchemy import select, text
+    from sqlalchemy.orm import aliased
+    import orjson
     @cmdlineApp
-    async def test():#type: ignore
-        async with getdbsession() as db:#type: ignore
-            print('??')
-            ql="store{appid,market{market_url}}"
-            #results=await fastQuery(db,ql,filter={"store_name":"myshop"},context=UserTokenData(userrole=2,merchant_id=1))
-
-            #result2=await fastDel(db,'store',13)
-            #result2=await fastDel(db,'store',13,context=UserTokenData(userrole=2,merchant_id=2))
-            data={
-
-                "market_name":"amazon33",
-                "Store":[{
-                    "store_name":"Mystore1333"
-                },
-                    {
-                        "store_name": "Mystore233"
-                    }
-                ]
-            }
-            await _fastAdd(db,'market',data)
-            #await fastDel(db,'market{store}')
+    async def test(db):#type: ignore
+        #user1=aliased(Models.Category)
+        query="category{category_id,category_name,Children{}}"
+        #s=select(Models.Category).join(Models.Category.Children.of_type(aliased(Models.Category)))
+        #print(s)
+        ret=await fastQuery(db,query)
+        print(ret)
+        print(ret[0].json())
     test()

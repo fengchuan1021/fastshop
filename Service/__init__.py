@@ -78,6 +78,7 @@ variantimageService : CRUDBase[Models.VariantImage]
 variantstoreService : CRUDBase[Models.VariantStore]
 wishproductService : CRUDBase[Models.WishProduct]
 wishvariantService : CRUDBase[Models.WishVariant]
+salereportService : CRUDBase[Models.SaleReport]
 inventorymovementService : CRUDBase[Models.InventoryMovement]
 logisticsruleService : LogisticsRuleService
 inventoryruleService : InventoryRuleService
