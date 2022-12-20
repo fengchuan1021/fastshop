@@ -65,10 +65,10 @@ async def postquery(
     if inshema.id:
         modelname=inshema.query if (pos:=inshema.query.find('{'))==-1 else inshema.query[0:pos]
         _filter[f'{modelname.lower()}_id']=id#type: ignore
-    result=await fastQuery(db,inshema.query,inshema.filter,inshema.pagenum,inshema.pagesize,inshema.orderby,inshema.returntotal,token,id)
-    if id:
+    result=await fastQuery(db,inshema.query,inshema.filter,inshema.pagenum,inshema.pagesize,inshema.orderby,inshema.returntotal,token,inshema.id)
+    if inshema.id:
         return CommonResponse(status='success',data=result)
-    if inshema.returncount:
+    if inshema.returntotal:
         return CommonResponse(status='success',data=result[0],total=result[1])
     else:
         return CommonResponse(status='success',data=result)

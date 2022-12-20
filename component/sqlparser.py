@@ -7,8 +7,7 @@ import Models
 import settings
 from common import findModelByName
 from component.graphqlpermission import getAuthorizedColumns
-
-#from sqlalchemy.orm import aliased
+from sqlalchemy.orm import aliased
 def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
     p1 = query.find('{')
     modelname = query[0:p1]
@@ -45,9 +44,9 @@ def getmodelnamecloums(query:str)->Tuple[str,List[str],List[str]]:
                 columns.append(tmpstr)
         return modelname,columns,joinmodel
 
-async def parseSQL(query:str,db: AsyncSession=None,context:Optional[settings.UserTokenData]=None,parentmodel:Any=None,statment:Any=None)->Any:#,modelarr=None
-    #if modelarr==None:
-    #   modelarr=[]
+async def parseSQL(query:str,db: AsyncSession=None,context:Optional[settings.UserTokenData]=None,parentmodel:Any=None,statment:Any=None,modelarr:List=None)->Any:#type :ignore
+    if modelarr==None:
+        modelarr=[]
     modelname,columns,joinmodel=getmodelnamecloums(query)
     if parentmodel:
         realmodelname = parentmodel.__annotations__.get(modelname)
@@ -68,7 +67,7 @@ async def parseSQL(query:str,db: AsyncSession=None,context:Optional[settings.Use
     option=None
     if None==statment:
         model = findModelByName(modelname)
-        #modelarr.append(model.__name__)
+        modelarr.append(model.__name__)#type: ignore
         if extra:
             statment=select(model).where(text(' and '.join( [f'{modelname}.{i}={getattr(context,i)}' for i in extra] )))
         else:
@@ -76,19 +75,22 @@ async def parseSQL(query:str,db: AsyncSession=None,context:Optional[settings.Use
     else:
         relivatetoparent=getattr(parentmodel,modelname)
 
-        option = contains_eager(relivatetoparent)
-        #if realmodelname in modelarr:
-        #    statment = statment.join(relivatetoparent.of_type(aliased(getattr(Models,realmodelname))))  # type: ignore
-        #else:
-            #modelarr.append(realmodelname)
-        statment=statment.join(relivatetoparent)#type: ignore
+
+        if realmodelname in modelarr:#type: ignore
+            tmpalisa=aliased(getattr(Models, realmodelname))
+            option = contains_eager(relivatetoparent,alias=tmpalisa)
+            statment = statment.join(relivatetoparent.of_type(tmpalisa))  # type: ignore
+        else:
+            option = contains_eager(relivatetoparent)
+            modelarr.append(realmodelname)#type: ignore
+            statment=statment.join(relivatetoparent)#type: ignore
     if columns:
         option=option.load_only(*columns) if option else load_only(*columns)
 
     childsoptions=[]
     for joint in joinmodel:
 
-        statment,childsoption=await parseSQL(joint,db,context,model,statment)#modelarr
+        statment,childsoption=await parseSQL(joint,db,context,model,statment,modelarr)
 
         if childsoption:
             childsoptions.append(childsoption)

@@ -124,14 +124,18 @@ if __name__=='__main__':
     from settings import UserTokenData
     from sqlalchemy import select, text
     from sqlalchemy.orm import aliased
+    from sqlalchemy.orm import joinedload, load_only, contains_eager
+    from XTTOOLS import toJson
     import orjson
+    import Models
     @cmdlineApp
     async def test(db):#type: ignore
         #user1=aliased(Models.Category)
         query="category{category_id,category_name,Children{}}"
-        #s=select(Models.Category).join(Models.Category.Children.of_type(aliased(Models.Category)))
+        #a=aliased(Models.Category)
+        #s=select(Models.Category).join(Models.Category.Children.of_type(a)).options(contains_eager(Models.Category.Children,alias=a))
         #print(s)
         ret=await fastQuery(db,query)
-        print(ret)
-        print(ret[0].json())
+        print(toJson(ret))
+
     test()
