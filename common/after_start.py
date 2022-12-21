@@ -25,7 +25,7 @@ async def after_start(db:AsyncSession=None)->None:
         await thirdmarketService.init(db)
     else:
         async with getdbsession() as db:
-            await thirdmarketService.init(db)#type: ignore
+            await thirdmarketService.init(db.session)#type: ignore
 
 
     elasticsearchclient.es = AsyncElasticsearch([settings.ELASTICSEARCHURL])

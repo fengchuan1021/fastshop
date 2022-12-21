@@ -45,8 +45,13 @@ class MagentoService(Market):
 
     async def getProductList(self,db:AsyncSession,store:Models.Store)->Any:
         url='/V1/products-render-info'
-        ret=await self.get(url,{'storeId':store.shop_id,'currencyCode':store.currency_code,'searchCriteria[currentPage]':1,'searchCriteria[pageSize]':50},store)
-        print(ret)
+        i=1
+        while 1:
+            ret=await self.get(url,{'storeId':store.shop_id,'currencyCode':store.currency_code,'searchCriteria[currentPage]':i,'searchCriteria[pageSize]':50},store)
+            i+=1
+            yield ret['items']
+            if len(ret['items'])<50:
+                break
     async def getCategories(self,db:AsyncSession,store:Store)->Any:
         url='/V1/categories'
         ret=await self.get(url,{},store)
