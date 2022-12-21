@@ -76,7 +76,9 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     address_arr=[]
     shippment_arr=[]#type: ignore
     shippmentItem_arr=[]#type: ignore
-    status_dic={111:"AWAITING_SHIPMENT",100:'UNPAID',112:'AWAITING_COLLECTION',114:'PARTIALLY_SHIPPING',121:'IN_TRANSIT',122:'DELIVERED',130:'COMPLETED',140:'CANCELLED'}
+    status_dic={111:"AWAITING_SHIPMENT",100:'UNPAID',112:'AWAITING_COLLECTION',114:'PARTIALLY_SHIPPING',121:'IN_TRANSIT',122:'DELIVERED',130:'COMPLETED',140:'CANCELLED',
+                998:"REQUIRE_REVIEW",
+                999:"REQUIRE_PLATFORM_REVIEW"}
     for json_data in orders:
         order=Models.Order()
         order.order_currency_code = json_data["payment_info"]["currency"]

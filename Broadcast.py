@@ -14,11 +14,7 @@ broadcastqueue:Dict=defaultdict(list)
 
 def AfterModelUpdated(listenModel : Type[Model]| Literal['*'],background:bool=False)->Callable[[F], F]:
 
-
     queuename = f'After{"*" if listenModel=="*" else listenModel.__name__}Updated{background}'
-
-
-
     def decorator(func:F)->F:
         if func.__module__.startswith("listeners") and func not in broadcastqueue[queuename]:
             broadcastqueue[queuename].append(func)

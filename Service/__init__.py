@@ -22,6 +22,7 @@ from .payment.paymethods.OnerwayService import OnerwayService
 from .payment.paymethods.PaypalService import PaypalService
 from .product.CategoryService import CategoryService
 from .search.ProductSearchService import ProductSearchService
+from .statistics.SaleReportService import SaleReportService
 from .store.StoreService import StoreService
 from .thirdpartmarket.ThirdMarketService import ThirdMarketService
 from .thirdpartmarket.market.AmazonService import AmazonService
@@ -78,7 +79,7 @@ variantimageService : CRUDBase[Models.VariantImage]
 variantstoreService : CRUDBase[Models.VariantStore]
 wishproductService : CRUDBase[Models.WishProduct]
 wishvariantService : CRUDBase[Models.WishVariant]
-salereportService : CRUDBase[Models.SaleReport]
+salereportService : SaleReportService
 inventorymovementService : CRUDBase[Models.InventoryMovement]
 logisticsruleService : LogisticsRuleService
 inventoryruleService : InventoryRuleService

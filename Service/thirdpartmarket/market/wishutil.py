@@ -62,7 +62,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     address_arr=[]#type: ignore
     shippment_arr=[]#type: ignore
     #shipmentitem_arr=[]
-    status_dic={"SHIPPED":"SHIPPED","REFUNDED":"REFUNDED"}
+    status_dic={"SHIPPED":"DELIVERED","REFUNDED":"CANCELLED","APPROVED":"AWAITING_SHIPMENT","REQUIRE_REVIEW":"REQUIRE_PLATFORM_REVIEW"}
     for json_data in orders:
         order=Models.Order()
         order.order_currency_code = json_data["order_payment"]["general_payment_details"]["payment_total"][

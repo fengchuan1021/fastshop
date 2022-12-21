@@ -17,19 +17,26 @@ async def revieworder(order:Models.Order,db:AsyncSession,token:settings.UserToke
     for reviewrule in reviewrules:
         flag=await Service.revieworderService.validRule(reviewrule,order)
         if flag:
-            order.status=reviewrule.status
+            order.status="REQUIRE_REVIEW"
 
-print(666666666666666666666)
 
-@Broadcast.AfterModelUpdated(Models.Order,background=True)
+@Broadcast.AfterModelCreated(Models.Order,background=True)
+async def statisticsneworder(order:Models.Order,db:AsyncSession,token:settings.UserTokenData=None)->None:
+    await Service.salereportService.onNewOrder(db,order)
+
+
+@Broadcast.AfterModelUpdated(Models.Order,background=False)
 async def statistics(order:Models.Order,db:AsyncSession,token:settings.UserTokenData=None)->None:
     print('after order changed!!')
     merchant_id=order.merchant_id
     store_id=order.store_id
     inspr = inspect(order)
-    history=getattr(inspr.attrs,'status').history
-    print(history.deleted)
-    print(history.added)
+    history=inspr.attrs.status.history
+    if history.deleted and history.added:
+        if history.deleted[0]=='UNPAID' and history.added[0]=='AWAITING_SHIPMENT':
+            #订单由待支付变为 代发货
+            await Service.salereportService.onUnpaidtoPaid(db, order)
+            pass
 
 if __name__ == '__main__':
     from common import cmdlineApp
@@ -38,7 +45,7 @@ if __name__ == '__main__':
     @cmdlineApp
     async def test(db:AsyncSession)->Any:
         model=await Service.orderService.findByPk(db,61821984346146)
-        model.status="paidsddd"
+        model.status="wating"
         await db.commit()
 
     test()
