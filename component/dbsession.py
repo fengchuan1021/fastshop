@@ -1,6 +1,8 @@
 import importlib
 from pathlib import Path
 import os
+from typing import Any
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import event
@@ -45,8 +47,7 @@ AsyncSessionMaker = sessionmaker(
 
 
 class getdbsession:
-    def __init__(self,request:Request=None,token: settings.UserTokenData=None):
-        self.request = request
+    def __init__(self,token: settings.UserTokenData=None):
         self.token=token
         self.session = AsyncSessionMaker()
         setattr(self.session, "_createdArr", [])
@@ -74,10 +75,11 @@ class getdbsession:
         #     raise Exception("this method is only usable in dev environment for testing porpose. in product mode it will not trigger broadcast")
         self.__init__()
         return self.__aenter__().__await__()
-    async def __aenter__(self)->AsyncSession:
-        return self.session
-
-    async def __aexit__(self,*args,skipcommit=False):#type: ignore
+    async def __aenter__(self)->'getdbsession':
+        return self
+    async def __aexit__(self,*args:Any)->None:
+        await self.close()
+    async def close(self,skipcommit=False):#type: ignore
         if not skipcommit:
             await self.session.commit()
         if self.session._updateArr:
@@ -89,14 +91,13 @@ class getdbsession:
         if self.session._updateArr or self.session._createdArr or self.session._deletedArr:
             await self.session.commit()
         await self.session.close()
-        if not self.request and elasticsearchclient.es:
-            await elasticsearchclient.es.close()
+
             #[await engine.dispose() for engine in engines.values()]
 
 
 
 async def get_webdbsession(request:Request,token: settings.UserTokenData=Depends(get_token)) -> AsyncSession:#type: ignore
-    db_client=getdbsession(request,token)
+    db_client=getdbsession(token)
     request.state.db_client = db_client
     return db_client.session
 

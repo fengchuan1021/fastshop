@@ -15,7 +15,7 @@ class SaleReport(Base):
     salereport_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
 
 
-    date=Column(DATE,server_default=text("CURRENT_TIMESTAMP"))
+    date=Column(DATE,index=True)
 
     order_amount=Column(DECIMAL(10,4),default=0,server_default="0")#总下单金额 包含未付款的
     order_count=Column(INTEGER)#总下单数量 包含未付款的

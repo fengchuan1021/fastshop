@@ -18,6 +18,7 @@ class Order(Base):
     market_id = Column(INTEGER, default=0,index=True)
     market_name = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
     merchant_id = Column(INTEGER, default=0,index=True)
+    store_id=Column(INTEGER,default=0,index=True)
     merchant_name = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
     # status = Column(
     #     ENUM("PENDING", "PROCESSING", "SHIPPED", "COMPLETE", "REFUNDED", "PART_REFUNDED", "PART_SHIPPED", "HOLDED"),

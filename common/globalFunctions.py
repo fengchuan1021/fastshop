@@ -56,10 +56,12 @@ def cmdlineApp(func:Callable[...,Any])->Callable[...,Any]:
         try:
             from common.after_start import after_start
             from component.dbsession import getdbsession
-            db=loop.run_until_complete(getdbsession())
-            loop.run_until_complete(after_start(db))
-            result=loop.run_until_complete(func(db,*args,**kwargs))
-            loop.run_until_complete(db.__aexit__(None,None,None))
+            dbclient=getdbsession(token=None)
+            dbsession=dbclient.session
+            loop.run_until_complete(after_start(dbsession))
+            result=loop.run_until_complete(func(dbsession,*args,**kwargs))
+            loop.run_until_complete(dbclient.close())
+
             return result
         except Exception as e:
             loop.run_until_complete(writelog(str(e)))

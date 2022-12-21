@@ -55,7 +55,7 @@ async def validate_tokenandperformevent(request: Request, call_next:Any)->Respon
         response = await call_next(request)  # This request will be modified and sent
         if db_client:=request.state._state.get('db_client',None):
             await db_client.session.commit()
-            backgroundtasks = BackgroundTask(db_client.__aexit__,skipcommit=True)
+            backgroundtasks = BackgroundTask(db_client.close,skipcommit=True)
             response.background =backgroundtasks
     except OperationalError as e:
         jsonout = Common500Response(status='dberror',msg=str(e))

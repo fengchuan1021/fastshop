@@ -1,3 +1,4 @@
+from functools import wraps
 from typing import Type,TypeVar,List,Iterable,Literal
 import asyncio
 import settings
@@ -9,15 +10,20 @@ from typing import Dict,Callable,Any,Generic,cast
 Model= TypeVar("Model", bound=Base)
 F = TypeVar('F', bound=Callable[..., Any])
 from collections import defaultdict
-broadcastqueue=defaultdict(list)
+broadcastqueue:Dict=defaultdict(list)
 
 def AfterModelUpdated(listenModel : Type[Model]| Literal['*'],background:bool=False)->Callable[[F], F]:
 
 
     queuename = f'After{"*" if listenModel=="*" else listenModel.__name__}Updated{background}'
 
+
+
     def decorator(func:F)->F:
-        broadcastqueue[queuename].append(func)
+        if func.__module__.startswith("listeners") and func not in broadcastqueue[queuename]:
+            broadcastqueue[queuename].append(func)
+
+        @wraps(func)
         def wrapper(*args:Any,**kwargs:Any)->Any:
            return func(*args,**kwargs)
 
@@ -38,7 +44,9 @@ def BeforeModelCreated(listenModel : Type[Model]| Literal['*'])->Callable[[F], F
     queuename=f'Before{"*" if listenModel=="*" else listenModel.__name__}Created'
 
     def decorator(func:F)->F:
-        broadcastqueue[queuename].append(func)
+        if func.__module__.startswith("listeners") and func not in broadcastqueue[queuename]:
+            broadcastqueue[queuename].append(func)
+            #broadcastqueue[queuename].append(func)
         def wrapper(*args:Any,**kwargs:Any)->Any:
             return func(*args,**kwargs)
         return cast(F, wrapper)
@@ -57,7 +65,8 @@ def AfterModelDeleted(listenModel:Type[Model] | Literal['*'],background:bool=Fal
     queuename = f'After{"*" if listenModel=="*" else listenModel.__name__}Deleted{background}'
 
     def decorator(func:F)->F:
-        broadcastqueue[queuename].append(func)
+        if func.__module__.startswith("listeners") and func not in broadcastqueue[queuename]:
+            broadcastqueue[queuename].append(func)
         def wrapper(*args:Any,**kwargs:Any)->Any:
            return func(*args,**kwargs)
         return cast(F, wrapper)
@@ -76,7 +85,8 @@ def AfterModelCreated(listenModel : Type[Model]| Literal['*'],background:bool=Fa
     queuename = f'After{"*" if listenModel=="*" else listenModel.__name__}Created{background}'
 
     def decorator(func:F)->F:
-        broadcastqueue[queuename].append(func)
+        if func.__module__.startswith("listeners") and func not in broadcastqueue[queuename]:
+            broadcastqueue[queuename].append(func)
         def wrapper(*args:Any,**kwargs:Any)->Any:
            return func(*args,**kwargs)
         return cast(F, wrapper)
