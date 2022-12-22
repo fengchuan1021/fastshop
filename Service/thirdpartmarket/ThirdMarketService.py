@@ -109,7 +109,9 @@ class ThirdMarketService():
 
         store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
         return await marketservice.shiPackage(db,store,shipInfo)
-
+    async def updateStock(self,db:AsyncSession,merchant_id:int,store_id:int,sku:str,num:int)->Any:
+        store, marketservice = await self.getStoreandMarketService(db, merchant_id, store_id)
+        return await marketservice.updateStock(db,store,sku,num)
 if __name__ == "__main__":
     from component.dbsession import getdbsession
     from common import cmdlineApp

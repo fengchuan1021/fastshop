@@ -23,6 +23,7 @@ import settings
 import aiohttp
 from urllib.parse import urlencode
 from Service.thirdpartmarket import Market
+from Service.thirdpartmarket.Shema import Shipinfo
 from Service.thirdpartmarket.market import magentoutil
 from common import cmdlineApp
 from common.CommonError import ResponseException, TokenException
@@ -47,6 +48,13 @@ class MagentoService(Market):
 
         async with aiohttp.ClientSession(headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'}) as session:
             async with session.post(url,json=body) as resp:
+                return resp.json()
+    async def put(self,url:str,body:Dict,store:Store)->Any:
+        if not store.token_expiration or store.token_expiration-int(time.time())<300:
+            await self.getAdminToken(store)
+        url=f'{store.apiendpoint}{url}'
+        async with aiohttp.ClientSession(headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'}) as session:
+            async with session.put(url,json=body) as resp:
                 return resp.json()
     async def getAdminToken(self,store:Models.Store)->Any:
         url='/rest/V1/integration/admin/token'
@@ -73,7 +81,25 @@ class MagentoService(Market):
                 await magentoutil.addproducts(db,needsync.values(),store.store_id,merchant_id)#type: ignore
 
             print('needupdate:',needupdate )
-
+    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
+        '''发货'''
+        url=f'/rest/V1/order/{shipinfo.order_id}/ship'
+        body={"tracks":[
+            {
+                "track_number":shipinfo.track_number,
+                "carrier_code":shipinfo.shipping_provider,
+                'title':shipinfo.shipping_provider
+            }
+        ]}
+        ret=await self.post(url,body,store)
+        return ret
+    async def updateStock(self,db:AsyncSession,store:Models.Store,sku:str,num:int)->Any:
+        product=await Service.magentoproductService.findOne(db,{'sku':sku,'store_id':store.store_id})
+        if product:
+            url=f'/rest/V1/products/{product.sku}/stockItems/1'
+            body={"stockItem":{"qty":num, "is_in_stock": True}}
+            ret=await self.put(url,body,store)
+            print(ret)
     async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int)->Any:
         url='/rest/V1/orders'
         update_at_max=None

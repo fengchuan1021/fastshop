@@ -48,4 +48,6 @@ class WishVariant(Base):
     wish_id=Column(XTVARCHAR(32),unique=True,index=True)
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
-
+    warehouse_id=Column(XTVARCHAR(32)) #在wish上的仓库id
+    inventory=Column(INTEGER,default=0)#在wish上的仓库库存
+    WishProduct:'WishProduct'=relationship('WishProduct',uselist=False,primaryjoin="foreign(WishVariant.wishproduct_id)==WishProduct.wishproduct_id")

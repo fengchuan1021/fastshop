@@ -46,6 +46,11 @@ def filloutVariant(variant:Models.TiktokVariant,variant_json:Dict,product:Models
     variant.price = variant_json['price']["original_price"]
     variant.currency_code = variant_json['price']["currency"]
     variant.market_varant_id=variant_json['id']
+    try:
+        variant.warehouse_id=variant_json["stock_infos"][0]["warehouse_id"]
+        variant.inventory=variant_json["stock_infos"][0]["available_stock"]
+    except Exception as e:
+        pass
 
 
 

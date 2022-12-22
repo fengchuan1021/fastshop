@@ -35,6 +35,8 @@ def filloutVariant(variant:Models.WishVariant,variant_json:Dict,product:Models.W
     variant.cost_currency_code = variant_json['cost']['currency_code']
     variant.gtin = variant_json['gtin']
     variant.wish_id = variant_json['id']
+    variant.warehouse_id=variant_json["inventories"][0]["warehouse_id"]
+    variant.inventory=variant_json["inventories"][0]["inventory"]
 
 async def addproducts(db:AsyncSession,products:List[Dict],store_id:int,merchant_id:int)->Any:
     productarr=[]

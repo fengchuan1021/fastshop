@@ -47,4 +47,8 @@ class TiktokVariant(Base):
     #tiktok_id=Column(XTVARCHAR(32),unique=True,index=True)
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
+    warehouse_id=Column(XTVARCHAR(32)) #在tiktok上的仓库id
+    inventory=Column(INTEGER,default=0)#在tiktok上的仓库库存
+    TiktokProduct:'TiktokProduct'=relationship('TiktokProduct',uselist=False,primaryjoin="foreign(TiktokVariant.tiktokproduct_id)==TiktokProduct.tiktokproduct_id")
+
 

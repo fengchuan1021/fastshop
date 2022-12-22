@@ -10,6 +10,8 @@ from dateutil.parser import parse
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Request
 from urllib.parse import urlencode
+
+from component.fastQL import fastQuery
 from modules.merchant.product.wish.ProductShema import WishCreateProduct
 from sqlalchemy.orm import Load
 #from sqlalchemy.orm.strategy_options import load_only
@@ -83,7 +85,25 @@ class WishService(Market):
             async with session.get(finalurl, headers={'authorization': f'Bearer {store.token}'}) as response:
 
                 return await response.json()
+    async def updateStock(self,db:AsyncSession,store:Models.Store,sku:str,num:int)->Any:
+        variant=await Service.wishvariantService.findOne(db,{'sku':sku,'store_id':store.store_id})
+        #variant=await fastQuery(db,'WishVariant{wish_id,WishProduct{wish_id}}')
+        if variant:
+            url=f'/api/v3/products/{variant.product_id}'
+            body={"variations":[
+                {
+                    id:variant.wish_id,
+                    "inventories":[
+                        {"inventory":num,
+                         "warehouse_id":variant.warehouse_id
+                         }
+                    ]
+                }
 
+
+            ]}
+            ret=await self.put(url,store,body)
+            return ret
     async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
         '''发货'''
         url=f'/api/v3/orders/{shipinfo.order_id}/tracking'
@@ -212,6 +232,7 @@ class WishService(Market):
             if updated_at_max:
                 params['updated_at_max']=updated_at_max
             result = await self.get(url, store,params )
+            print('productlist:',result)
             data = result['data']#type: ignore
             if data:
                 updated_at_max=data[-1]["updated_at"]

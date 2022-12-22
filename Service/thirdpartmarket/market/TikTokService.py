@@ -93,6 +93,7 @@ class TikTokService(Market):
         async with aiohttp.ClientSession() as session:
             async with session.get(settings.TIKTOK_APIURL+url) as resp:
                 return await  resp.json()
+
     async def refreshtoken(self,store:Models.Store)->Models.Store:
         print('refresktoken')
         async with aiohttp.ClientSession() as session:
@@ -125,6 +126,14 @@ class TikTokService(Market):
                     raise TokenException("token expired")
 
                 return ret
+    async def put(self,url:str,body:Dict,store:Models.Store)->Any:
+        finalurl=self.buildurl(url,{},store)
+        async with aiohttp.ClientSession() as session:
+            async with session.put(settings.TIKTOK_APIURL+finalurl,json=body) as resp:
+                ret=await resp.json()
+                if ret['code'] == 105002:  # token expired
+                    raise TokenException("token expired")
+                return ret
     async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str,sem:Any=None)->Any:
         url=f'/api/products/details'
         while 1:
@@ -134,6 +143,8 @@ class TikTokService(Market):
                     await asyncio.sleep(1)
             else:
                 data = await self.get(url, {"product_id":product_id},store)
+            if 'data' not in data:
+                return data
 
             return data['data']
     async def getProductList(self,db:AsyncSession,store:Models.Store)->Any:#type ignore
@@ -148,7 +159,25 @@ class TikTokService(Market):
             yield data
             if len(result['data']) < 100:#type: ignore
                 break
-
+    async def updateStock(self,db:AsyncSession,store:Models.Store,sku:str,num:int)->Any:
+        url='/api/products/stocks'
+        variant=await Service.tiktokvariantService.findOne(db,{'sku':'sku','store_id':store.store_id})
+        if variant:
+            body={
+              "product_id": variant.market_product_id,
+              "skus": [
+                {
+                  "id": variant.market_varant_id,
+                  "stock_infos": [
+                    {
+                      "available_stock": num,
+                      "warehouse_id": variant.warehouse_id
+                    }
+                  ]
+                }
+              ]
+            }
+            await self.put(url,body,store)
     async def syncProduct(self,db:AsyncSession,store:Models.Store,merchant_id:int)->Any:
         async for tmp in self.getProductList(db,store):
             productSummarys=tmp['products']
