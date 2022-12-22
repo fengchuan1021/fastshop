@@ -11,6 +11,7 @@ from .order.Shipping import OrderShipment,OrderShipmentItem
 from .product.AttrSpecification import PreAttrSpecification,ProductAttribute,ProductSpecification
 from .product.Brand import Brand
 from .product.Category import Category,ProductCategory
+from .product.MagentoProduct import MagentoProduct
 from .product.Product import Product,Variant
 from .product.TiktokProduct import TiktokProduct,TiktokVariant
 from .product.VariantImage import VariantImage

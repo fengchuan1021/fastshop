@@ -71,6 +71,7 @@ productspecificationService : CRUDBase[Models.ProductSpecification]
 brandService : CRUDBase[Models.Brand]
 categoryService : CategoryService
 productcategoryService : CRUDBase[Models.ProductCategory]
+magentoproductService : CRUDBase[Models.MagentoProduct]
 productService : CRUDBase[Models.Product]
 variantService : CRUDBase[Models.Variant]
 tiktokproductService : CRUDBase[Models.TiktokProduct]
