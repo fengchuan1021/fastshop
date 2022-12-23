@@ -3,7 +3,7 @@ import datetime
 import os
 import time
 import random
-from typing import Dict, List, TYPE_CHECKING, cast, Any
+from typing import Dict, List, TYPE_CHECKING, cast, Any, Literal
 import asyncio
 
 import orjson
@@ -32,30 +32,22 @@ from modules.merchant.product.magento.ProductShema import MagentoProductShema
 
 
 class MagentoService(Market):
-    async def get(self,url:str,params:Dict,store:Store)->Any:
+    async def request(self,store:Store,method:Literal["GET","POST","PUT"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
         if not store.token_expiration or store.token_expiration-int(time.time())<300:
             await self.getAdminToken(store)
-        url=f'{store.apiendpoint}{url}'
-        if params:
-            url=f'{url}?{urlencode(params)}'
-        async with aiohttp.ClientSession(headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'}) as session:
-            async with session.get(url) as resp:
-                return await resp.json()
-    async def post(self,url:str,body:Dict,store:Store)->Any:
-        if not store.token_expiration or store.token_expiration-int(time.time())<300:
-            await self.getAdminToken(store)
-        url=f'{store.apiendpoint}{url}'
+        url = f'{store.apiendpoint}{url}'
+        async with aiohttp.request(method,url,params=params,json=body,headers=headers) as resp:
+            return resp.json()
 
-        async with aiohttp.ClientSession(headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'}) as session:
-            async with session.post(url,json=body) as resp:
-                return resp.json()
-    async def put(self,url:str,body:Dict,store:Store)->Any:
-        if not store.token_expiration or store.token_expiration-int(time.time())<300:
-            await self.getAdminToken(store)
-        url=f'{store.apiendpoint}{url}'
-        async with aiohttp.ClientSession(headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'}) as session:
-            async with session.put(url,json=body) as resp:
-                return resp.json()
+    async def get(self,store:Store,url:str,params:Dict=None)->Any:
+        return await self.request(store,"GET",url,params=params,headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'})
+
+    async def post(self,store:Store,url:str,body:Dict)->Any:
+        return await self.request(store,"POST",url,body=body,headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'})
+
+    async def put(self,store:Store,url:str,body:Dict)->Any:
+        return await self.request(store,"PUT",url,body=body,headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'})
+
     async def getAdminToken(self,store:Models.Store)->Any:
         url='/rest/V1/integration/admin/token'
         async with aiohttp.ClientSession() as session:
@@ -91,14 +83,14 @@ class MagentoService(Market):
                 'title':shipinfo.shipping_provider
             }
         ]}
-        ret=await self.post(url,body,store)
+        ret=await self.post(store,url,body)
         return ret
     async def updateStock(self,db:AsyncSession,store:Models.Store,sku:str,num:int)->Any:
         product=await Service.magentoproductService.findOne(db,{'sku':sku,'store_id':store.store_id})
         if product:
             url=f'/rest/V1/products/{product.sku}/stockItems/1'
             body={"stockItem":{"qty":num, "is_in_stock": True}}
-            ret=await self.put(url,body,store)
+            ret=await self.put(store,url,body)
             print(ret)
     async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int)->Any:
         url='/rest/V1/orders'
@@ -109,10 +101,10 @@ class MagentoService(Market):
                 params['searchCriteria[filterGroups][0][filters][0][field]']='updated_at'
                 params['searchCriteria[filterGroups][0][filters][0][value]']=update_at_max
                 params['searchCriteria[filterGroups][0][filters][0][conditionType]']='lt'
-            ret=await self.get(url,{'searchCriteria[currentPage]':1,'searchCriteria[pageSize]':50,
+            ret=await self.get(store,url,{'searchCriteria[currentPage]':1,'searchCriteria[pageSize]':50,
                                     'searchCriteria[sortOrders][0][direction]':'desc',
                                     'searchCriteria[sortOrders][0][field]':'updated_at',
-                                    },store)
+                                    })
 
             yield ret
             if not ret['items']:
@@ -123,26 +115,29 @@ class MagentoService(Market):
                     break
     async def createProduct(self,db:AsyncSession,store:Models.Store,data:MagentoProductShema)->Any:
         url='/rest/V1/products'
-        ret=await self.post(url,data.dict(exclude_unset=True),store)
+        ret=await self.post(store,url,{"product":data.dict(exclude_unset=True)})
+        print('ret:')
+        print(ret)
         return ret
     async def getProductList(self,db:AsyncSession,store:Models.Store)->Any:
         url='/rest/V1/products'
         i=1
         while 1:
-            ret=await self.get(url,{'storeId':store.shop_id,'currencyCode':store.currency_code,'searchCriteria[currentPage]':i,'searchCriteria[pageSize]':50},store)
+            ret=await self.get(store,url,{'storeId':store.shop_id,'currencyCode':store.currency_code,'searchCriteria[currentPage]':i,'searchCriteria[pageSize]':50})
             i+=1
             yield ret['items']
             if len(ret['items'])<50:
                 break
     async def getCategories(self,db:AsyncSession,store:Store)->Any:
         url='/V1/categories'
-        ret=await self.get(url,{},store)
+        ret=await self.get(store,url)
         print(ret)
 if __name__ == '__main__':
     @cmdlineApp
     async def test(db):#type: ignore
         store=await Service.storeService.findByPk(db,4)
-        await Service.magentoService.getAdminToken(store)
+        await Service.magentoService.updateStock(db,store,'24-MB01',999)
+        #await Service.magentoService.getAdminToken(store)
         #await Service.magentoService.getProductList(db,store)
 
     test()
