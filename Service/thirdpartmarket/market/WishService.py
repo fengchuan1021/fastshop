@@ -3,7 +3,7 @@
 import settings
 import asyncio
 import datetime,time
-from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast, Optional
+from typing import Generator, Any, List, Dict, TYPE_CHECKING, cast, Optional, Literal
 import orjson
 import pytz,os #type: ignore
 from dateutil.parser import parse
@@ -36,9 +36,24 @@ from component.snowFlakeId import snowFlack
 
 
 class WishService(Market):
-    def __init__(self) -> None:
-        pass
-        # self.session = aiohttp.ClientSession(base_url=settings.WISH_BASEURL)
+    async def request(self,store:Models.Store,method:Literal["GET","POST","PUT"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
+
+        url = f'{settings.WISH_BASEURL}{url}'
+        async with aiohttp.request(method,url,params=params,json=body,headers=headers) as resp:
+            return resp.json()
+    async def post(self,url:str,store:Models.Store,body:Dict=None,headers:Dict=None)->Any:
+        tokenheader={'authorization': f'Bearer {store.token}'}
+        if headers:
+            tokenheader.update(headers)
+        return await self.request(store,"POST",url,body=body,headers=tokenheader)
+
+    async def put(self,url:str,store:Models.Store,body:Dict=None)->Any:
+        tokenheader = {'authorization': f'Bearer {store.token}'}
+
+        return await self.request(store, "PUT", url, body=body, headers=tokenheader)
+    async def get(self,url: str, store:Models.Store, params: Dict = None) -> Any:
+        return await self.request(store, "GET", url, params=params, headers={'authorization': f'Bearer {store.token}'})
+
 
     def getAuthorizationUrl(self, shop_id: int) -> str:
         return settings.WISH_BASEURL + f"/v3/oauth/authorize?client_id={settings.WISH_CLIENTID}&state={shop_id}"
@@ -61,30 +76,7 @@ class WishService(Market):
                 store.token_expiration=int(parse(ret['data']['expiry_time']).timestamp())
                 store.refreshtoken=ret['data']['refresh_token']
 
-    async def post(self,url:str,store:Models.Store,body:Dict=None,headers:Dict=None)->Any:
-        tokenheader={'authorization': f'Bearer {store.token}'}
-        if headers:
-            tokenheader.update(headers)
-        async with aiohttp.ClientSession() as session:
-            async with session.post(settings.WISH_BASEURL+url,json=body,headers=tokenheader) as resp:
-                return await resp.json()
-    async def put(self,url:str,store:Models.Store,body:Dict=None)->Any:
-        tokenheader = {'authorization': f'Bearer {store.token}'}
-        async with aiohttp.ClientSession() as session:
-            async with session.put(settings.WISH_BASEURL+url,json=body,headers=tokenheader) as resp:
-                return await resp.json()
-    async def get(self,url: str, store: Optional[Models.Store], params: Dict = None) -> Any:
-        store=cast(Models.Store,store)
-        if not params:
-            params = {}
-        async with aiohttp.ClientSession() as session:
-            if params:
-                finalurl = f'{settings.WISH_BASEURL}{url}?{urlencode(params)}'
-            else:
-                finalurl = settings.WISH_BASEURL + url
-            async with session.get(finalurl, headers={'authorization': f'Bearer {store.token}'}) as response:
 
-                return await response.json()
     async def updateStock(self,db:AsyncSession,store:Models.Store,sku:str,num:int)->Any:
         variant=await Service.wishvariantService.findOne(db,{'sku':sku,'store_id':store.store_id})
         #variant=await fastQuery(db,'WishVariant{wish_id,WishProduct{wish_id}}')
@@ -136,30 +128,9 @@ class WishService(Market):
         #         ret['data']['expiry_time']).timestamp() - 3600 * 12 - datetime.datetime.now().timestamp()))
         #     await cache.set('wishrefreshtoken', self.refresh_token)
 
-    # some error
-    async def getBrandList(self) -> None:
-        url = "/api/v3/brands"
-        params = {"limit": "100"}
-        #print(self.session.headers)
-        data=await self.get(url,None,params)
-        # async with self.session.get(url, params=params) as resp:
-        #     ret = await resp.json()
-        #     print(ret)
 
-    async def getCurrencyList(self) -> None:
-        url = '/api/v3/currencies'
-        data=await self.get(url,None)
-        # async with self.session.get(url) as resp:
-        #     ret = await resp.json()
-        #     print(ret)
 
-    # async def getOrderList(self, db:AsyncSession,store:Models.Store) -> List:  # type: ignore
-    #     url = '/api/v3/orders'
-    #     params = {'states': 'REQUIRE_REVIEW'}
-    #     data=await self.get(url,store,params)
-    #     print("order:",data)
-    #
-    #     return data['data']
+
 
     async def createProduct(self,db:AsyncSession,store:Models.Store,body:WishCreateProduct):  # type: ignore
         url = '/api/v3/products'

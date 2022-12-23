@@ -2,7 +2,7 @@ import base64
 import os
 import time
 import random
-from typing import Dict, List, TYPE_CHECKING, cast, Any
+from typing import Dict, List, TYPE_CHECKING, cast, Any, Literal
 import asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,9 +31,6 @@ else:
     from . import tiktokutil
 
 class TikTokService(Market):
-    def __init__(self)->None:
-        pass
-
 
     def get_sign(self,data:str, key:str)->str:
         sign = hmac.new(key.encode('utf-8'), data.encode('utf-8'), digestmod=sha256).hexdigest()
@@ -50,30 +47,30 @@ class TikTokService(Market):
         sign=self.get_sign(signstring,store.appsecret)#type: ignore
         params['access_token']=store.token#type: ignore
         params['sign']=sign#type: ignore
-        return f'{url}?{urlencode(params)}'#type: ignore
+        return f'{settings.TIKTOK_APIURL}{url}?{urlencode(params)}'#type: ignore
 
     async def getAuthorizedStore(self,db:AsyncSession,store:Models.Store)->Any:
         url = "/api/store/get_authorized_store"
-        return await self.get(url,{},store)
+        return await self.get(store,url)
 
     async def getActiveStoreList(self,db:AsyncSession,store:Models.Store)->Any:
         url = "/api/seller/global/active_stores"
-        return await self.get(url,{},store)
+        return await self.get(store,url)
 
     async def uploadImg(self,db:AsyncSession,store:Models.Store,file:bytes,img_scene:int)->Any:
 
         encoded_data=base64.encodebytes(file).decode()
-        ret=await self.post('/api/products/upload_imgs',{},{'img_data':encoded_data,'img_scene':img_scene},store)
+        ret=await self.post(store,'/api/products/upload_imgs',{'img_data':encoded_data,'img_scene':img_scene})
         return ret
 
     async def uploadFile(self,db:AsyncSession,store:Models.Store,file:bytes,file_name:str)->Any:
         encoded_data=base64.encodebytes(file).decode()
-        ret=await self.post('/api/products/upload_imgs',{},{'img_data':encoded_data,'file_name':file_name},store)
+        ret=await self.post(store,'/api/products/upload_imgs',{'img_data':encoded_data,'file_name':file_name})
         return ret
 
     async def createProduct(self,db:AsyncSession,store:Models.Store,data:TiktokCreateproductShema)->Any:
         url='/api/products'
-        ret=await self.post(url,{},data.dict(exclude_unset=True),store)
+        ret=await self.post(store,url,data.dict(exclude_unset=True))
         return ret
 
 
@@ -87,12 +84,26 @@ class TikTokService(Market):
         #
         # async with self.session.delete(url) as resp:
         #     ret=await resp.json()
+    async def request(self,store:Models.Store,method:Literal["GET","POST","PUT"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
+        if params==None:
+            params={}
+        url=self.buildurl(url,params,store)#type: ignore
+        async with aiohttp.request(method,url,json=body,headers=headers) as resp:
+            ret=await resp.json()
+            if ret['code'] == 105002:  # token expired
+                raise TokenException("token expired")
+            return ret
 
-    async def get(self,url:str,params:Dict,store:Models.Store)->Any:
-        url=self.buildurl(url,params,store)
-        async with aiohttp.ClientSession() as session:
-            async with session.get(settings.TIKTOK_APIURL+url) as resp:
-                return await  resp.json()
+    async def get(self,store:Models.Store,url:str,params:Dict=None)->Any:
+        return await self.request(store,'GET',url,params)
+    async def post(self,store:Models.Store,url:str,body:Dict=None,params:Dict=None)->Any:
+        return await self.request(store,"POST",url,body=body,params=params)
+
+    async def put(self,store:Models.Store,url:str,body:Dict)->Any:
+        return await self.request(store, "PUT", url, body=body)
+
+
+
 
     async def refreshtoken(self,store:Models.Store)->Models.Store:
         print('refresktoken')
@@ -112,37 +123,16 @@ class TikTokService(Market):
                     store.status=0
                     store.status_msg=ret["message"]
                     raise TokenException(ret["message"])
-    async def post(self,url:str,params:Dict,body:Dict,store:Models.Store)->Any:
-        if not params:
-            params={}
 
-        finalurl=self.buildurl(url,params,store)
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(settings.TIKTOK_APIURL+finalurl,json=body) as resp:
-
-                ret=await resp.json()
-                if ret['code'] == 105002:  # token expired
-                    raise TokenException("token expired")
-
-                return ret
-    async def put(self,url:str,body:Dict,store:Models.Store)->Any:
-        finalurl=self.buildurl(url,{},store)
-        async with aiohttp.ClientSession() as session:
-            async with session.put(settings.TIKTOK_APIURL+finalurl,json=body) as resp:
-                ret=await resp.json()
-                if ret['code'] == 105002:  # token expired
-                    raise TokenException("token expired")
-                return ret
     async def getProductDetail(self, db: AsyncSession, store: Models.Store, product_id: str,sem:Any=None)->Any:
         url=f'/api/products/details'
         while 1:
             if sem:
                 async with sem:
-                    data=await self.get(url,{"product_id":product_id},store)
+                    data=await self.get(store,url,{"product_id":product_id})
                     await asyncio.sleep(1)
             else:
-                data = await self.get(url, {"product_id":product_id},store)
+                data = await self.get(store,url, {"product_id":product_id})
             if 'data' not in data:
                 return data
 
@@ -153,7 +143,7 @@ class TikTokService(Market):
         params = {'page_size':100}
         while 1:
             params['page_number']=page_number
-            result=await self.post(url,{},params,store)
+            result=await self.post(store,url,params)
             data = result['data']
             page_number+=1
             yield data
@@ -177,7 +167,7 @@ class TikTokService(Market):
                 }
               ]
             }
-            await self.put(url,body,store)
+            await self.put(store,url,body)
     async def syncProduct(self,db:AsyncSession,store:Models.Store,merchant_id:int)->Any:
         async for tmp in self.getProductList(db,store):
             productSummarys=tmp['products']
@@ -243,8 +233,7 @@ class TikTokService(Market):
         while 1:
             if cursor:
                 body['cursor']=cursor
-            print('body:',body)
-            ret=await self.post(url,{},body,store)
+            ret=await self.post(store,url,body)
             print('ret:',ret)
 
             if ret['code']==0:
@@ -261,21 +250,21 @@ class TikTokService(Market):
         body={'package_id':Shipinfo.package_id,'pick_up_type':1,'pick_up':{'pick_up_start_time':int(time.time())},
               'self_shipment':{'tracking_number':Shipinfo.track_number,'shipping_provider_id':Shipinfo.shipping_provider_id}
               }
-        ret=await self.post(url,{},body,store)
+        ret=await self.post(store,url,body)
         return ret['data']
 
     async def getOrderDetail(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
         url='/api/orders/detail/query'
         if not isinstance(order_ids,list):
             order_ids=[order_ids]
-        ret=await self.post(url,{},{"order_id_list":order_ids},store)#order_ids
+        ret=await self.post(store,url,{"order_id_list":order_ids})#order_ids
 
         if ret['code']!=0:
             raise ResponseException({'status':'failed','msg':ret['message']})
         return ret['data']["order_list"]
     async def getPackageDetail(self, db: AsyncSession, store:Models.Store,package_id:str)->Any:
         url='/api/fulfillment/detail'
-        ret=await self.get(url,{'package_id':package_id},store)
+        ret=await self.get(store,url,{'package_id':package_id})
         return ret['data']
 if __name__=='__main__':
     import asyncio
