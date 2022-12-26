@@ -67,6 +67,8 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
     status_dic={"SHIPPED":"DELIVERED","REFUNDED":"CANCELLED","APPROVED":"AWAITING_SHIPMENT","REQUIRE_REVIEW":"REQUIRE_PLATFORM_REVIEW"}
     for json_data in orders:
         order=Models.Order()
+        order.store_id = store.store_id
+        order.store_name = store.store_name
         order.order_currency_code = json_data["order_payment"]["general_payment_details"]["payment_total"][
             "currency_code"]
         RATE = await CurrencyRate(order.order_currency_code)

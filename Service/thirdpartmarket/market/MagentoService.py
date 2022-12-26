@@ -25,7 +25,7 @@ from urllib.parse import urlencode
 from Service.thirdpartmarket import Market
 from Service.thirdpartmarket.Shema import Shipinfo
 from Service.thirdpartmarket.market import magentoutil
-from common import cmdlineApp
+
 from common.CommonError import ResponseException, TokenException
 from component.fastQL import fastQuery
 from modules.merchant.product.magento.ProductShema import MagentoProductShema
@@ -133,6 +133,7 @@ class MagentoService(Market):
         ret=await self.get(store,url)
         print(ret)
 if __name__ == '__main__':
+    from common import cmdlineApp
     @cmdlineApp
     async def test(db):#type: ignore
         store=await Service.storeService.findByPk(db,4)

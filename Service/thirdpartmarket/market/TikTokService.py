@@ -88,7 +88,7 @@ class TikTokService(Market):
         if params==None:
             params={}
         url=self.buildurl(url,params,store)#type: ignore
-        async with aiohttp.request(method,url,json=body,headers=headers) as resp:
+        async with aiohttp.request(method,url,params=params,json=body,headers=headers) as resp:
             ret=await resp.json()
             if ret['code'] == 105002:  # token expired
                 raise TokenException("token expired")

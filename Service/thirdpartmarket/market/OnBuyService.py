@@ -1,59 +1,47 @@
+import datetime
 import time
-from typing import Dict, List, TYPE_CHECKING, cast, Any
+from typing import Dict, List, TYPE_CHECKING, cast, Any, Literal
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from dateutil.parser import parse
 import Models
 import Service
 import settings
+from . import onbuyutil
 import aiohttp
+from common import TokenException
 from component.cache import cache
 from urllib.parse import urlencode
 #from Service.thirdpartmarket import Market
 class OnBuyService():#Market
-    def __init__(self)->None:
-        pass
-        #self.session = aiohttp.ClientSession(base_url=settings.ONBUY_APIURL)
 
-    async def getStore(self,db:AsyncSession,store_id:str)->Models.Store:
-        store = await Service.storeService.findByPk(db,store_id)
-        if not store:
-            raise Exception("store info not found")
-        return store
-    async def getToken(self,store:Models.Store=None)->str:
+    async def request(self,store:Models.Store,method:Literal["GET","POST","PUT"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
+        if not store.token_expiration or store.token_expiration-int(time.time())<120:
+            await self.getToken(store)
+        header={'Authorization':store.token}
+        if headers:
+            header.update(headers)
+        async with aiohttp.request(method, f'{settings.ONBUY_ENDPOINT}{url}', params=params,json=body, headers=header) as resp:#type: ignore
+            ret = await resp.json()
+            return ret
+    async def get(self,store:Models.Store,url:str,params:Dict=None)->Any:
+        ret=await self.request(store,'GET',url,params)
+        return ret
 
-        if TYPE_CHECKING:
-            store=cast(Models.Store,store)
-        tmp=await cache.get(f'onbuy_token:{store.store_id}',decodestr=True)
-        print("token:",tmp)
-        if tmp:
-            return tmp
+    async def getToken(self,store:Models.Store)->str:
         form = aiohttp.FormData()
-        form.add_field('secret_key',store.appsecret )
-        form.add_field('consumer_key',store.appkey)
-        print('key:',form.__dict__)
-        async with self.session.post('/v2/auth/request-token',data=form) as resp:#type: ignore
-            t=await resp.text()
-            print('baseurl:',settings.ONBUY_APIURL)
-            print('t:',t)
-            data=await resp.json()
-            token=data["access_token"]
-            await cache.set(f'onbuy_token:{store.store_id}',token,int(data['expires_at'])-int(time.time()))
+        form.add_field('secret_key',store.appkey )
+        form.add_field('consumer_key',store.appsecret)
+        async with aiohttp.request("POST",f'{settings.ONBUY_ENDPOINT}/v2/auth/request-token',data=form) as resp:
+            ret=await resp.json()
+            token=ret["access_token"]
+            store.token=token
+            store.token_expiration=int(ret['expires_at'])
+            print('tioken:',token)
+            print('ret:',ret)
             return token
-    async def buildurl(self,url:str,params:Dict=None,store:'Models.Store'=None)->str:
-        if TYPE_CHECKING:
-            store=cast(Models.Store,store)
-        token=await self.getToken(store)
-        self.session.headers.update({'Authorization':token})#type: ignore
-        return f'{url}?{urlencode(params)}'#type: ignore
 
-    async def getBrands(self,db:AsyncSession,store_id:str)->Any:
-        url='/v2/brands'
-        params={'filter[name]':'life','sort[name]':'desc','limit':5,'offset':0}
-        store= await self.getStore(db,store_id)
-        url=await self.buildurl(url,params,store)
-        async with self.session.get(url) as resp:#type: ignore
-            data=await resp.json()
-            print('brands:',data)
+
+
 
 
 
@@ -61,63 +49,86 @@ class OnBuyService():#Market
     async def createProduct(self,db:AsyncSession,merchantid:str,product_id:str)->Any:
         url='/api/products'
         pass
-        # enterprisemodel = await self.getStore(db, merchantid)
-        # url = self.buildurl(url, {}, enterprisemodel)
-        #
-        # #data productdata
-        # data:Dict={}
-        #
-        # async with self.session.post(url,json=data) as resp:
-        #     ret=await resp.json()
-
-    async def deleteProduct(self,db:AsyncSession,store_id:str,product_id:str)->Any:
-        url='/2/listings/by-sku'
-
-        store= await self.getStore(db, store_id)
-        #
-        skus=[1,2,3]
-        url = await self.buildurl(url, {},store)
-        async with self.session.delete(url,json={"site_id":2000,"skus":skus}) as resp:#type: ignore
-            result=await resp.json()
-            print(result)
 
 
 
-    async def getProductList(self,db:AsyncSession,store_id:str)->List:#type: ignore
-        url = "/v2/listings"
-        store= await self.getStore(db,store_id)
-        params={"site_id":2000}
-        url=await self.buildurl(url,params,store)
-        async with self.session.get(url) as resp:#type: ignore
-            json=await resp.json()
-            print('josn:',json)
 
 
-    async def getOrderList(self,db:AsyncSession,store_id:str)->List:#type: ignore
-        url = "/v2/orders"
-        params={'site_id':2000,'filter[status]':'open','limit':20,'offset':0,'sort[created]':'desc'}
-        store = await self.getStore(db, store_id)
-        url=await self.buildurl(url,params,store)
-        async with self.session.get(url) as resp:#type: ignore
-            data=await resp.json()
-            print(data)
-            return data
+
+
+    async def getProductList(self, db: AsyncSession, store: Models.Store) -> Any:
+
+        url = "/v2/products"
+        params={"site_id":2000,"limit":100,'offset':0}
+        while 1:
+            ret=await self.get(store,url,params)
+            print("ret::",ret)
+            yield ret["results"]
+            if len(ret["results"])<100:
+                break
+
+
+
+
+    async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int)->Any:
+        url='/v2/orders'
+        offset=0
+
+        while 1:
+            params = {"limit": 100, 'offset': offset, 'sort[modified]': 'desc','site_id':2000}
+            ret=await self.get(store,url,params)
+            print('ret:',ret)
+            yield ret['results']
+            if not ret['results']:
+                break
+            update_at=ret['results'][-1]["updated_at"]
+            offset+=100
+            if datetime.datetime.fromisoformat(update_at).timestamp()<=starttime:
+                break
+
+    async def syncOrder(self, db: AsyncSession, merchant_id: int, store: Models.Store, starttime: int) -> Any:
+        async for remoteOrders in self.getOrderList(db,store,starttime):
+            if not remoteOrders:
+                break
+            needsync={remoteOrder["order_id"]:remoteOrder for remoteOrder in remoteOrders}
+            print('needSync:',needsync)
+            needupdate={}
+            ourdbmodels=await Service.orderService.find(db,{'market_order_number__in':needsync.keys(),"store_id":store.store_id})
+            for model in ourdbmodels:
+                tmstamp = model.market_updatetime.timestamp() if not isinstance(model.market_updatetime,#type: ignore
+                                                                                str) else parse(
+                    model.market_updatetime).timestamp()  # type: ignore
+
+                if tmstamp!=parse(needsync[model.market_order_number]["updated_at"]).timestamp():
+                    needupdate[model.order_id]=needsync[model.market_order_number] #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
+                del needsync[model.market_order_number]
+
+            try:
+                await onbuyutil.addOrders(db,needsync.values(),store,merchant_id)
+            except TokenException as e:
+                await db.rollback()
+                store.status=0
+                store.status_msg='token expired'
+
 
 
     async def getOrderDetail(self, db: AsyncSession, merchantid: str, order_id: str) -> Any:
         pass
 if __name__=='__main__':
     import asyncio
+    from common import cmdlineApp, TokenException
 
-    from component.dbsession import getdbsession
-    async def t()->None:
-        async with getdbsession() as db:
-            onbuy=OnBuyService()
-            #await onbuy.getBrands(db,99071137052361794)#type: ignore
-            await onbuy.getProductList(db,99071137052361794)#type: ignore
-            #await onbuy.getOrderList(db,99071137052361794)#type: ignore
-            #await onbuy.getAuthorizedStore(db,99071137052361794)#type: ignore
-    asyncio.run(t())
+
+    @cmdlineApp
+    async def t(db:AsyncSession)->None:
+        onbuy=OnBuyService()
+        store=await Service.storeService.findByPk(db,5)
+        await onbuy.getToken(store)
+        #await onbuy.getBrands(db,99071137052361794)#type: ignore
+        #await onbuy.getProductList(db,99071137052361794)#type: ignore
+        #await onbuy.getOrderList(db,99071137052361794)#type: ignore
+        #await onbuy.getAuthorizedStore(db,99071137052361794)#type: ignore
+    t()
 
 
 

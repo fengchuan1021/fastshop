@@ -86,6 +86,8 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
                 999:"REQUIRE_PLATFORM_REVIEW"}
     for json_data in orders:
         order=Models.Order()
+        order.store_id = store.store_id
+        order.store_name = store.store_name
         order.order_currency_code = json_data["payment_info"]["currency"]
         RATE=await CurrencyRate(order.order_currency_code)
         order.market_id=(await Service.thirdmarketService.getMarket('tiktok')).market_id
