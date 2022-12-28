@@ -73,7 +73,7 @@ class MagentoService(Market):
                 await magentoutil.addproducts(db,needsync.values(),store.store_id,merchant_id)#type: ignore
 
             print('needupdate:',needupdate )
-    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
+    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo,order:Models.Order,ordershipmentitems:List[Models.OrderShipmentItem])->Any:
         '''发货'''
         url=f'/rest/V1/order/{shipinfo.order_id}/ship'
         body={"tracks":[

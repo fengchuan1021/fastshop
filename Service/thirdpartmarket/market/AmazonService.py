@@ -39,8 +39,9 @@ class AmazonService(Market):
                 cursor=ret['NextToken']
             else:
                 break
-    async def getOrderDetail(self,db:AsyncSession,store:Models.Store,order_id:str)->Any:
-        url=f'/orders/v0/orders/{order_id}'
+    async def getOrderDetail(self,db:AsyncSession,store:Models.Store,market_order_id:str)->Any:
+        url=f'/orders/v0/orders/{market_order_id}'
+        raise NotImplementedError
 
 if __name__ == '__main__':
     @cmdlineApp

@@ -61,9 +61,9 @@ class OnBuyService(Market):  # Market
             print('tioken:', token)
             print('ret:', ret)
             return token
-    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
+    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo,order:Models.Order,ordershipmentitems:List[Models.OrderShipmentItem])->Any:
         '''发货'''
-        order, ordershipmentitems=await self.addShipment(db,store,shipinfo)
+
         url='/v2/orders/dispatch'
         body={
             "orders": [
@@ -166,14 +166,45 @@ class OnBuyService(Market):  # Market
                 store.status = 0
                 store.status_msg = 'token expired'
 
-    async def getOrderDetail(self, db: AsyncSession, merchantid: str, order_id: str) -> Any:
+    async def getOrderDetail(self, db: AsyncSession, store: Models.Store,market_order_id:str) -> Any:
         pass
 
 
     async def getProductDetail(self,db:AsyncSession,store:Models.Store,product_id:str)->Any:
         raise NotImplementedError
 
-    async def deleteProduct(self,db:AsyncSession,enterprise_id:str,product_id:str)->List:
+    async def deleteProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        raise NotImplementedError
+    async def getTrackingProviders(self,db:AsyncSession,store:Models.Store)->Any:
+        url='/v2/orders/tracking-providers?site_id=2000&limit=100'
+        ret=await self.get(store,url)
+        print(len(ret['results']))
+        print(ret)
+
+    async def updateStock(self,db:AsyncSession,store:Models.Store,sku:str,num:int)->Any:
+        url='/v2/listings/by-sku'
+        body={'site_id':2000,'listings':[
+            {
+                "sku": sku,
+                "stock": num
+            }
+        ]}
+        ret =await self.put(store, url, body)
+        return ret
+    async def updatePrice(self,db:AsyncSession,store:Models.Store,sku:str,price:float)->Any:
+        url='/v2/listings/by-sku'
+        body={'site_id':2000,'listings':[
+            {
+                "sku": sku,
+                "price":price
+            }
+        ]}
+        ret =await self.put(store,url,body)
+        return ret
+    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
+        raise NotImplementedError
+
+    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
         raise NotImplementedError
 if __name__ == '__main__':
     import asyncio
@@ -184,7 +215,8 @@ if __name__ == '__main__':
     async def t(db: AsyncSession) -> None:
         onbuy = OnBuyService()
         store = await Service.storeService.findByPk(db, 5)
-        await onbuy.getCategories(db,store)
+        #await onbuy.getCategories(db,store)
+        await onbuy.getTrackingProviders(db,store)
         # await onbuy.getToken(store)
         # await onbuy.getBrands(db,99071137052361794)#type: ignore
         # await onbuy.getProductList(db,99071137052361794)#type: ignore

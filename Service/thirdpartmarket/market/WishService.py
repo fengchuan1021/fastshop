@@ -96,7 +96,7 @@ class WishService(Market):
             ]}
             ret=await self.put(url,store,body)
             return ret
-    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
+    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo,order:Models.Order,ordershipmentitems:List[Models.OrderShipmentItem])->Any:
         '''发货'''
         url=f'/api/v3/orders/{shipinfo.order_id}/tracking'
         body={'origin_country':shipinfo.origin_country,
@@ -137,8 +137,8 @@ class WishService(Market):
         ret=await self.post(url,store,body.dict(exclude_unset=True))
         return ret
 
-    async def getOrderDetail(self, db: AsyncSession, store:Models.Store, order_id: str) -> Any:
-        url = f'/api/v3/orders/{order_id}'
+    async def getOrderDetail(self, db: AsyncSession, store:Models.Store,market_order_id:str,sem:Any=None) -> Any:
+        url = f'/api/v3/orders/{market_order_id}'
         data=await self.get(url,store)
         return data
         # async with self.session.get(url) as resp:

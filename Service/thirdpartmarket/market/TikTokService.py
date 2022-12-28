@@ -74,7 +74,7 @@ class TikTokService(Market):
         return ret
 
 
-    async def deleteProduct(self,db:AsyncSession,store_id:str,product_id:str)->Any:
+    async def deleteProduct(self, db: AsyncSession, store: Models.Store, sku: str) -> Any:
         url='/api/products'
         #await self.delete
         # merchantmodel = await self.getStore(db, store_id)
@@ -209,7 +209,7 @@ class TikTokService(Market):
                 if ourdborder.market_updatetime==needsync[ourdborder.market_order_id]:
                     del needsync[ourdborder.market_order_id]
 
-            orders=await self.getOrderDetail(db,store,[titikorder_id for titikorder_id in needsync])
+            orders=await self.getOrderDetailBatch(db,store,[titikorder_id for titikorder_id in needsync])
             #print('addorder:',orders)
             try:
                 await tiktokutil.addOrders(db, orders, store, merchant_id)
@@ -244,7 +244,7 @@ class TikTokService(Market):
             else:
                 raise Exception(f"tiktok error {ret['message']}")
 
-    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo)->Any:
+    async def shiPackage(self,db:AsyncSession,store:Models.Store,shipinfo:Shipinfo,order:Models.Order,ordershipmentitems:List[Models.OrderShipmentItem])->Any:
         '''发货'''
         url='/api/fulfillment/rts'
         body={'package_id':Shipinfo.package_id,'pick_up_type':1,'pick_up':{'pick_up_start_time':int(time.time())},
@@ -252,11 +252,17 @@ class TikTokService(Market):
               }
         ret=await self.post(store,url,body)
         return ret['data']
-
-    async def getOrderDetail(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
+    async def getOrderDetail(self, db: AsyncSession, store:Models.Store,market_order_id:str) -> Any:
         url='/api/orders/detail/query'
-        if not isinstance(order_ids,list):
-            order_ids=[order_ids]
+
+        order_ids=[market_order_id]
+        ret=await self.post(store,url,{"order_id_list":order_ids})#order_ids
+
+        if ret['code']!=0:
+            raise ResponseException({'status':'failed','msg':ret['message']})
+        return ret['data']["order_list"]
+    async def getOrderDetailBatch(self, db: AsyncSession, store:Models.Store,order_ids:List[str]) -> Any:
+        url='/api/orders/detail/query'
         ret=await self.post(store,url,{"order_id_list":order_ids})#order_ids
 
         if ret['code']!=0:
