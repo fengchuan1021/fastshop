@@ -110,7 +110,7 @@ async def addOrders(db: AsyncSession, orders: Iterable, store: Models.Store, mer
         except Exception as e:
             print(100, e)
 
-        order.market_order_number = json_data["order_id"]
+        order.market_order_id = json_data["order_id"]
 
         # payment info
         order.grand_total = float(json_data["price_total"])
@@ -127,10 +127,10 @@ async def addOrders(db: AsyncSession, orders: Iterable, store: Models.Store, mer
 
         # 添加收货地址
         if "delivery_address" in json_data:
-            address = Models.OrderAddress()
+            address = Models.ShipOrderAddress()
             address.is_tmp = 'Y'
             address.order_id = order.order_id
-            address.address_type = "SHIPPING"
+
             address.street = json_data["delivery_address"]["line_1"]
             address.city = json_data["delivery_address"]["county"]
             address.district = json_data["delivery_address"]["town"]
@@ -152,8 +152,8 @@ async def addOrders(db: AsyncSession, orders: Iterable, store: Models.Store, mer
                 shippment.total_qty = sum(
                     [int(item["quantity"]) for order in package_detail["order_info_list"] for item in
                      order["sku_list"]])
-                shippment.shipping_address_id = address.order_address_id
-                shippment.shipment_number = package_detail["tracking_number"]
+                shippment.shipping_address_id = address.shiporder_address_id
+
                 try:
                     shippment.carrier_name = package_detail["shipping_provider"]
                     shippment.track_number = package_detail["tracking_number"]

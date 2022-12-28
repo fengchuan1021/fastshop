@@ -167,7 +167,7 @@ class WishService(Market):
             #for remoteOrder in remoteOrders:
             needsync = {remoteOrder["id"]:remoteOrder for remoteOrder in remoteOrders}
             needupdate={}
-            ourdbmodels=await Service.orderService.find(db,{"market_order_number__in":needsync.keys()},Load(Models.Order).load_only(Models.Order.market_order_number,Models.Order.market_updatetime))
+            ourdbmodels=await Service.orderService.find(db,{"market_order_id__in":needsync.keys()},Load(Models.Order).load_only(Models.Order.market_order_id,Models.Order.market_updatetime))
             for model in ourdbmodels:
                 if os.name=='nt':#for timezone bug in windows
                     if isinstance(model.market_updatetime,str):
@@ -176,9 +176,9 @@ class WishService(Market):
                         tmstamp=model.market_updatetime.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
                 else:
                     tmstamp=model.market_updatetime.timestamp() if not isinstance(model.market_updatetime,str) else parse(model.market_updatetime).timestamp()#type: ignore
-                if tmstamp!=parse(needsync[model.market_order_number]["updated_at"]).timestamp():
-                    needupdate[model.order_id]=needsync[model.market_order_number] #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
-                del needsync[model.market_order_number]
+                if tmstamp!=parse(needsync[model.market_order_id]["updated_at"]).timestamp():
+                    needupdate[model.order_id]=needsync[model.market_order_id] #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
+                del needsync[model.market_order_id]
             #sem = asyncio.Semaphore(100)#100并发量 wish有速度限制
             #new_task=[self.getOrderDetail(db,store,market_order_id,sem) for market_order_id in needsync]#:#add new product
 

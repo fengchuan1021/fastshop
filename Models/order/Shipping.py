@@ -16,11 +16,12 @@ class OrderShipment(Base):
     __tablename__ = 'order_shipment'
     order_shipment_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     order_id = Column(BIGINT, default=0,index=True)
+    market_order_id = Column(XTVARCHAR(32), default='', server_default='')
     total_weight = Column(DECIMAL(10, 4))
     total_qty = Column(DECIMAL(10, 4))
     shipping_address_id = Column(BIGINT, default=0)
     billing_address_id = Column(BIGINT, default=0)
-    shipment_number = Column(XTVARCHAR(255), default='', server_default='')
+    #shipment_number = Column(XTVARCHAR(255), default='', server_default='')
     carrier_name = Column(XTVARCHAR(64), default='', server_default='')
     carrier_code = Column(XTVARCHAR(64), default='', server_default='')
     track_number = Column(XTVARCHAR(64), default='', server_default='')
@@ -37,10 +38,11 @@ class OrderShipment(Base):
 class OrderShipmentItem(Base):
     __tablename__ = 'order_shipment_item'
     order_shipment_item_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    order_shipment_id = Column(BIGINT, default=0, index=True)
     order_id = Column(BIGINT, default=0,index=True)
     market_order_id=Column(XTVARCHAR(32),default='',server_default='')
     market_sku_id=Column(XTVARCHAR(32),default='',server_default='')
-    order_shipment_id = Column(BIGINT, default=0,index=True)
+
     order_item_id = Column(BIGINT, default=0)
     product_id = Column(INTEGER, default=0)
     variant_id = Column(INTEGER, default=0)

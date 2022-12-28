@@ -17,6 +17,7 @@ class Order(Base):
     order_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     market_id = Column(INTEGER, default=0,index=True)
     market_name = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
+    market_order_id = Column(XTVARCHAR(32), default='', server_default='', index=True)
     merchant_id = Column(INTEGER, default=0,index=True)
     store_id=Column(INTEGER,default=0,index=True)
     store_name=Column(XTVARCHAR(32),default='',server_default='')
@@ -34,7 +35,7 @@ class Order(Base):
     customer_lastname = Column(XTVARCHAR(32), default='', server_default='')
     customer_middlename = Column(XTVARCHAR(32), default='', server_default='')
     #order_number = Column(BIGINT(20), autoincrement=True)
-    market_order_number = Column(XTVARCHAR(32), default='', server_default='',index=True)
+
     coupon_code = Column(XTVARCHAR(32), default='', server_default='')
     customer_id = Column(XTVARCHAR(32), default='', server_default='')
     payment_method = Column(XTVARCHAR(32), default='', server_default='')
@@ -61,7 +62,9 @@ class Order(Base):
     market_delivery_option=Column(XTVARCHAR(32), default='', server_default='')#配送方式
     #created_at = Column(DATETIME) have create in baseclass.
     #updated_at = Column(DATETIME)
-    OrderAddress: List['OrderAddress']=relationship('OrderAddress',uselist=True,primaryjoin='foreign(OrderAddress.order_id)==Order.order_id',back_populates='Order',cascade='')
+    ShipOrderAddress: 'ShipOrderAddress'=relationship('ShipOrderAddress',uselist=False,primaryjoin='foreign(ShipOrderAddress.order_id)==Order.order_id',back_populates='Order',cascade='')
+    BillOrderAddress: 'BillOrderAddress'=relationship('BillOrderAddress',uselist=False,primaryjoin='foreign(BillOrderAddress.order_id)==Order.order_id',back_populates='Order',cascade='')
+
     OrderItem: List['OrderItem'] = relationship('OrderItem', uselist=True,
                                                       primaryjoin='foreign(OrderItem.order_id)==Order.order_id',
                                                       back_populates='Order', cascade='')
@@ -72,9 +75,9 @@ class Order(Base):
     OrderShipment: List['OrderShipment'] = relationship('OrderShipment', uselist=True,
                                                       primaryjoin='foreign(OrderShipment.order_id)==Order.order_id',
                                                       back_populates='Order', cascade='')
-class OrderAddress(Base):
-    __tablename__ = 'order_address'
-    order_address_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+class BillOrderAddress(Base):
+    __tablename__ = 'billorder_address'
+    billorder_address_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     order_id = Column(BIGINT, default=0,index=True)
     customer_id = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
     region = Column(XTVARCHAR(64), nullable=False, default='', server_default='')
@@ -92,12 +95,38 @@ class OrderAddress(Base):
     country_id = Column(INTEGER, default=0)
     country_code=Column(XTVARCHAR(3), default='',server_default='')
     country = Column(XTVARCHAR(80), default='', server_default='')
-    address_type = Column(ENUM("BILLING", "SHIPPING"),default='SHIPPING',server_default='SHIPPING', comment="账单地址 / 收货地址")
     company = Column(XTVARCHAR(255), default='', server_default='')
     full_address=Column(XTVARCHAR(255),default='',server_default='')
     #updated_at = Column(DATETIME)
-    Order:'Order'=relationship('Order',uselist=False,primaryjoin='foreign(OrderAddress.order_id)==Order.order_id',back_populates='OrderAddress',cascade='')
+    Order:'Order'=relationship('Order',uselist=False,primaryjoin='foreign(BillOrderAddress.order_id)==Order.order_id',back_populates='BillOrderAddress',cascade='')
     is_tmp=Column(ENUM("Y","N"),default='Y',server_default='Y')#临时使用 以后删除，来自第三方市场的地址没有id 一段时间后自动删除
+
+class ShipOrderAddress(Base):
+    __tablename__ = 'shiporder_address'
+    shiporder_address_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
+    order_id = Column(BIGINT, default=0,index=True)
+    customer_id = Column(XTVARCHAR(255), nullable=False, default='', server_default='')
+    region = Column(XTVARCHAR(64), nullable=False, default='', server_default='')
+    region_id = Column(INTEGER, default=0)
+    postcode = Column(XTVARCHAR(64), nullable=False)
+
+    firstname = Column(XTVARCHAR(64), default='', server_default='')
+    lastname = Column(XTVARCHAR(32), default='', server_default='')
+    middlename = Column(XTVARCHAR(32), default='', server_default='')
+
+    street = Column(XTVARCHAR(255), default='', server_default='')
+    district=Column(XTVARCHAR(64), default='', server_default='')
+    city = Column(XTVARCHAR(64), default='', server_default='')
+    telephone = Column(XTVARCHAR(32), default='', server_default='')
+    country_id = Column(INTEGER, default=0)
+    country_code=Column(XTVARCHAR(3), default='',server_default='')
+    country = Column(XTVARCHAR(80), default='', server_default='')
+    company = Column(XTVARCHAR(255), default='', server_default='')
+    full_address=Column(XTVARCHAR(255),default='',server_default='')
+    #updated_at = Column(DATETIME)
+    Order:'Order'=relationship('Order',uselist=False,primaryjoin='foreign(ShipOrderAddress.order_id)==Order.order_id',back_populates='ShipOrderAddress',cascade='')
+    is_tmp=Column(ENUM("Y","N"),default='Y',server_default='Y')#临时使用 以后删除，来自第三方市场的地址没有id 一段时间后自动删除
+
 class OrderItem(Base):
 
     __tablename__ = 'order_item'

@@ -30,12 +30,16 @@ class CRUDBase(Generic[ModelType]):
         return f"{cache.get_prefix()}:modelcache:{self.model.__tablename__}:{func_args.arguments.get('id')}"  # type: ignore
 
     @cache(key_builder='getpkcachename', expire=3600 * 48)  # type: ignore
-    async def findByPk(self, dbSession: AsyncSession, id: int, condition: Dict = None) -> Optional[ModelType]:
+    async def findByPk(self, dbSession: AsyncSession, id: int, condition: Dict = None,option: Any = None) -> Optional[ModelType]:
+        if not option:
+            option=[]
+        elif not isinstance(option,list):
+            option = [option]
         if condition:
             w, p = filterbuilder(condition)
-            results = await dbSession.execute(select(self.model).where(self.model.id == id).where(text(w)), p)
+            results = await dbSession.execute(select(self.model).options(*option).where(self.model.id == id).where(text(w)), p)
         else:
-            results = await dbSession.execute(select(self.model).where(self.model.id == id))
+            results = await dbSession.execute(select(self.model).options(*option).where(self.model.id == id))
         return results.scalar_one_or_none()
 
     async def find(self, db: AsyncSession, filter: Optional[BaseModel | Dict] = None, option: Any = None,

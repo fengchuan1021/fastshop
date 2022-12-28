@@ -52,11 +52,11 @@ python manage.py importopenapi 1.json
 
 docker run --network myapp --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name myredis -p 6379:6379 redis
 
-docker run --network myapp --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name mymysql -p3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=XT  -v /home/fengchuan/mysqldata:/var/lib/mysql mysql:8 --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4
+docker run --network myapp --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name mymysql -p3306:3306 -e MYSQL_ROOT_PASSWORD=6zZjywcDt7AcI3oI -e MYSQL_DATABASE=XT  -v /mysqldata:/var/lib/mysql mysql:8 --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4
 
 docker run --network myapp --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --hostname my-rabbit --name myrabbit -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin -p5672:5672 -p15672:15672 rabbitmq:3-management
 
-docker run --network myapp --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name elasticsearch  -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -e "ES_HEAP_SIZE=1G" elasticsearch:8.2.3
+docker run --network myapp --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name elasticsearch  -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -e "ES_HEAP_SIZE=1G" elasticsearch:7.17.8
 
 docker run --network myapp --add-host=host.docker.internal:host-gateway --restart=always --log-opt max-size=10m --log-opt max-file=5 -d --name kibana  -p 5601:5601 kibana:8.2.3
 ###other command.

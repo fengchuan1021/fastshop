@@ -94,7 +94,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             order.customer_firstname=json_data["full_address"]["shipping_detail"]["name"]
         except Exception as e:
             print(88,e)
-        order.market_order_number=json_data["id"]
+        order.market_order_id=json_data["id"]
 
         try:
             order.discount_amount= json_data["order_payment"]["general_payment_details"]["product_price"]["amount"]-json_data["order_payment"]["general_payment_details"]["product_merchant_payment"]["amount"]
@@ -143,7 +143,7 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             print(141, e)
             # 添加地址
         try:
-            address=Models.OrderAddress()
+            address=Models.ShipOrderAddress()
             address.order_id=order.order_id
             address.is_tmp = 'Y'
             tmpdata=json_data["full_address"]["shipping_detail"]
@@ -168,8 +168,8 @@ async def addOrders(db:AsyncSession,orders:List[Dict],store:Models.Store,merchan
             for json_shippment in json_data["tracking_information"]:
                 shippment=Models.OrderShipment()
                 shippment.order_id=order.order_id
-                shippment.shipping_address_id=address.order_address_id
-                shippment.shipment_number=json_shippment["tracking_number"]
+                shippment.shipping_address_id=address.shiporder_address_id
+                shippment.track_number=json_shippment["tracking_number"]
                 shippment.carrier_name=json_shippment["shipping_provider"]['name']
                 shippment_arr.append(shippment)
 

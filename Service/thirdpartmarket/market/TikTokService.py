@@ -203,11 +203,11 @@ class TikTokService(Market):
         async for ordersummory in self.getOrderList(db,store,starttime):#有分页限制一页最多50个
             needsync={order["order_id"]:order["update_time"] for order in ordersummory} #假设这些订单都需要同步
             #从数据库中查找 如果找到并且update_time 相同则不需要同步
-            filter={'market_id':self.market_id,'market_order_number__in':[order["order_id"] for order in ordersummory]}
-            ourdb_orders=await Service.orderService.find(db,filter,Load(Models.Order).load_only(Models.Order.market_order_number,Order.market_updatetime))
+            filter={'market_id':self.market_id,'market_order_id__in':[order["order_id"] for order in ordersummory]}
+            ourdb_orders=await Service.orderService.find(db,filter,Load(Models.Order).load_only(Models.Order.market_order_id,Order.market_updatetime))
             for ourdborder in ourdb_orders:
-                if ourdborder.market_updatetime==needsync[ourdborder.market_order_number]:
-                    del needsync[ourdborder.market_order_number]
+                if ourdborder.market_updatetime==needsync[ourdborder.market_order_id]:
+                    del needsync[ourdborder.market_order_id]
 
             orders=await self.getOrderDetail(db,store,[titikorder_id for titikorder_id in needsync])
             #print('addorder:',orders)
@@ -222,7 +222,7 @@ class TikTokService(Market):
 
 
 
-            #await Service.orderService.find(db,{'market_order_number__in',[order["order_id"] for order in ordersummory],'market_id':})
+            #await Service.orderService.find(db,{'market_order_id__in',[order["order_id"] for order in ordersummory],'market_id':})
 
     async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int=None)->Any:
         url = "/api/orders/search"
