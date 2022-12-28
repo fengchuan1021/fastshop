@@ -30,6 +30,9 @@ class Market:
     async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
         raise NotImplementedError
     @abc.abstractmethod
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float) -> Any:
+        raise NotImplementedError
+    @abc.abstractmethod
     async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int)->List:
         raise NotImplementedError
 
@@ -41,9 +44,7 @@ class Market:
     async def updateStock(self,db:AsyncSession,store:Models.Store,sku:str,num:int)->Any:
         raise NotImplementedError
 
-    @abc.abstractmethod
-    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float) -> Any:
-        raise NotImplementedError
+
 
 
 

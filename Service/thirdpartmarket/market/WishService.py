@@ -295,6 +295,19 @@ class WishService(Market):
         if ret['code']!=0:
             raise ResponseException({'status':'failed','msg':ret['message']})
         return ret['data']
+
+
+    async def deleteProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        raise NotImplementedError
+
+    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
+        raise NotImplementedError
+
+    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
+        raise NotImplementedError
+
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float) -> Any:
+        raise NotImplementedError
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
         datas=await self.getProductList(db,store)#type: ignore
         for data in datas:
@@ -335,11 +348,11 @@ if __name__ == '__main__':
     from ctypes import cdll
     cdll.msvcrt._tzset ()
 
-    async def test():  # type: ignore
+    async def test()->Any:
         wishService = WishService()
         async with getdbsession() as db:
             store = await Service.storeService.findByPk(db, 1)
-            await Service.wishService.syncOrder(db,store,int(time.time())-3600*24*31)
+            await Service.wishService.syncOrder(db,1,store,int(time.time())-3600*24*31)
             #await Service.wishService.backgroundsyncProduct(db, store)
         # await wishService.getCurrencyList()
         # await wishService.getBrandList()
