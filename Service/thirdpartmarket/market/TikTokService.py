@@ -74,17 +74,8 @@ class TikTokService(Market):
         return ret
 
 
-    async def deleteProduct(self, db: AsyncSession, store: Models.Store, sku: str) -> Any:
-        url='/api/products'
-        #await self.delete
-        # merchantmodel = await self.getStore(db, store_id)
-        #
-        # url = self.buildurl(url, {"product_ids":[123,456]}, merchantmodel)
-        #
-        #
-        # async with self.session.delete(url) as resp:
-        #     ret=await resp.json()
-    async def request(self,store:Models.Store,method:Literal["GET","POST","PUT"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
+
+    async def request(self,store:Models.Store,method:Literal["GET","POST","PUT","DELETE"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
         if params==None:
             params={}
         url=self.buildurl(url,params,store)#type: ignore
@@ -98,7 +89,8 @@ class TikTokService(Market):
         return await self.request(store,'GET',url,params)
     async def post(self,store:Models.Store,url:str,body:Dict=None,params:Dict=None)->Any:
         return await self.request(store,"POST",url,body=body,params=params)
-
+    async def delete(self,store:Models.Store,url:str,body:Dict=None,params:Dict=None)->Any:
+        return await self.request(store,"DELETE",url,body=body,params=params)
     async def put(self,store:Models.Store,url:str,body:Dict)->Any:
         return await self.request(store, "PUT", url, body=body)
 
@@ -272,6 +264,48 @@ class TikTokService(Market):
         url='/api/fulfillment/detail'
         ret=await self.get(store,url,{'package_id':package_id})
         return ret['data']
+
+
+    async def deleteProduct(self, db: AsyncSession, store: Models.Store, sku: str) -> Any:
+        url='/api/products'
+        variant = await Service.tiktokvariantService.findOne(db, {'sku': sku, 'store_id': store.store_id})
+        if variant:
+            ret=await self.delete(store,url,{"product_ids":[variant.market_product_id]})
+            return ret
+
+    async def offlineProduct(self, db: AsyncSession, store: Models.Store, sku: str) ->Any:
+        url='/api/products/inactivated_products'
+        variant = await Service.tiktokvariantService.findOne(db, {'sku': sku, 'store_id': store.store_id})
+        if variant:
+            ret=await self.post(store,url,{"product_ids":[variant.market_product_id]})
+            return ret
+
+
+    async def onlineProduct(self, db: AsyncSession, store: Models.Store, sku: str) -> Any:
+        url='/api/products/activate'
+        variant = await Service.tiktokvariantService.findOne(db, {'sku': sku, 'store_id': store.store_id})
+        if variant:
+            ret=await self.post(store,url,{"product_ids":[variant.market_product_id]})
+            return ret
+
+
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float,
+                          price_currency_code:str="GBP") -> Any:
+        url='/api/products/prices'
+        variant = await Service.tiktokvariantService.findOne(db, {'sku': sku,'store_id': store.store_id})
+        if variant:
+            body={
+                  "product_id": variant.market_product_id,
+                  "skus": [
+                    {
+                      "id": variant.market_varant_id,
+                      "original_price": price
+                    }
+                  ]
+                }
+            ret=await self.put(store,url,body)
+            return ret
+
 if __name__=='__main__':
     import asyncio
 

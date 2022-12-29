@@ -43,6 +43,9 @@ class AmazonService(Market):
         url=f'/orders/v0/orders/{market_order_id}'
         raise NotImplementedError
 
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float,
+                          price_currency_code:str="GBP") -> Any:
+        raise NotImplementedError
 if __name__ == '__main__':
     @cmdlineApp
     async def test(db):#type: ignore

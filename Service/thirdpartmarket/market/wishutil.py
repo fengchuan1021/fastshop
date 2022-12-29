@@ -11,7 +11,7 @@ def filloutProduct(product:Models.WishProduct,json_data:Dict)->Any:
     product.subcategory_id = json_data['subcategory_id']
     product.updated_at = json_data['updated_at']
     product.num_sold = json_data['num_sold']
-    product.wish_id = json_data['id']
+    product.market_product_id = json_data['id']
     product.category = json_data['category']
     product.is_promoted = json_data['is_promoted']
     product.status = json_data['status']
@@ -28,13 +28,13 @@ def filloutVariant(variant:Models.WishVariant,variant_json:Dict,product:Models.W
     variant.wishproduct_id = product.wishproduct_id
     variant.status = variant_json['status']
     variant.sku = variant_json['sku']
-    variant.product_id = product.wish_id
+    variant.market_product_id = product.market_product_id
     variant.price = variant_json['price']['amount']
     variant.currency_code = variant_json['price']['currency_code']
     variant.cost_price = variant_json['cost']['amount']
     variant.cost_currency_code = variant_json['cost']['currency_code']
     variant.gtin = variant_json['gtin']
-    variant.wish_id = variant_json['id']
+    variant.market_variant_id = variant_json['id']
     variant.warehouse_id=variant_json["inventories"][0]["warehouse_id"]
     variant.inventory=variant_json["inventories"][0]["inventory"]
 

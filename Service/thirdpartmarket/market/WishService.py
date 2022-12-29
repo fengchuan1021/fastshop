@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Request
 from urllib.parse import urlencode
 
+from common.CurrencyRate import CurrencyRate
 from component.fastQL import fastQuery
 from modules.merchant.product.wish.ProductShema import WishCreateProduct
 from sqlalchemy.orm import Load
@@ -36,7 +37,7 @@ from component.snowFlakeId import snowFlack
 
 
 class WishService(Market):
-    async def request(self,store:Models.Store,method:Literal["GET","POST","PUT"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
+    async def request(self,store:Models.Store,method:Literal["GET","POST","PUT","DELETE"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
 
         url = f'{settings.WISH_BASEURL}{url}'
         async with aiohttp.request(method,url,params=params,json=body,headers=headers) as resp:
@@ -53,7 +54,8 @@ class WishService(Market):
         return await self.request(store, "PUT", url, body=body, headers=tokenheader)
     async def get(self,url: str, store:Models.Store, params: Dict = None) -> Any:
         return await self.request(store, "GET", url, params=params, headers={'authorization': f'Bearer {store.token}'})
-
+    async def delete(self,url: str, store:Models.Store) -> Any:
+        return await self.request(store, "DELETE", url,headers={'authorization': f'Bearer {store.token}'})
 
     def getAuthorizationUrl(self, shop_id: int) -> str:
         return settings.WISH_BASEURL + f"/v3/oauth/authorize?client_id={settings.WISH_CLIENTID}&state={shop_id}"
@@ -81,10 +83,10 @@ class WishService(Market):
         variant=await Service.wishvariantService.findOne(db,{'sku':sku,'store_id':store.store_id})
         #variant=await fastQuery(db,'WishVariant{wish_id,WishProduct{wish_id}}')
         if variant:
-            url=f'/api/v3/products/{variant.product_id}'
+            url=f'/api/v3/products/{variant.market_product_id}'
             body={"variations":[
                 {
-                    id:variant.wish_id,
+                    id:variant.market_variant_id,
                     "inventories":[
                         {"inventory":num,
                          "warehouse_id":variant.warehouse_id
@@ -248,7 +250,7 @@ class WishService(Market):
         async for productSummarys in self.getProductList(db,store):
             needsync = {productSummary["id"]:productSummary['updated_at'] for productSummary in productSummarys}
             needupdate={}
-            ourdbmodels=await Service.wishproductService.find(db,{"wish_id__in":needsync.keys()},Load(Models.WishProduct).load_only(Models.WishProduct.wish_id,Models.WishProduct.market_updatetime))
+            ourdbmodels=await Service.wishproductService.find(db,{"market_product_id__in":needsync.keys()},Load(Models.WishProduct).load_only(Models.WishProduct.market_product_id,Models.WishProduct.market_updatetime))
             for model in ourdbmodels:
                 if os.name=='nt':#for timezone bug in windows
                     if isinstance(model.market_updatetime,str):
@@ -257,9 +259,9 @@ class WishService(Market):
                         tmstamp=model.market_updatetime.replace(tzinfo=pytz.UTC).timestamp()#type: ignore
                 else:
                     tmstamp=model.market_updatetime.timestamp() if not isinstance(model.market_updatetime,str) else parse(model.market_updatetime).timestamp()#type: ignore
-                if tmstamp!=parse(needsync[model.wish_id]).timestamp():
-                    needupdate[model.wishproduct_id]=model.wish_id #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
-                del needsync[model.wish_id]
+                if tmstamp!=parse(needsync[model.market_product_id]).timestamp():
+                    needupdate[model.wishproduct_id]=model.market_product_id #wisshproduct_id 我们数据库主键 wish_id wish数据库主键
+                del needsync[model.market_product_id]
             sem = asyncio.Semaphore(20)#35并发量 wish有速度限制
             newproducts_task=[self.getProductDetail(db,store,product_id,sem) for product_id in needsync]#:#add new product
 
@@ -298,16 +300,45 @@ class WishService(Market):
 
 
     async def deleteProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
-        raise NotImplementedError
+        variant = await Service.wishvariantService.findOne(db, {'sku': sku, 'store_id': store.store_id})
+        if variant:
+            url=f'/api/v3/products/{variant.market_product_id}'
+            await self.delete(url,store)
 
-    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
-        raise NotImplementedError
+    async def setVariantStatus(self,db:AsyncSession,store:Models.Store,sku:str,status:Literal["ENABLED","DISABLED"])->Any:
+        variant = await Service.wishvariantService.findOne(db, {'sku': sku, 'store_id': store.store_id})
+        # variant=await fastQuery(db,'WishVariant{wish_id,WishProduct{wish_id}}')
+        if variant:
+            url = f'/api/v3/products/{variant.market_product_id}'
+            body = {"variations": [
+                {
+                    id: variant.market_variant_id,
+                    "status": status
+                }
 
-    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
-        raise NotImplementedError
+            ]}
+            ret = await self.put(url, store, body)
+            return ret
+    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        return await self.setVariantStatus(db,store,sku,"DISABLED")
 
-    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float) -> Any:
-        raise NotImplementedError
+    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        return await self.setVariantStatus(db,store,sku,"ENABLED")
+
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float,price_currency_code:str="GBP") -> Any:
+        variant = await Service.wishvariantService.findOne(db, {'sku': sku, 'store_id': store.store_id})
+        RATE = await CurrencyRate(price_currency_code,"USD")
+        if variant:
+            url = f'/api/v3/products/{variant.market_product_id}'
+            body = {"variations": [
+                {
+                    id: variant.market_variant_id,
+                    "price": {"amount":round(price*RATE,2),"currency_code":"USD"}
+                }
+
+            ]}
+            ret = await self.put(url, store, body)
+            return ret
     async def importToXT(self,db:AsyncSession,merchant_id:int,store:Models.Store)->Any:
         datas=await self.getProductList(db,store)#type: ignore
         for data in datas:

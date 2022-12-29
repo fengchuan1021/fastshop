@@ -11,7 +11,7 @@ class WishProduct(Base):
     __tablename__ = 'wishproduct'
     name=Column(XTVARCHAR(128))
     wishproduct_id=Column(BIGINT(20), primary_key=True, default=snowFlack.getId, comment="primary key")
-    wish_id=Column(XTVARCHAR(32),unique=True,index=True)
+    market_product_id=Column(XTVARCHAR(32),unique=True,index=True)
     subcategory_id=Column(XTVARCHAR(32),default='')
     market_updatetime=Column(DATETIME(fsp=3))
     created_at=Column(DATETIME(fsp=3))
@@ -39,13 +39,14 @@ class WishVariant(Base):
     wishproduct_id=Column(BIGINT,index=True)
     status=Column(XTVARCHAR(32))
     sku=Column(XTVARCHAR(80))
-    product_id=Column(XTVARCHAR(32))
+    market_product_id=Column(XTVARCHAR(32))
+    market_variant_id = Column(XTVARCHAR(32), unique=True, index=True)
     price=Column(DECIMAL(10,4))
     currency_code=Column(XTVARCHAR(12))
     cost_price=Column(DECIMAL(10,4))
     cost_currency_code = Column(XTVARCHAR(12))
     gtin=Column(XTVARCHAR(32))
-    wish_id=Column(XTVARCHAR(32),unique=True,index=True)
+
     merchant_id=Column(INTEGER,index=True)
     store_id=Column(INTEGER,index=True)
     warehouse_id=Column(XTVARCHAR(32)) #在wish上的仓库id

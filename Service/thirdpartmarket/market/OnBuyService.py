@@ -22,7 +22,7 @@ from modules.merchant.product.onbuy.ProductShema import OnbuyCreateProductShema
 from Service.thirdpartmarket import Market
 class OnBuyService(Market):  # Market
 
-    async def request(self, store: Models.Store, method: Literal["GET", "POST", "PUT"], url: str, params: Dict = None,
+    async def request(self, store: Models.Store, method: Literal["GET", "POST", "PUT",'DELETE'], url: str, params: Dict = None,
                       body: Dict = None, headers: Dict = None) -> Any:
         if not store.token_expiration or store.token_expiration - int(time.time()) < 120:
             await self.getToken(store)
@@ -43,6 +43,9 @@ class OnBuyService(Market):  # Market
         return ret
     async def put(self, store: Models.Store, url: str, body: Dict = None) -> Any:
         ret = await self.request(store, 'PUT', url, body=body)
+        return ret
+    async def delete(self, store: Models.Store, url: str, body: Dict = None) -> Any:
+        ret = await self.request(store, 'DELETE', url, body=body)
         return ret
     async def getBrands(self,db:AsyncSession,store:Models.Store,searchname:str)->Any:
         url='/v2/brands'
@@ -191,7 +194,7 @@ class OnBuyService(Market):  # Market
         ]}
         ret =await self.put(store, url, body)
         return ret
-    async def updatePrice(self,db:AsyncSession,store:Models.Store,sku:str,price:float)->Any:
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float,price_currency_code:str="GBP") -> Any:
         url='/v2/listings/by-sku'
         body={'site_id':2000,'listings':[
             {
@@ -201,10 +204,18 @@ class OnBuyService(Market):  # Market
         ]}
         ret =await self.put(store,url,body)
         return ret
-    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
-        raise NotImplementedError
+    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        url='/v2/listings/by-sku'
 
-    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
+        body = {'site_id': 2000, 'listings': [
+            {
+                "sku": sku,
+
+            }
+        ]}
+        return await self.delete(store,url,body)
+    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        #onbuy does not has function to set product status
         raise NotImplementedError
 if __name__ == '__main__':
     import asyncio

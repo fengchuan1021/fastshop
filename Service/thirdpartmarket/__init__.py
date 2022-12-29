@@ -24,13 +24,13 @@ class Market:
     async def deleteProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
         raise NotImplementedError
     @abc.abstractmethod
-    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
+    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
         raise NotImplementedError
     @abc.abstractmethod
-    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->List:
+    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
         raise NotImplementedError
     @abc.abstractmethod
-    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float) -> Any:
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float,price_currency_code:str="GBP") -> Any:
         raise NotImplementedError
     @abc.abstractmethod
     async def getOrderList(self,db:AsyncSession,store:Models.Store,starttime:int)->List:

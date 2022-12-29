@@ -27,17 +27,18 @@ from Service.thirdpartmarket.Shema import Shipinfo
 from Service.thirdpartmarket.market import magentoutil
 
 from common.CommonError import ResponseException, TokenException
+from common.CurrencyRate import CurrencyRate
 from component.fastQL import fastQuery
 from modules.merchant.product.magento.ProductShema import MagentoProductShema
 
 
 class MagentoService(Market):
-    async def request(self,store:Store,method:Literal["GET","POST","PUT"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
+    async def request(self,store:Store,method:Literal["GET","POST","PUT","DELETE"],url:str,params:Dict=None,body:Dict=None,headers:Dict=None)->Any:
         if not store.token_expiration or store.token_expiration-int(time.time())<300:
             await self.getAdminToken(store)
         url = f'{store.apiendpoint}{url}'
         async with aiohttp.request(method,url,params=params,json=body,headers=headers) as resp:
-            return resp.json()
+            return await resp.json()
 
     async def get(self,store:Store,url:str,params:Dict=None)->Any:
         return await self.request(store,"GET",url,params=params,headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'})
@@ -47,7 +48,8 @@ class MagentoService(Market):
 
     async def put(self,store:Store,url:str,body:Dict)->Any:
         return await self.request(store,"PUT",url,body=body,headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'})
-
+    async def delete(self,store:Store,url:str,body:Dict)->Any:
+        return await self.request(store,"DELETE",url,body=body,headers={'Authorization':f'Bearer {store.token}','Content-Type':'application/json'})
     async def getAdminToken(self,store:Models.Store)->Any:
         url='/rest/V1/integration/admin/token'
         async with aiohttp.ClientSession() as session:
@@ -132,12 +134,47 @@ class MagentoService(Market):
         url='/V1/categories'
         ret=await self.get(store,url)
         print(ret)
+    async def updatePrice(self, db: AsyncSession, store: Models.Store, sku: str, price: float,
+                          price_currency_code:str="GBP") -> Any:
+        url=f'/rest/V1/products/{sku}'
+        RATE = await CurrencyRate(price_currency_code, store.currency_code)
+        body={
+            'product':{
+                   'sku':sku,
+                    "price":round(price*RATE,2),
+            }
+        }
+        ret=await self.put(store,url,body)
+        print(f'{ret=}')
+        return ret
+
+
+    async def deleteProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        url=f'/rest/V1/products/{sku}'
+        body={'product':{'sku':sku}}
+        await self.delete(store,url,body)
+    async def offlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        url = f'/rest/V1/products/{sku}'
+        body = {'product': {'sku': sku,'status':2}}
+        ret=await self.put(store, url, body)
+        print(ret)
+        return ret
+
+    async def onlineProduct(self,db:AsyncSession,store:Models.Store,sku:str)->Any:
+        url = f'/rest/V1/products/{sku}'
+        body = {'product': {'sku': sku,'status':1}}
+        ret=await self.put(store, url, body)
+        print(ret)
+        return ret
+
 if __name__ == '__main__':
     from common import cmdlineApp
     @cmdlineApp
     async def test(db):#type: ignore
         store=await Service.storeService.findByPk(db,4)
-        await Service.magentoService.updateStock(db,store,'24-MB01',999)
+        magento=MagentoService()
+        ret=await magento.updatePrice(db, store, 'WSH12-32-Purple',66.66)
+        #await magento.updateStock(db,store,'WSH12-32-Purple',999)
         #await Service.magentoService.getAdminToken(store)
         #await Service.magentoService.getProductList(db,store)
 
