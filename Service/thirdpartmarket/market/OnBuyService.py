@@ -13,10 +13,7 @@ if __name__ == '__main__':
 else:
     from . import onbuyutil
 import aiohttp
-from common import TokenException
-from component.cache import cache
-from urllib.parse import urlencode
-import asyncio
+
 from modules.merchant.product.onbuy.ProductShema import OnbuyCreateProductShema
 
 from Service.thirdpartmarket import Market

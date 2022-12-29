@@ -1,5 +1,3 @@
-
-
 import settings
 import asyncio
 import datetime,time
@@ -9,7 +7,7 @@ import pytz,os #type: ignore
 from dateutil.parser import parse
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Request
-from urllib.parse import urlencode
+
 
 from common.CurrencyRate import CurrencyRate
 from component.fastQL import fastQuery
