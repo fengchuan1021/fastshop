@@ -63,7 +63,10 @@ class MyBase(object):
                 continue
             if isinstance(value,Base):
                 if value not in resolved:#type: ignore
-                    dic[key]=value.dict()
+                    dic[key]=value.dict(resolved)
+            elif isinstance(value,list):
+                dic[key]=[v.dict(resolved) for v in value]#type: ignore
+
             else:
                 dic[key] = value
         return dic

@@ -71,7 +71,10 @@ async def _fastAdd(db: AsyncSession,modelname:str,data:Dict,context:Optional[set
         if isinstance(value,(dict,list)):
             if not allpermission and key.lower() not in _lowerrelation:
                 raise PermissionException(f"not permission access {key}")
-            children[key]=modelclass.__annotations__.get(key)
+            if isinstance(value,list):
+                children[key] = modelclass.__annotations__.get(key).__args__[0].__forward_arg__#type: ignore
+            else:
+                children[key]=modelclass.__annotations__.get(key)
         else:
             if not allpermission and key not in columns:
                 raise PermissionException(f"not permission access {key}")

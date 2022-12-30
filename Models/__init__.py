@@ -5,7 +5,7 @@ from .Permission import Permission,Graphpermission,Roledisplayedmenu
 from .User import User
 from .country.Country import Country
 from .customer.Customer import Customer
-from .order.Order import Order,ShipOrderAddress,BillOrderAddress,OrderItem,OrderStatusHistory
+from .order.Order import Order,BillOrderAddress,ShipOrderAddress,OrderItem,OrderStatusHistory
 from .order.ReviewOrderRule import ReviewOrderRule
 from .order.Shipping import OrderShipment,OrderShipmentItem
 from .product.AttrSpecification import PreAttrSpecification,ProductAttribute,ProductSpecification

@@ -59,7 +59,8 @@ userService : UserService
 countryService : CRUDBase[Models.Country]
 customerService : CRUDBase[Models.Customer]
 orderService : CRUDBase[Models.Order]
-
+billorderaddressService : CRUDBase[Models.BillOrderAddress]
+shiporderaddressService : CRUDBase[Models.ShipOrderAddress]
 orderitemService : CRUDBase[Models.OrderItem]
 orderstatushistoryService : CRUDBase[Models.OrderStatusHistory]
 revieworderruleService : CRUDBase[Models.ReviewOrderRule]
