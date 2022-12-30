@@ -27,4 +27,4 @@ from .stock.VariantWarehouseRedeploy import VariantWarehouseRedeploy,VariantWare
 from .stock.Warehouse import Warehouse,WarehouseShelve
 from .store.Market import Market
 from .store.Merchant import Merchant
-from .store.Store import Store
+from .store.Store import Store,StoreWarehouse

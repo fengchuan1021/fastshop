@@ -98,6 +98,7 @@ warehouseshelveService : CRUDBase[Models.WarehouseShelve]
 marketService : CRUDBase[Models.Market]
 merchantService : CRUDBase[Models.Merchant]
 storeService : StoreService
+storewarehouseService : CRUDBase[Models.StoreWarehouse]
 uploadService : UploadService
 revieworderService : ReviewOrderService
 paymentService : PaymentService
