@@ -18,7 +18,7 @@ class Product(Base):
     __tablename__ = 'product'
     product_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId, comment="primary key")
     sku = Column(XTVARCHAR(80), comment="sku")
-
+    singlevariant = Column(ENUM("Y", "N"), server_default="'Y'", default='Y')  # 单品只有一个规格
     #brand_id = Column(INTEGER, index=True, server_default='0', default=0)
     brand_name = Column(XTVARCHAR(24), nullable=False, default='', server_default='')
 
@@ -132,7 +132,7 @@ class Variant(Base):
     # 可分配库存：qty - 所有 variantstore.qtyshare is YES的 qty的最终库存
 
     #available_qty = Column(INTEGER, default=0, index=True)
-
+    singlevariant=Column(ENUM("Y","N"), server_default="'Y'",default='Y')#单品只有一个规格
     specification = Column(XTVARCHAR(12), server_default='')
 
     #color = Column(XTVARCHAR(12), server_default='')
