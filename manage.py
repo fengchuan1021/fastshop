@@ -129,6 +129,10 @@ def resetdb()->None:
     command.upgrade(config=config, revision='head')
     click.secho('Success: db reset successfuly', fg='green')
 @app.command()
+def patch()->None:
+    from devtools import patchlibrary
+    patchlibrary.patch()
+@app.command()
 def initall()->None:
 
     os.environ['migratedb'] = '1'
