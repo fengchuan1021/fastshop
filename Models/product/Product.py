@@ -164,13 +164,13 @@ class Variant(Base):
                                                       )
 
     merchant_id = Column(INTEGER, index=True)
-    store_id = Column(INTEGER, index=True)
+    #store_id = Column(INTEGER, index=True)
     Merchant: 'Merchant' = relationship('Merchant', uselist=False,
                                         primaryjoin='foreign(Variant.merchant_id) == Merchant.merchant_id',
                                         back_populates='Variant', cascade='')
-    Store: 'Store' = relationship('Store', uselist=False,
-                                  primaryjoin='foreign(Variant.store_id) == Store.store_id',
-                                  back_populates='Variant', cascade='')
+    # Store: 'Store' = relationship('Store', uselist=False,
+    #                               primaryjoin='foreign(Variant.store_id) == Store.store_id',
+    #                               back_populates='Variant', cascade='')
 
     SupplierVariant: List['SupplierVariant'] = relationship('SupplierVariant',
                                                             primaryjoin="foreign(SupplierVariant.variant_id)==Variant.variant_id",

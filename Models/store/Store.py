@@ -53,9 +53,9 @@ class Store(Base):
     #                                           primaryjoin='foreign(Product.store_id) == Store.store_id',
     #                                           back_populates='Store',cascade='')
 
-    Variant: List['Variant'] = relationship("Variant", uselist=True,
-                                              primaryjoin='foreign(Variant.store_id) == Store.store_id',
-                                              back_populates='Store',cascade='')
+    # Variant: List['Variant'] = relationship("Variant", uselist=True,
+    #                                           primaryjoin='foreign(Variant.store_id) == Store.store_id',
+    #                                           back_populates='Store',cascade='')
     # Variants: 'VariantSite' = relationship('VariantSite', uselist=True,
 
     #                                    primaryjoin='foreign(VariantSite.site_id) == Site.site_id',
