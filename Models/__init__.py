@@ -21,10 +21,11 @@ from .statistics.SaleReport import SaleReport
 from .stock.InventoryMovement import InventoryMovement
 from .stock.LogisticsRule import LogisticsRule,InventoryRule
 from .stock.PurchaseReceipt import PurchaseReceipt,PurchaseReceiptItems
+from .stock.StoreWarehouse import StoreWarehouse,variant_store_warehouse
 from .stock.Supplier import Supplier,SupplierVariant
 from .stock.VariantWarehouse import VariantWarehouse
 from .stock.VariantWarehouseRedeploy import VariantWarehouseRedeploy,VariantWarehouseRedeployItem,Package
 from .stock.Warehouse import Warehouse,WarehouseShelve
 from .store.Market import Market
 from .store.Merchant import Merchant
-from .store.Store import Store,StoreWarehouse
+from .store.Store import Store

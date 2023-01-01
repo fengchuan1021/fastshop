@@ -61,9 +61,3 @@ class Store(Base):
     #                                    primaryjoin='foreign(VariantSite.site_id) == Site.site_id',
     #                                    back_populates='Site')
 
-class StoreWarehouse(Base):
-    __tablename__ = 'store_warehouse'
-    __table_args__ = (UniqueConstraint('store_id', "warehouse_id", name="storewarehouse"),)
-    store_warehouse_id = Column(INTEGER, primary_key=True, autoincrement=True)
-    store_id=Column(INTEGER)
-    warehouse_id=Column(BIGINT)

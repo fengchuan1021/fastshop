@@ -87,6 +87,8 @@ logisticsruleService : LogisticsRuleService
 inventoryruleService : InventoryRuleService
 purchasereceiptService : CRUDBase[Models.PurchaseReceipt]
 purchasereceiptitemsService : CRUDBase[Models.PurchaseReceiptItems]
+storewarehouseService : CRUDBase[Models.StoreWarehouse]
+variant_store_warehouseService : CRUDBase[Models.variant_store_warehouse]
 supplierService : CRUDBase[Models.Supplier]
 suppliervariantService : CRUDBase[Models.SupplierVariant]
 variantwarehouseService : CRUDBase[Models.VariantWarehouse]
@@ -98,7 +100,6 @@ warehouseshelveService : CRUDBase[Models.WarehouseShelve]
 marketService : CRUDBase[Models.Market]
 merchantService : CRUDBase[Models.Merchant]
 storeService : StoreService
-storewarehouseService : CRUDBase[Models.StoreWarehouse]
 uploadService : UploadService
 revieworderService : ReviewOrderService
 paymentService : PaymentService

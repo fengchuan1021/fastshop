@@ -16,7 +16,7 @@ class Warehouse(Base):
     warehouse_id = Column(BIGINT(20), primary_key=True, default=snowFlack.getId)
     name = Column(XTVARCHAR(32))
     code = Column(XTVARCHAR(32))
-    status = Column(ENUM('ENABLE', "DISABLE"), default='ENBALE', server_default='ENABLE')
+    status = Column(ENUM('ENABLE', "DISABLE"), default='ENABLE', server_default='ENABLE')
     description = Column(XTVARCHAR(255), default='')
     latitude = Column(FLOAT())
     longitude = Column(FLOAT())
